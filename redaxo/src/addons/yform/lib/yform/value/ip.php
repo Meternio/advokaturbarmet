@@ -11,7 +11,7 @@ class rex_yform_value_ip extends rex_yform_value_abstract
 {
     public function enterObject()
     {
-        $sk = ($this->getElement('server_var') != '') ? $this->getElement('server_var') : 'REMOTE_ADDR';
+        $sk = ('' != $this->getElement('server_var')) ? $this->getElement('server_var') : 'REMOTE_ADDR';
         $this->setValue($_SERVER[$sk]);
 
         $this->params['value_pool']['email'][$this->getName()] = $this->getValue();
@@ -21,12 +21,12 @@ class rex_yform_value_ip extends rex_yform_value_abstract
         }
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'ip|name|[no_db]|[server_var]';
     }
 
-    public function getDefinitions()
+    public function getDefinitions(): array
     {
         return [
             'type' => 'value',
@@ -40,5 +40,20 @@ class rex_yform_value_ip extends rex_yform_value_abstract
             'description' => rex_i18n::msg('yform_values_ip_description'),
             'db_type' => ['varchar(191)', 'text'],
         ];
+    }
+
+    public static function getSearchField($params)
+    {
+        rex_yform_value_text::getSearchField($params);
+    }
+
+    public static function getSearchFilter($params)
+    {
+        return rex_yform_value_text::getSearchFilter($params);
+    }
+
+    public static function getListValue($params)
+    {
+        return rex_yform_value_text::getListValue($params);
     }
 }

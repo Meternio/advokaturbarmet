@@ -9,7 +9,7 @@
 
 class rex_yform_action_encrypt_value extends rex_yform_action_abstract
 {
-    public function executeAction()
+    public function executeAction(): void
     {
         $f = $this->getElement(3); // the function
         if (!function_exists($f)) {
@@ -21,11 +21,11 @@ class rex_yform_action_encrypt_value extends rex_yform_action_abstract
 
         // Label to save in
         $ls = @$this->getElement(4);
-        if ($ls == '') {
+        if ('' == $ls) {
             $ls = $l[0];
         }
-        if ($ls == '') {
-            return false;
+        if ('' == $ls) {
+            return;
         }
 
         // $this->params["value_pool"]["sql"] = Array for database
@@ -36,13 +36,13 @@ class rex_yform_action_encrypt_value extends rex_yform_action_abstract
             }
         }
 
-        if ($k != '') {
+        if ('' != $k) {
             $this->params['value_pool']['sql'][$ls] = $f($k);
             $this->params['value_pool']['email'][$ls] = $f($k);
         }
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'action|encrypt|label[,label2,label3]|md5|[save_in_this_label]';
     }

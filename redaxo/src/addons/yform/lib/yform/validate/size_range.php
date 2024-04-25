@@ -17,23 +17,23 @@ class rex_yform_validate_size_range extends rex_yform_validate_abstract
             return;
         }
 
-        if ($Object->getValue() == '') {
+        if ('' == $Object->getValue()) {
             return;
         }
 
         $w = false;
 
         $minsize = -1;
-        if ($this->getElement('min') != '') {
+        if ('' != $this->getElement('min')) {
             $minsize = (int) $this->getElement('min');
         }
 
         $maxsize = -1;
-        if ($this->getElement('max') != '') {
+        if ('' != $this->getElement('max')) {
             $maxsize = (int) $this->getElement('max');
         }
 
-        $size = strlen($Object->getValue());
+        $size = mb_strlen((string) $Object->getValue());
 
         if ($minsize > -1 && $minsize > $size) {
             $w = true;
@@ -49,12 +49,12 @@ class rex_yform_validate_size_range extends rex_yform_validate_abstract
         }
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'validate|size_range|name|[minsize]|[maxsize]|Fehlermeldung';
     }
 
-    public function getDefinitions()
+    public function getDefinitions(): array
     {
         return [
             'type' => 'validate',

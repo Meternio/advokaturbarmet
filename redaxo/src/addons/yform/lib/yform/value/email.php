@@ -13,12 +13,23 @@ class rex_yform_value_email extends rex_yform_value_abstract
     {
         $this->setValue((string) $this->getValue());
 
-        if ($this->getValue() == '' && !$this->params['send']) {
+        if ('' == $this->getValue() && !$this->params['send']) {
             $this->setValue($this->getElement(3));
         }
 
         if ($this->needsOutput()) {
             $this->params['form_output'][$this->getId()] = $this->parse(['value.email.tpl.php', 'value.text.tpl.php'], ['type' => 'email']);
+        }
+
+        if ($this->needsOutput() && $this->isViewable()) {
+            if (!$this->isEditable()) {
+                $attributes = empty($this->getElement('attributes')) ? [] : json_decode($this->getElement('attributes'), true);
+                $attributes['readonly'] = 'readonly';
+                $this->setElement('attributes', json_encode($attributes));
+                $this->params['form_output'][$this->getId()] = $this->parse(['value.email-view.tpl.php', 'value.text-view.tpl.php', 'value.view.tpl.php'], ['type' => 'email']);
+            } else {
+                $this->params['form_output'][$this->getId()] = $this->parse(['value.email.tpl.php', 'value.text.tpl.php'], ['type' => 'email']);
+            }
         }
 
         $this->params['value_pool']['email'][$this->getName()] = $this->getValue();
@@ -27,12 +38,12 @@ class rex_yform_value_email extends rex_yform_value_abstract
         }
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'email|name|label|defaultwert|[no_db]|[attributes]|[notice]';
     }
 
-    public function getDefinitions()
+    public function getDefinitions(): array
     {
         return [
             'type' => 'value',
@@ -53,28 +64,16 @@ class rex_yform_value_email extends rex_yform_value_abstract
 
     public static function getSearchField($params)
     {
-        $params['searchForm']->setValueField('text', ['name' => $params['field']->getName(), 'label' => $params['field']->getLabel(), 'notice' => rex_i18n::msg('yform_search_defaults_wildcard_notice')]);
+        rex_yform_value_text::getSearchField($params);
     }
 
     public static function getSearchFilter($params)
     {
-        $sql = rex_sql::factory();
-        $value = $params['value'];
-        $field = $params['field']->getName();
+        return rex_yform_value_text::getSearchFilter($params);
+    }
 
-        if ($value == '(empty)') {
-            return ' (' . $sql->escapeIdentifier($field) . ' = "" or ' . $sql->escapeIdentifier($field) . ' IS NULL) ';
-        }
-        if ($value == '!(empty)') {
-            return ' (' . $sql->escapeIdentifier($field) . ' <> "" and ' . $sql->escapeIdentifier($field) . ' IS NOT NULL) ';
-        }
-
-        $pos = strpos($value, '*');
-        if ($pos !== false) {
-            $value = str_replace('%', '\%', $value);
-            $value = str_replace('*', '%', $value);
-            return $sql->escapeIdentifier($field) . ' LIKE ' . $sql->escape($value);
-        }
-        return $sql->escapeIdentifier($field) . ' = ' . $sql->escape($value);
+    public static function getListValue($params)
+    {
+        return rex_yform_value_text::getListValue($params);
     }
 }

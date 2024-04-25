@@ -28,8 +28,10 @@ search_it_settings_indexoffline = Index offline articles
 search_it_settings_automaticindex_label = Index and deindex articles automatically (ADD, EDIT, DELETE)
 search_it_settings_reindex_cols_onforms_label = Reindex all columns, if tables are changed through YForm or form
 search_it_settings_index_url_addon_label = Index URL addon (version >=2) URLs
+search_it_settings_index_without_ssl_verification_label = Don't verify SSL certificate (useful at local development while using self-signed certificats)
+search_it_settings_index_host_label = Should indexing be done via a special host[:port]? (Please specify only if absolutely necessary)
 
-search_it_settings_http_authbasic = HTTP Basic AUTH ( .htaccess protection)
+search_it_settings_http_authbasic = HTTP Basic AUTH (.htaccess protection)
 search_it_settings_http_auth_desc = If the website i s protected through HTTP Basic Auth, you can put a valid login here, in order to allow indexing
 search_it_settings_htaccess_user = Username
 search_it_settings_htaccess_pass = Password
@@ -106,7 +108,8 @@ search_it_generate_article_http_error = not indexed, HTTP error
 search_it_generate_article_404_error = not indexed, HTTP 404 error
 search_it_generate_article_socket_error = not indexed, Socket error
 search_it_generate_article_id_not_found = not indexed, no article with this ID in this language
-search_it_generate_col_done = ( {0} column(s) indexed )
+search_it_generate_col_datasets = Datasets
+search_it_generate_col_done = ( {0} column value(s) indexed )
 search_it_generate_col_error = not indexed, Error
 search_it_generate_col_not_exists = column "{0}" does not exist in table "{1}"
 search_it_generate_table_not_exists = table "{0}" does not exist
@@ -144,7 +147,7 @@ search_it_test_legend = Check settinge and test search
 search_it_test_submit = Search
 search_it_test_mode = Searchmode
 search_it_test_notice = Search done.
-search_it_test_hits = Hits:
+search_it_test_hits = Hits
 
 search_it_test_result = Test search result
 search_it_test_result_object = Test search result object

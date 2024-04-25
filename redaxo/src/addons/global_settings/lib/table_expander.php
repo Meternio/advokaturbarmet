@@ -21,7 +21,7 @@ class rex_global_settings_table_expander extends rex_form
 
         $field = $this->addTextField('name');
         $field->setLabel(rex_i18n::msg('global_settings_field_label_name'));
-		$field->setAttribute('id', 'global-settings-name-field');
+        $field->setAttribute('id', 'global-settings-name-field');
 
         $field = $this->addSelectField('priority');
         $field->setLabel(rex_i18n::msg('global_settings_field_label_priority'));
@@ -52,6 +52,9 @@ class rex_global_settings_table_expander extends rex_form
         $field = $this->addTextField('title');
         $field->setLabel(rex_i18n::msg('global_settings_field_label_title'));
         $field->setNotice(rex_i18n::msg('global_settings_field_notice_title'));
+
+        $field = $this->addTextField('notice');
+        $field->setLabel(rex_i18n::msg('global_settings_field_label_note'));
 
         $gq = rex_sql::factory();
         $gq->setQuery('SELECT dbtype,id FROM ' . rex::getTablePrefix() . 'global_settings_type');
@@ -161,7 +164,7 @@ class rex_global_settings_table_expander extends rex_form
 
     public function stripPrefix($string)
     {
-        $lowerString = strtolower($string);
+        $lowerString = strtolower($string ?? '');
         if (substr($lowerString, 0, strlen($this->metaPrefix)) === $this->metaPrefix) {
             return substr($string, strlen($this->metaPrefix));
         }
@@ -251,7 +254,8 @@ class rex_global_settings_table_expander extends rex_form
                         $upd->setValue($fieldName, $fieldDefault);
                         $upd->update();
                         return true;
-                    } catch (rex_sql_exception $e) {
+                    }
+                    catch (rex_sql_exception $e) {
                         return false;
                     }
                 }

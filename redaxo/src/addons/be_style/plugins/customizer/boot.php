@@ -9,6 +9,7 @@
 
 // Plugin-Config
 $plugin = rex_plugin::get('be_style', 'customizer');
+/** @var array{codemirror_theme: string, codemirror_darktheme: string, codemirror-selectors: string, codemirror-options: string, codemirror: int, codemirror-langs: int, codemirror-tools: int, labelcolor: string, showlink: int, codemirror-autoresize?: bool} $config */
 $config = $plugin->getConfig();
 
 /* Output CodeMirror-CSS */
@@ -19,12 +20,12 @@ if (rex::isBackend() && 'css' == rex_request('codemirror_output', 'string', ''))
     $filenames = [];
     $filenames[] = $plugin->getAssetsUrl('vendor/codemirror/codemirror.min.css');
     $filenames[] = $plugin->getAssetsUrl('vendor/codemirror/addon/display/fullscreen.css');
-    $filenames[] = $plugin->getAssetsUrl('vendor/codemirror/theme/'.$config['codemirror_theme'].'.css');
+    $filenames[] = $plugin->getAssetsUrl('vendor/codemirror/theme/' . $config['codemirror_theme'] . '.css');
     if ('' != rex_request('themes', 'string', '')) {
-        $_themes = explode(',', rex_request('themes', 'string', ''));
-        foreach ($_themes as $_theme) {
-            if (preg_match('/[a-z0-9\._-]+/i', $_theme)) {
-                $filenames[] = $plugin->getAssetsUrl('vendor/codemirror/theme/'.$_theme.'.css');
+        $themes = explode(',', rex_request('themes', 'string', ''));
+        foreach ($themes as $theme) {
+            if (preg_match('/[a-z0-9\._-]+/i', $theme)) {
+                $filenames[] = $plugin->getAssetsUrl('vendor/codemirror/theme/' . $theme . '.css');
             }
         }
     }
@@ -119,21 +120,25 @@ if (rex::isBackend() && rex::getUser()) {
     if ($config['codemirror']) {
         // JsProperty CodeMirror-Theme
         rex_view::setJsProperty('customizer_codemirror_defaulttheme', $config['codemirror_theme']);
+        rex_view::setJsProperty('customizer_codemirror_defaultdarktheme', $config['codemirror_darktheme'] ?? 'dracula');
         // JsProperty CodeMirror-Selectors
         $selectors = 'textarea.rex-code, textarea.rex-js-code, textarea.codemirror';
         if (isset($config['codemirror-selectors']) && '' != $config['codemirror-selectors']) {
             $selectors = $selectors . ', ' . $config['codemirror-selectors'];
         }
         rex_view::setJsProperty('customizer_codemirror_selectors', $selectors);
+        // JsProperty CodeMirror-Autoresize
         if (isset($config['codemirror-autoresize'])) {
             rex_view::setJsProperty('customizer_codemirror_autoresize', $config['codemirror-autoresize']);
         }
-
+        // JsProperty Codemirror-Options
+        rex_view::setJsProperty('customizer_codemirror_options', str_replace(["\n", "\r"], '', trim($config['codemirror-options'] ?? '')));
+        // JsProperty JS/CSS-Buster
         $mtimejs = filemtime($plugin->getAssetsUrl('vendor/codemirror/codemirror.min.js'));
         $mtimecss = filemtime($plugin->getAssetsUrl('vendor/codemirror/codemirror.min.css'));
         if (isset($_SESSION['codemirror_reload'])) {
-            $mtimejs = $mtimejs . $_SESSION['codemirror_reload'];
-            $mtimecss = $mtimecss . $_SESSION['codemirror_reload'];
+            $mtimejs .= $_SESSION['codemirror_reload'];
+            $mtimecss .= $_SESSION['codemirror_reload'];
         }
         rex_view::setJsProperty('customizer_codemirror_jsbuster', $mtimejs);
         rex_view::setJsProperty('customizer_codemirror_cssbuster', $mtimecss);
@@ -145,12 +150,11 @@ if (rex::isBackend() && rex::getUser()) {
 
     if ('' != $config['labelcolor']) {
         rex_view::setJsProperty('customizer_labelcolor', $config['labelcolor']);
-        rex_view::addCssFile($plugin->getAssetsUrl('css/styles-labelcolor.css'));
     }
     if ($config['showlink']) {
         rex_view::setJsProperty(
             'customizer_showlink',
-            '<h1 class="be-style-customizer-title"><a href="'. rex_escape(rex::getServer()) .'" target="_blank" rel="noreferrer noopener"><span class="be-style-customizer-title-name">' . rex_escape(rex::getServerName()) . '</span><i class="fa fa-external-link"></i></a></h1>'
+            '<h1 class="be-style-customizer-title"><a href="' . rex_url::frontend() . '" target="_blank" rel="noreferrer noopener"><span class="be-style-customizer-title-name">' . rex_escape(rex::getServerName()) . '</span><i class="rex-icon rex-icon-external-link"></i></a></h1>',
         );
     }
 }

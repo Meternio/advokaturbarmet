@@ -1,25 +1,29 @@
 <?php
 
-/** @var rex_yform_choice_list $choiceList */
-/** @var rex_yform_choice_list_view $choiceListView */
+/**
+ * @var rex_yform_value_abstract $this
+ * @psalm-scope-this rex_yform_value_abstract
+ * @var rex_yform_choice_list $choiceList
+ * @var rex_yform_choice_list_view $choiceListView
+ */
 
 $notices = [];
 if ($this->getElement('notice')) {
     $notices[] = rex_i18n::translate($this->getElement('notice'), false);
 }
 if (isset($this->params['warning_messages'][$this->getId()]) && !$this->params['hide_field_warning_messages']) {
-    $notices[] = '<span class="text-warning">'.rex_i18n::translate($this->params['warning_messages'][$this->getId()], false).'</span>';
+    $notices[] = '<span class="text-warning">' . rex_i18n::translate($this->params['warning_messages'][$this->getId()], false) . '</span>';
 }
 
 if (!isset($groupAttributes)) {
     $groupAttributes = [];
 }
 
-$groupClass = trim('form-group '.$this->getWarningClass());
+$groupClass = trim('form-group ' . $this->getWarningClass());
 if (isset($groupAttributes['class']) && is_array($groupAttributes['class'])) {
     $groupAttributes['class'][] = $groupClass;
 } elseif (isset($groupAttributes['class'])) {
-    $groupAttributes['class'] .= ' '.$groupClass;
+    $groupAttributes['class'] .= ' ' . $groupClass;
 } else {
     $groupAttributes['class'] = $groupClass;
 }
@@ -36,7 +40,7 @@ if (isset($this->params['fixdata'][$this->getName()]) && !isset($elementAttribut
 if (isset($elementAttributes['class']) && is_array($elementAttributes['class'])) {
     $elementAttributes['class'][] = $elementClass;
 } elseif (isset($elementAttributes['class'])) {
-    $elementAttributes['class'] .= ' '.$elementClass;
+    $elementAttributes['class'] .= ' ' . $elementClass;
 } else {
     $elementAttributes['class'] = $elementClass;
 }
@@ -49,12 +53,12 @@ if (isset($elementAttributes['class']) && is_array($elementAttributes['class']))
         <?= in_array($view->getValue(), $this->getValue(), true) ? ' selected="selected"' : '' ?>
         <?= $view->getAttributesAsString() ?>
     >
-        <?= rex_escape($view->getLabel()) ?>
+        <?= $view->getLabel() ?>
     </option>
 <?php
 } ?>
 
-<?php $choiceGroupOutput = function (rex_yform_choice_group_view $view) use ($choiceOutput) {
+<?php $choiceGroupOutput = static function (rex_yform_choice_group_view $view) use ($choiceOutput) {
         ?>
     <optgroup label="<?= rex_escape($view->getLabel()) ?>">
         <?php foreach ($view->getChoices() as $choiceView): ?>
@@ -64,9 +68,21 @@ if (isset($elementAttributes['class']) && is_array($elementAttributes['class']))
 <?php
     } ?>
 
-<?php 
+<?php
     if (!isset($groupAttributes['id'])) {
         $groupAttributes['id'] = $this->getHTMLId();
+    }
+
+    // RexSelectStyle im Backend nutzen
+    $useRexSelectStyle = rex::isBackend();
+
+    // RexSelectStyle nicht nutzen, wenn die Klasse `.selectpicker` gesetzt ist
+    if (isset($elementAttributes['class']) && str_contains($elementAttributes['class'], 'selectpicker')) {
+        $useRexSelectStyle = false;
+    }
+    // RexSelectStyle nicht nutzen, wenn das Selectfeld mehrzeilig ist
+    if (isset($elementAttributes['size']) && (int) $elementAttributes['size'] > 1) {
+        $useRexSelectStyle = false;
     }
  ?>
 <div<?= rex_string::buildAttributes($groupAttributes) ?>>
@@ -76,6 +92,10 @@ if (isset($elementAttributes['class']) && is_array($elementAttributes['class']))
         </label>
     <?php endif ?>
 
+
+    <?php if ($useRexSelectStyle): ?>
+    <div class="rex-select-style">
+    <?php endif ?>
     <select<?= rex_string::buildAttributes($elementAttributes) ?>>
         <?php if ($choiceList->getPlaceholder() && !$choiceList->isMultiple()): ?>
             <option value=""><?= rex_escape($choiceList->getPlaceholder()) ?></option>
@@ -93,8 +113,11 @@ if (isset($elementAttributes['class']) && is_array($elementAttributes['class']))
             <?php $view instanceof rex_yform_choice_group_view ? $choiceGroupOutput($view) : $choiceOutput($view) ?>
         <?php endforeach ?>
     </select>
+    <?php if ($useRexSelectStyle): ?>
+    </div>
+    <?php endif ?>
 
     <?php if ($notices): ?>
-        <p class="help-block"><?= implode('<br />', $notices) ?></p>
+        <p class="help-block small"><?= implode('<br />', $notices) ?></p>
     <?php endif ?>
 </div>

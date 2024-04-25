@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the ramsey/http-range library
  *
@@ -9,15 +10,18 @@
  * @license http://opensource.org/licenses/MIT MIT
  */
 
+declare(strict_types=1);
+
 namespace Ramsey\Http\Range\Exception;
 
 /**
- * Indicates a range request is not present in the current request
+ * Thrown to indicate a range request is not present in the current request.
  */
 class NoRangeException extends HttpRangeException
 {
     /**
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      * @var string
      */
-    protected $message = 'The Range header is not present on this request or has no value';
+    protected $message = 'The Range header is not present on this request or has no value.';
 }

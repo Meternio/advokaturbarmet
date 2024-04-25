@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the ramsey/http-range library
  *
@@ -9,10 +10,12 @@
  * @license http://opensource.org/licenses/MIT MIT
  */
 
+declare(strict_types=1);
+
 namespace Ramsey\Http\Range\Unit;
 
 /**
- * A generic HTTP Range range spec
+ * A generic HTTP Range range spec.
  */
 class GenericRange extends AbstractUnitRange implements UnitRangeInterface
 {

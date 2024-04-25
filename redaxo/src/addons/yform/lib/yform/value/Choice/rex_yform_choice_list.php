@@ -48,12 +48,12 @@ class rex_yform_choice_list
     public function createListFromSqlArray($choices)
     {
         foreach ($choices as $choice) {
-            $value = isset($choice['value']) ? $choice['value'] : $choice['id'];
-            $label = isset($choice['label']) ? $choice['label'] : $choice['name'];
+            $value = $choice['value'] ?? $choice['id'];
+            $label = $choice['label'] ?? $choice['name'];
             $label = rex_i18n::translate((string) $label, false);
 
             // Im Template werden im `select` optgroup erstellt
-            if ($this->options['group_by'] && isset($choice[$this->options['group_by']])) {
+            if (isset($this->options['group_by']) && $this->options['group_by'] && isset($choice[$this->options['group_by']])) {
                 $this->choices[$choice[$this->options['group_by']]][trim($label)] = trim($value);
                 $this->choicesByValues[trim($value)] = trim($label);
                 continue;
@@ -71,9 +71,10 @@ class rex_yform_choice_list
 
         $preferredChoices = $this->options['preferred_choices'];
         $choiceAttributes = $this->options['choice_attributes'];
+        $choiceLabel = $this->options['choice_label'];
 
         if (!is_callable($preferredChoices) && !empty($preferredChoices)) {
-            $preferredChoices = function ($choice) use ($preferredChoices) {
+            $preferredChoices = static function ($choice) use ($preferredChoices) {
                 return in_array($choice, $preferredChoices, true);
             };
         }
@@ -83,6 +84,11 @@ class rex_yform_choice_list
                 $otherGroupChoices = [];
                 $preferredGroupChoices = [];
                 foreach ($value as $nestedLabel => $nestedValue) {
+                    if (is_callable($choiceLabel)) {
+                        $nestedLabel = call_user_func($choiceLabel, $nestedValue, $nestedLabel);
+                    } else {
+                        $nestedLabel = rex_escape($nestedLabel);
+                    }
                     $view = new rex_yform_choice_view($nestedValue, $nestedLabel, $choiceAttributes, $requiredAttributes);
 
                     if ($preferredChoices && call_user_func($preferredChoices, $nestedValue, $nestedLabel)) {
@@ -100,6 +106,12 @@ class rex_yform_choice_list
                 }
 
                 continue;
+            }
+
+            if (is_callable($choiceLabel)) {
+                $label = call_user_func($choiceLabel, $value, $label);
+            } else {
+                $label = rex_escape($label);
             }
 
             $view = new rex_yform_choice_view($value, $label, $choiceAttributes, $requiredAttributes);

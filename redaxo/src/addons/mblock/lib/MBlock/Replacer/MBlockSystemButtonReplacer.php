@@ -8,6 +8,7 @@
 class MBlockSystemButtonReplacer
 {
     use \MBlock\Decorator\MBlockDOMTrait;
+    const REX_VERSION = '5.12.1';
 
     /**
      * @param MBlockItem $item
@@ -125,8 +126,13 @@ class MBlockSystemButtonReplacer
             // change for id
             self::replaceId($dom->firstChild, $item);
             // change onclick id
-            self::replaceOnClick($dom, $item, 'REXMedia(', '(', ',');
-            self::replaceOnClick($dom, $item, 'REXMedia(', '(', ')');
+            if (rex_version::compare(rex::getVersion(),self::REX_VERSION, '>=')) {
+                self::replaceOnClick($dom, $item, 'REXMedia(', '(\'?', '\'?,', '(\'', '\',');
+                self::replaceOnClick($dom, $item, 'REXMedia(', '(\'?', '\'?\)', '(\'', '\')');
+            } else {
+                self::replaceOnClick($dom, $item, 'REXMedia(', '(', ',', '(', ',');
+                self::replaceOnClick($dom, $item, 'REXMedia(', '(', ')', '(', ')');
+            }
         }
     }
 
@@ -169,8 +175,13 @@ class MBlockSystemButtonReplacer
                     }
                 }
                 // change click id
-                self::replaceOnClick($dom, $item, 'REXMedialist(', '(', ',');
-                self::replaceOnClick($dom, $item, 'REXMedialist(', '(', ')');
+                if (rex_version::compare(rex::getVersion(),self::REX_VERSION, '>=')) {
+                    self::replaceOnClick($dom, $item, 'REXMedialist(', '(\'?', '\'?,', '(\'', '\',');
+                    self::replaceOnClick($dom, $item, 'REXMedialist(', '(\'?', '\'?\)', '(\'', '\')');
+                } else {
+                    self::replaceOnClick($dom, $item, 'REXMedialist(', '(', ',', '(', ',');
+                    self::replaceOnClick($dom, $item, 'REXMedialist(', '(', ')', '(', ')');
+                }
             }
         }
     }
@@ -205,9 +216,13 @@ class MBlockSystemButtonReplacer
             // add link art name
             self::addArtName($dom->firstChild, $item, $name);
             // change click id
-            self::replaceOnClick($dom, $item, 'REXLink(', '(', ')');
-            // change click id
-            self::replaceOnClick($dom, $item, 'openLinkMap(', '_', '\'');
+            if (rex_version::compare(rex::getVersion(),self::REX_VERSION, '>=')) {
+                self::replaceOnClick($dom, $item, 'REXLink(', '(\'?', '\'?\)','(\'', '\')');
+                self::replaceOnClick($dom, $item, 'openLinkMap(', '_', '\'', '_', '\'');
+            } else {
+                self::replaceOnClick($dom, $item, 'REXLink(', '(', ')', '(', ')');
+                self::replaceOnClick($dom, $item, 'openLinkMap(', '_', '\'', '_', '\'');
+            }
         }
     }
 
@@ -288,10 +303,14 @@ class MBlockSystemButtonReplacer
                     self::addLinkSelectOptions($child, $item, $name);
                 }
             }
-            // change click id
-            self::replaceOnClick($dom, $item, 'REXLinklist(', '(', ',');
-            // change click id
-            self::replaceOnClick($dom, $item, 'deleteREXLinklist(', '(', ')');
+            if (rex_version::compare(rex::getVersion(),self::REX_VERSION, '>=')) {
+                self::replaceOnClick($dom, $item, 'REXLinklist(', '(\'?', '\'?,','(\'', '\',');
+                self::replaceOnClick($dom, $item, 'deleteREXLinklist(', '(\'?', '\'?', '(\'', '\'');
+            } else {
+                self::replaceOnClick($dom, $item, 'REXLinklist(', '(', ',', '(', ',');
+                self::replaceOnClick($dom, $item, 'deleteREXLinklist(', '(', ')', '(', ')');
+            }
+
         }
     }
 
@@ -303,7 +322,7 @@ class MBlockSystemButtonReplacer
      * @param string $suffix
      * @author Joachim Doerr
      */
-    protected static function replaceOnClick(DOMElement $dom, MBlockItem $item, $btnFindKey, $prefix = '', $suffix = '')
+    protected static function replaceOnClick(DOMElement $dom, MBlockItem $item, $btnFindKey, $searchPrefix = '', $searchSuffix = '', $prefix = '', $suffix = '')
     {
         // find a buttons and replace id
         if ($dom->hasChildNodes()) {
@@ -311,7 +330,7 @@ class MBlockSystemButtonReplacer
             foreach($dom->getElementsByTagName('a') as $child) {
                 if ($child->hasAttribute('onclick')) {
                     if (strpos($child->getAttribute('onclick'), $btnFindKey) !== false) {
-                        $child->setAttribute('onclick', preg_replace('/\\'.$prefix.'\d\\'.$suffix.'/', $prefix . $item->getPayload('count-id') . $_SESSION['mblock_count'] . '00' . $item->getPayload('replace-id') . $suffix, $child->getAttribute('onclick')));
+                        $child->setAttribute('onclick', preg_replace('/\\'.$searchPrefix.'\d\\'.$searchSuffix.'/', $prefix . $item->getPayload('count-id') . $_SESSION['mblock_count'] . '00' . $item->getPayload('replace-id') . $suffix, $child->getAttribute('onclick')));
                     }
                 }
             }
@@ -378,13 +397,20 @@ class MBlockSystemButtonReplacer
         ) {
             $key = (isset($item->getResult()[$item->getSystemName() . '_' . $item->getSystemId()])) ? $item->getSystemName() . '_' . $item->getSystemId() : strtolower($item->getSystemName()) . '_' . $item->getSystemId();
             $resultItems = explode(',', $item->getResult()[$key]);
-            foreach ($resultItems as $resultItem) {
-                $dom->appendChild(new DOMElement('option', $resultItem));
-            }
-            /** @var DOMElement $child */
-            foreach ($dom->childNodes as $child) {
-                $child->setAttribute('value', $child->nodeValue);
-                $child->removeAttribute('selected');
+            if (sizeof($resultItems) > 0) {
+                foreach ($resultItems as $resultItem) {
+                    if (!empty($resultItem)) {
+                        $dom->appendChild(new DOMElement('option', $resultItem));
+                    }
+                }
+                /** @var DOMElement $child */
+                foreach ($dom->childNodes as $child) {
+                    if ($child->nodeName != 'option') { // Patch xampp gegen ooops
+                        continue;
+                    }
+                    $child->setAttribute('value', $child->nodeValue);
+                    $child->removeAttribute('selected');
+                }
             }
         }
     }
@@ -406,12 +432,17 @@ class MBlockSystemButtonReplacer
         ) {
             $key = (isset($item->getResult()[$item->getSystemName() . '_' . $item->getSystemId()])) ? $item->getSystemName() . '_' . $item->getSystemId() : strtolower($item->getSystemName()) . '_' . $item->getSystemId();
             $resultItems = explode(',', $item->getResult()[$key]);
-            if ($resultItems[0] != '') {
+            if (sizeof($resultItems) > 0) {
                 foreach ($resultItems as $resultItem) {
-                    $dom->appendChild(new DOMElement('option', $resultItem));
+                    if (!empty($resultItem)) {
+                        $dom->appendChild(new DOMElement('option', $resultItem));
+                    }
                 }
                 /** @var DOMElement $child */
                 foreach ($dom->childNodes as $child) {
+                    if ($child->nodeName != 'option') { // Patch xampp gegen ooops
+                       continue;
+                    }                    
                     $child->setAttribute('value', $child->nodeValue);
                     $child->nodeValue = htmlentities(self::getLinkInfo($child->getAttribute('value'))['art_name']);
                     $child->removeAttribute('selected');

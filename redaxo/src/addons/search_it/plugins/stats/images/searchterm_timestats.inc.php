@@ -20,7 +20,7 @@ $bardata = [];
 $cumulateddata = [];
 
 $max = 1;
-foreach ( $stats->getTimestats($term, $this->getConfig('searchtermselectmonthcount')) as $month) {
+foreach ($stats->getTimestats($term, $this->getConfig('searchtermselectmonthcount')) as $month) {
     $bardata[] = array(
         date('M', mktime(0, 0, 0, $month['m'], 1, 2010)) . "\n" . $month['count'],
         $month['count']
@@ -30,15 +30,15 @@ foreach ( $stats->getTimestats($term, $this->getConfig('searchtermselectmonthcou
         $max = $month['count'];
 }
 
-$title = $this->i18n(
+$title = rex_i18n::rawMsg(
     'search_it_stats_searchterm_timestats_title',
     empty($term)
         ? $this->i18n('search_it_stats_searchterm_timestats_title0_all')
-        : $this->i18n(
+        : rex_i18n::rawMsg(
         'search_it_stats_searchterm_timestats_title0_single',
         $term
     ),
-    rex_get('monthcount','int')
+    rex_get('monthcount', 'int')
 );
 $title = utf8_decode($title);
 

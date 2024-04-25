@@ -4,8 +4,6 @@
  * Cronjob Addon - Plugin optimize_tables.
  *
  * @author gharlan[at]web[dot]de Gregor Harlan
- *
- * @package redaxo5
  */
 
 $plugin = rex_plugin::get('cronjob', 'optimize_tables');
@@ -15,7 +13,7 @@ $sql->setQuery('SELECT id FROM ' . rex::getTablePrefix() . 'cronjob WHERE type="
 if (0 == $sql->getRows()) {
     $sql->setTable(rex::getTablePrefix() . 'cronjob');
     $sql->setValue('name', 'Tabellen-Optimierung');
-    $sql->setValue('type', 'rex_cronjob_optimize_tables');
+    $sql->setValue('type', rex_cronjob_optimize_tables::class);
     $sql->setValue('interval', '{"minutes":[0],"hours":[0],"days":"all","weekdays":"all","months":"all"}');
     $sql->setValue('environment', '|frontend|backend|script|');
     $sql->setValue('execution_moment', 0);

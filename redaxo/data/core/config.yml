@@ -1,4 +1,6 @@
 setup: false
+live_mode: false
+safe_mode: false
 debug:
     enabled: false
     throw_always_exception: false
@@ -10,6 +12,12 @@ fileperm: '0664'
 dirperm: '0775'
 session_duration: 7200
 session_keep_alive: 21600
+session_max_overall_duration: 2419200
+backend_login_policy:
+    login_tries_until_blocked: 50
+    login_tries_until_delay: 3
+    relogin_delay: 5
+    enable_stay_logged_in: true
 session:
     backend:
         cookie: { lifetime: null, path: null, domain: null, secure: null, httponly: true, samesite: Lax }
@@ -41,6 +49,7 @@ socket_proxy: null
 setup_addons:
     - backup
     - be_style
+    - install
 system_addons:
     - backup
     - mediapool
@@ -103,3 +112,4 @@ accesskeys:
     add_2: 'y'
 editor: null
 editor_basepath: null
+theme: null

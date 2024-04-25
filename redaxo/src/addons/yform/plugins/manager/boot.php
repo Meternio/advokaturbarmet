@@ -7,13 +7,27 @@
  * @author <a href="http://www.yakamara.de">www.yakamara.de</a>
  *
  * @var rex_plugin $this
+ * @psalm-scope-this rex_plugin
  */
 
 rex_yform::addTemplatePath(rex_path::plugin('yform', 'manager', 'ytemplates'));
-rex_complex_perm::register('yform_manager_table', 'rex_yform_manager_table_perm');
+rex_complex_perm::register('yform_manager_table_edit', 'rex_yform_manager_table_perm_edit');
+rex_complex_perm::register('yform_manager_table_view', 'rex_yform_manager_table_perm_view');
 
 if (rex::isBackend() && rex::getUser()) {
+    rex_extension::register('PACKAGES_INCLUDED', function () {
+        if ($this->getProperty('compile')) {
+            $compiler = new rex_scss_compiler();
+            $compiler->setRootDir($this->getPath('scss/'));
+            $compiler->setScssFile($this->getPath('scss/manager.scss'));
+            $compiler->setCssFile($this->getPath('assets/manager.css'));
+            $compiler->compile();
+            rex_dir::copy($this->getPath('assets'), $this->getAssetsPath()); // copy whole assets directory
+        }
+    });
+
     rex_view::addJsFile($this->getAssetsUrl('manager.js'));
+    rex_view::addJsFile($this->getAssetsUrl('relations.js'));
     rex_view::addCssFile($this->getAssetsUrl('manager.css'));
     rex_view::addJsFile($this->getAssetsUrl('widget.js'));
 
@@ -32,8 +46,8 @@ if (rex::isBackend() && rex::getUser()) {
 
     $prio = 1;
     foreach ($tables as $table) {
-        if ($table->isActive() && rex::getUser()->getComplexPerm('yform_manager_table')->hasPerm($table->getTableName())) {
-            $be_page = new rex_be_page_main('yform_tables', $table->getTableName(), rex_i18n::translate($table->getName()));
+        if ($table->isActive() && $table->isGranted('VIEW', rex::getUser())) {
+            $be_page = new rex_be_page_main('yform_tables', $table->getTableName(), rex_escape($table->getNameLocalized()));
             $be_page->setHref('index.php?page=yform/manager/data_edit&table_name=' . $table->getTableName());
             $be_page->setIcon('rex-icon rex-icon-module');
             $be_page->setPrio($prio);
@@ -42,7 +56,7 @@ if (rex::isBackend() && rex::getUser()) {
                 $be_page->setHidden();
             }
 
-            if (rex_request('page', 'string') == 'yform/manager/data_edit' && rex_request('table_name', 'string') == $table->getTableName()) {
+            if ('yform/manager/data_edit' == rex_request('page', 'string') && rex_request('table_name', 'string') == $table->getTableName()) {
                 $be_page->setIsActive();
 
                 $main_page = $this->getAddon()->getProperty('page');
@@ -52,7 +66,7 @@ if (rex::isBackend() && rex::getUser()) {
                 $rex_yform_manager_popup = rex_request('rex_yform_manager_popup', 'int');
                 $rex_yform_filter = rex_request('rex_yform_filter', 'array');
 
-                if ((isset($rex_yform_manager_opener['id']) && $rex_yform_manager_opener['id'] != '') || $rex_yform_manager_popup == 1) {
+                if ((isset($rex_yform_manager_opener['id']) && '' != $rex_yform_manager_opener['id']) || 1 == $rex_yform_manager_popup) {
                     $main_page['popup'] = true;
                 }
 
@@ -68,10 +82,10 @@ if (rex::isBackend() && rex::getUser()) {
     $this->setProperty('pages', $pages);
 }
 
-\rex_extension::register('MEDIA_IS_IN_USE', 'rex_yform_value_be_media::isMediaInUse');
-\rex_extension::register('PACKAGES_INCLUDED', 'rex_yform_value_be_link::isArticleInUse');
+rex_extension::register('MEDIA_IS_IN_USE', 'rex_yform_value_be_media::isMediaInUse');
+rex_extension::register('PACKAGES_INCLUDED', 'rex_yform_value_be_link::isArticleInUse');
 
-rex_extension::register('REX_YFORM_SAVED', function (rex_extension_point $ep) {
+rex_extension::register('YFORM_SAVED', static function (rex_extension_point $ep) {
     if ($ep->getSubject() instanceof Exception) {
         return;
     }
@@ -87,7 +101,7 @@ rex_extension::register('REX_YFORM_SAVED', function (rex_extension_point $ep) {
     }
     $dataset->invalidateData();
 
-    if ($table->hasHistory()) {
+    if ($table->hasHistory() && $dataset->isHistoryEnabled()) {
         $action = 'insert' === $ep->getParam('action') ? rex_yform_manager_dataset::ACTION_CREATE : rex_yform_manager_dataset::ACTION_UPDATE;
         $dataset->makeSnapshot($action);
     }

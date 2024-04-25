@@ -5,15 +5,13 @@
  */
 abstract class rex_effect_abstract
 {
-    /**
-     * @var rex_managed_media
-     */
+    /** @var rex_managed_media */
     public $media;
 
     /**
      * effekt parameter.
      *
-     * @var array
+     * @var array<string, mixed>
      */
     public $params = [];
 
@@ -21,16 +19,26 @@ abstract class rex_effect_abstract
     {
     }
 
+    /**
+     * @return void
+     */
     public function setMedia(rex_managed_media $media)
     {
         $this->media = $media;
     }
 
+    /**
+     * @param array<string, mixed> $params
+     * @return void
+     */
     public function setParams(array $params)
     {
         $this->params = $params;
     }
 
+    /**
+     * @return void
+     */
     abstract public function execute();
 
     /**
@@ -38,7 +46,7 @@ abstract class rex_effect_abstract
      */
     public function getName()
     {
-        return get_class($this);
+        return static::class;
     }
 
     /**
@@ -56,7 +64,7 @@ abstract class rex_effect_abstract
      *       // ... the next input-field spec
      *     ];
      *
-     * @return array
+     * @return list<array{label: string, name: string, type: 'int'|'float'|'string'|'select'|'media', default?: mixed, notice?: string, prefix?: string, suffix?: string, attributes?: array, options?: array}>
      */
     public function getParams()
     {
@@ -64,21 +72,25 @@ abstract class rex_effect_abstract
         return [];
     }
 
-    protected function keepTransparent($des)
+    /**
+     * @param resource $gdImage
+     * @return void
+     */
+    protected function keepTransparent($gdImage)
     {
         $image = $this->media;
         if ('png' == $image->getFormat() || 'webp' == $image->getFormat()) {
-            imagealphablending($des, false);
-            imagesavealpha($des, true);
+            imagealphablending($gdImage, false);
+            imagesavealpha($gdImage, true);
         } elseif ('gif' == $image->getFormat()) {
             $gdimage = $image->getImage();
             $colorTransparent = imagecolortransparent($gdimage);
-            imagepalettecopy($gdimage, $des);
+            imagepalettecopy($gdimage, $gdImage);
             if ($colorTransparent > 0) {
-                imagefill($des, 0, 0, $colorTransparent);
-                imagecolortransparent($des, $colorTransparent);
+                imagefill($gdImage, 0, 0, $colorTransparent);
+                imagecolortransparent($gdImage, $colorTransparent);
             }
-            imagetruecolortopalette($des, true, 256);
+            imagetruecolortopalette($gdImage, true, 256);
         }
     }
 }

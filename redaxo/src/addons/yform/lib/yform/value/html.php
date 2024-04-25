@@ -26,12 +26,12 @@ class rex_yform_value_html extends rex_yform_value_abstract
         $this->params['form_output'][$this->getId()] = $html;
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
-        return htmlspecialchars('html|name|label|<div class="block"></div>');
+        return rex_escape('html|name|label|<div class="block"></div>');
     }
 
-    public function getDefinitions()
+    public function getDefinitions(): array
     {
         return [
             'type' => 'value',
@@ -47,10 +47,5 @@ class rex_yform_value_html extends rex_yform_value_abstract
             'is_searchable' => false,
             'is_hiddeninlist' => true,
         ];
-    }
-
-    public static function getSearchField($params)
-    {
-        $params['searchForm']->setValueField('text', ['name' => $params['field']->getName(), 'label' => $params['field']->getLabel()]);
     }
 }

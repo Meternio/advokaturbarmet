@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author mail[at]joachim-doerr[dot]com Joachim Doerr
  * @package redaxo5
@@ -19,6 +20,27 @@ class MBlockValueHandler
 
         if (rex_get('function') == 'add') {
             return $result;
+        }
+       
+        $prevent_action = false; 
+        if (rex_addon::get('gridblock')->isAvailable())
+        {
+            if (rex_gridblock::isBackend())
+            {
+                $prevent_action = true; 
+            }
+        }
+         // Get data from $_POST and ignore gridblock addon 
+         // Should be chenged when https://github.com/redaxo/redaxo/issues/5298 is fixed. 
+        if (rex_request('save', 'int') == 1 && $prevent_action == false) {
+            $result = [];
+
+            if (rex_request('REX_INPUT_VALUE', 'array')) {
+                foreach (rex_request('REX_INPUT_VALUE') as $key => $value) {
+                    $result['value'][$key] = $value;
+                }
+                return $result;
+            }
         }
 
         if ($sliceId != false) {
@@ -46,7 +68,7 @@ class MBlockValueHandler
                         $result['link'][$i] = $sql->getValue('link' . $i);
                     }
 
-                    $jsonResult = json_decode(htmlspecialchars_decode($result['value'][$i]), true);
+                    $jsonResult = json_decode(htmlspecialchars_decode((string) $result['value'][$i]), true);
 
                     if (is_array($jsonResult))
                         $result['value'][$i] = $jsonResult;
@@ -100,3 +122,4 @@ class MBlockValueHandler
         return $result;
     }
 }
+

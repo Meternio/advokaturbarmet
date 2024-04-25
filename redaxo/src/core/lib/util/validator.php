@@ -11,10 +11,10 @@ class rex_validator
 {
     use rex_factory_trait;
 
-    /** @psalm-var list<array{string, string|null, mixed}> */
-    private $types = [];
-    /** @var string|null */
-    private $message;
+    /** @var list<rex_validation_rule> */
+    private array $rules = [];
+
+    private ?string $message = null;
 
     protected function __construct()
     {
@@ -33,11 +33,11 @@ class rex_validator
     }
 
     /**
-     * Adds a validator.
+     * Adds a validation rule.
      *
-     * @param string      $type    Validator type (any static method name of this class)
-     * @param null|string $message Message which is used if this validator type does not match
-     * @param mixed       $option  Type specific option
+     * @param string $type Validator type (any static method name of this class)
+     * @param string|null $message Message which is used if this validator type does not match
+     * @param mixed $option Type specific option
      *
      * @throws InvalidArgumentException
      *
@@ -45,12 +45,35 @@ class rex_validator
      */
     public function add($type, $message = null, $option = null)
     {
+        return $this->addRule(new rex_validation_rule($type, $message, $option));
+    }
+
+    /**
+     * Adds a validation rule.
+     *
+     * @throws InvalidArgumentException
+     *
+     * @return $this
+     */
+    public function addRule(rex_validation_rule $rule)
+    {
+        $type = $rule->getType();
+
         if (!method_exists($this, $type)) {
             throw new InvalidArgumentException('Unknown validator type: ' . $type);
         }
-        $this->types[] = [$type, $message, $option];
+
+        $this->rules[] = $rule;
 
         return $this;
+    }
+
+    /**
+     * @return list<rex_validation_rule>
+     */
+    public function getRules(): array
+    {
+        return $this->rules;
     }
 
     /**
@@ -63,17 +86,15 @@ class rex_validator
     public function isValid($value)
     {
         $this->message = null;
-        foreach ($this->types as $type) {
-            [$type, $message, $option] = $type;
+        foreach ($this->rules as $rule) {
+            $type = $rule->getType();
 
-            if ('' === $value) {
-                if ('notempty' !== strtolower($type)) {
-                    continue;
-                }
+            if ('' === $value && 'notempty' !== strtolower($type)) {
+                continue;
             }
 
-            if (!$this->$type($value, $option)) {
-                $this->message = $message;
+            if (!$this->$type($value, $rule->getOption())) {
+                $this->message = $rule->getMessage();
                 return false;
             }
         }
@@ -99,7 +120,7 @@ class rex_validator
      */
     public function notEmpty($value)
     {
-        return 0 !== strlen($value);
+        return '' !== $value;
     }
 
     /**
@@ -114,25 +135,18 @@ class rex_validator
      */
     public function type($value, $type)
     {
-        switch ($type) {
-            case 'int':
-            case 'integer':
-                return $this->match($value, '/^\d+$/');
-
-            case 'float':
-            case 'real':
-                return is_numeric($value);
-
-            default:
-                throw new InvalidArgumentException('Unknown $type:' . $type);
-        }
+        return match ($type) {
+            'int', 'integer' => $this->match($value, '/^\d+$/'),
+            'float', 'real' => is_numeric($value),
+            default => throw new InvalidArgumentException('Unknown $type:' . $type),
+        };
     }
 
     /**
      * Checks whether the value has the given min length.
      *
      * @param string $value
-     * @param int    $minLength
+     * @param int $minLength
      *
      * @return bool
      */
@@ -145,7 +159,7 @@ class rex_validator
      * Checks whether the value has the given max value.
      *
      * @param string $value
-     * @param int    $maxLength
+     * @param int $maxLength
      *
      * @return bool
      */
@@ -158,7 +172,7 @@ class rex_validator
      * Checks whether the value is equal or greater than the given min value.
      *
      * @param string $value
-     * @param int    $min
+     * @param int $min
      *
      * @return bool
      */
@@ -171,7 +185,7 @@ class rex_validator
      * Checks whether the value is equal or lower than the given max value.
      *
      * @param string $value
-     * @param int    $max
+     * @param int $max
      *
      * @return bool
      */
@@ -246,6 +260,7 @@ class rex_validator
      * Checks the value by using the given callable.
      *
      * @param string $value
+     * @param callable(string):bool $callback
      *
      * @return bool
      */

@@ -68,8 +68,17 @@ class rex_var_imglist extends rex_var
         $medialistarray = explode(',', $value);
         if (is_array($medialistarray)) {
             foreach ($medialistarray as $key => $file) {
-                if ($file != '') {
-                    $thumbnails .= '<li data-key="' . $key . '" value="' . $file . '" data-value="' . $file . '"><img class="thumbnail" src="' . rex_url::backendController(['rex_media_type' => 'rex_medialistbutton_preview', 'rex_media_file' => $file]) . '" /></li>';
+                if ('' != $file) {
+
+                    $url = rex_url::backendController(['rex_media_type' => 'rex_medialistbutton_preview', 'rex_media_file' => $file]);
+                    $extension = pathinfo($file, PATHINFO_EXTENSION);
+                    $isVideo = in_array($extension, ['mp4', 'webm', 'ogg']);
+                    if ('svg' === $extension || $isVideo) {
+                        $url = rex_url::media($file);
+                    }
+                    $media = $isVideo ? '<video playsinline autoplay muted loop class="thumbnail"><source src="' . $url . '" type="video/' . $extension . '"></video>' : '<img class="thumbnail" src="' . $url . '" />';
+
+                    $thumbnails .= '<li data-key="' . $key . '" value="' . $file . '" data-value="' . $file . '">' . $media . '</li>';
 
                     $options .= '<option data-key="' . $key . '" value="' . $file . '">' . $file . '</option>';
                 }
@@ -81,8 +90,10 @@ class rex_var_imglist extends rex_var
             $disabled = '';
         }
 
+        $id = str_replace(['][', '[', ']'], '', $id);
+
         $e = [];
-        $e['before'] = '<div class="rex-js-widget' . $wdgtClass . '" data-params="' . $open_params . '" data-widget-id="' . $id . '">';
+        $e['before'] = '<div class="rex-js-widget custom-imglist ' . $wdgtClass . '" data-params="' . $open_params . '" data-widget-id="' . $id . '">';
         $e['field'] = '<ul class="form-control thumbnail-list" id="REX_IMGLIST_' . $id . '">' . $thumbnails . '</ul><select class="form-control" name="REX_MEDIALIST_SELECT[' . $id . ']" id="REX_MEDIALIST_SELECT_' . $id . '" size="10">' . $options . '</select><input type="hidden" name="' . $name . '" id="REX_MEDIALIST_' . $id . '" value="' . $value . '" />';
         $e['functionButtons'] = '
                 <a href="#" class="btn btn-popup open" title="' . rex_i18n::msg('var_media_open') . '"' . $disabled . '><i class="rex-icon rex-icon-open-mediapool"></i></a>

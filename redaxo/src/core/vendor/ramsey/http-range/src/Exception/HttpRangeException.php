@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the ramsey/http-range library
  *
@@ -9,11 +10,15 @@
  * @license http://opensource.org/licenses/MIT MIT
  */
 
+declare(strict_types=1);
+
 namespace Ramsey\Http\Range\Exception;
 
+use RuntimeException;
+
 /**
- * A general exception for ramsey/http-range
+ * A general exception for ramsey/http-range.
  */
-class HttpRangeException extends \RuntimeException
+class HttpRangeException extends RuntimeException
 {
 }

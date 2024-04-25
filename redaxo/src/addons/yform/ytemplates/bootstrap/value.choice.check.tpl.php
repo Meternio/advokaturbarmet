@@ -1,14 +1,18 @@
 <?php
 
-/** @var rex_yform_choice_list $choiceList */
-/** @var rex_yform_choice_list_view $choiceListView */
+/**
+ * @var rex_yform_value_abstract $this
+ * @psalm-scope-this rex_yform_value_abstract
+ * @var rex_yform_choice_list $choiceList
+ * @var rex_yform_choice_list_view $choiceListView
+ */
 
 $notices = [];
 if ($this->getElement('notice')) {
     $notices[] = rex_i18n::translate($this->getElement('notice'), false);
 }
 if (isset($this->params['warning_messages'][$this->getId()]) && !$this->params['hide_field_warning_messages']) {
-    $notices[] = '<span class="text-warning">'.rex_i18n::translate($this->params['warning_messages'][$this->getId()], false).'</span>';
+    $notices[] = '<span class="text-warning">' . rex_i18n::translate($this->params['warning_messages'][$this->getId()], false) . '</span>';
 }
 
 if (!isset($groupAttributes)) {
@@ -19,7 +23,7 @@ $groupClass = 'form-check-group';
 if (isset($groupAttributes['class']) && is_array($groupAttributes['class'])) {
     $groupAttributes['class'][] = $groupClass;
 } elseif (isset($groupAttributes['class'])) {
-    $groupAttributes['class'] .= ' '.$groupClass;
+    $groupAttributes['class'] .= ' ' . $groupClass;
 } else {
     $groupAttributes['class'] = $groupClass;
 }
@@ -27,11 +31,11 @@ if (isset($groupAttributes['class']) && is_array($groupAttributes['class'])) {
 if (!isset($elementAttributes)) {
     $elementAttributes = [];
 }
-$elementClass = trim(($choiceList->isMultiple() ? 'checkbox' : 'radio').' '.$this->getWarningClass());
+$elementClass = trim(($choiceList->isMultiple() ? 'checkbox' : 'radio') . ' ' . $this->getWarningClass());
 if (isset($elementAttributes['class']) && is_array($elementAttributes['class'])) {
     $elementAttributes['class'][] = $elementClass;
 } elseif (isset($elementAttributes['class'])) {
-    $elementAttributes['class'] .= ' '.$elementClass;
+    $elementAttributes['class'] .= ' ' . $elementClass;
 } else {
     $elementAttributes['class'] = $elementClass;
 }
@@ -44,17 +48,17 @@ if (isset($elementAttributes['class']) && is_array($elementAttributes['class']))
         <label>
             <input
                 value="<?= rex_escape($view->getValue()) ?>"
-                <?= (in_array($view->getValue(), $this->getValue(), true) ? ' checked="checked"' : '') ?>
+                <?= in_array($view->getValue(), $this->getValue(), true) ? ' checked="checked"' : '' ?>
                 <?= $view->getAttributesAsString() ?>
             />
             <i class="form-helper"></i>
-            <?= rex_escape($view->getLabel()) ?>
+            <?= $view->getLabel() ?>
         </label>
     </div>
 <?php
 } ?>
 
-<?php $choiceGroupOutput = function (rex_yform_choice_group_view $view) use ($choiceOutput) {
+<?php $choiceGroupOutput = static function (rex_yform_choice_group_view $view) use ($choiceOutput) {
         ?>
     <div class="form-check-group">
         <label><?= rex_escape($view->getLabel()) ?></label>
@@ -65,7 +69,7 @@ if (isset($elementAttributes['class']) && is_array($elementAttributes['class']))
 <?php
     } ?>
 
-<?php 
+<?php
     if (!isset($groupAttributes['id'])) {
         $groupAttributes['id'] = $this->getHTMLId();
     }
@@ -87,6 +91,6 @@ if (isset($elementAttributes['class']) && is_array($elementAttributes['class']))
     <?php endforeach ?>
 
     <?php if ($notices): ?>
-        <p class="help-block"><?= implode('<br />', $notices) ?></p>
+        <p class="help-block small"><?= implode('<br />', $notices) ?></p>
     <?php endif ?>
 </div>

@@ -19,8 +19,15 @@ class rex_yform_value_checkbox extends rex_yform_value_abstract
             $this->setValue($this->getElement('default'));
         }
 
-        if ($this->needsOutput()) {
-            $this->params['form_output'][$this->getId()] = $this->parse('value.checkbox.tpl.php', ['value' => $this->getValue()]);
+        if ($this->needsOutput() && $this->isViewable()) {
+            if (!$this->isEditable()) {
+                $attributes = empty($this->getElement('attributes')) ? [] : json_decode($this->getElement('attributes'), true);
+                $attributes['disabled'] = 'disabled';
+                $this->setElement('attributes', json_encode($attributes));
+                $this->params['form_output'][$this->getId()] = $this->parse(['value.checkbox-view.tpl.php', 'value.checkbox.tpl.php'], ['value' => $this->getValue()]);
+            } else {
+                $this->params['form_output'][$this->getId()] = $this->parse('value.checkbox.tpl.php', ['value' => $this->getValue()]);
+            }
         }
 
         $this->params['value_pool']['email'][$this->getName()] = $this->getValue();
@@ -29,12 +36,12 @@ class rex_yform_value_checkbox extends rex_yform_value_abstract
         }
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'checkbox|name|label|default clicked (0/1)|[no_db]|[notice]';
     }
 
-    public function getDefinitions()
+    public function getDefinitions(): array
     {
         return [
             'type' => 'value',
@@ -61,12 +68,11 @@ class rex_yform_value_checkbox extends rex_yform_value_abstract
 
     public static function getSearchField($params)
     {
-        $v = 1;
-        $w = 0;
-
-        $options = [];
-        $options[$v] = rex_i18n::rawMsg('yform_values_checked');
-        $options[$w] = rex_i18n::rawMsg('yform_values_not_checked');
+        $options = explode(',', $params['field']['output_values'] ?? '');
+        if (2 != count($options)) {
+            $options[0] = rex_i18n::rawMsg('yform_values_not_checked');
+            $options[1] = rex_i18n::rawMsg('yform_values_checked');
+        }
         $options[''] = '---';
 
         $params['searchForm']->setValueField('choice', [
@@ -76,28 +82,27 @@ class rex_yform_value_checkbox extends rex_yform_value_abstract
         ]);
     }
 
-    public static function getSearchFilter($params)
+    public static function getSearchFilter($params): rex_yform_manager_query
     {
         $value = $params['value'];
-        $field = $params['field']->getName();
+        /** @var rex_yform_manager_query $query */
+        $query = $params['query'];
+        $field = $query->getTableAlias() . '.' . $params['field']->getName();
 
-        $sql = rex_sql::factory();
-
-        return ' ' . $sql->escapeIdentifier($field) . ' =  ' . $sql->escape($value) . '';
+        return $query->where($field, $value);
     }
 
     public static function getListValue($params)
     {
-        $values = $params['params']['field']['output_values'] ?? '0,1';
-        $values = explode(',', $values);
+        $values = explode(',', $params['params']['field']['output_values'] ?? '');
         if (2 != count($values)) {
             $values = [0, 1];
         }
 
-        if ('1' === $params['subject']) {
+        if (1 === $params['subject']) {
             return $values[1];
         }
-        if ('0' === $params['subject']) {
+        if (0 === $params['subject']) {
             return $values[0];
         }
 

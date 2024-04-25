@@ -1,9 +1,5 @@
 <?php
 
-/**
- * @package redaxo5
- */
-
 header('X-Robots-Tag: noindex, nofollow, noarchive');
 header('X-Frame-Options: SAMEORIGIN');
 header("Content-Security-Policy: frame-ancestors 'self'");
@@ -11,56 +7,61 @@ header("Content-Security-Policy: frame-ancestors 'self'");
 // assets which are passed with a cachebuster will be cached very long,
 // as we assume their url will change when the underlying content changes
 if (rex_get('asset') && rex_get('buster')) {
-    $assetFile = rex_get('asset');
+    /** @psalm-taint-escape file */ // it is not escaped here, but it is validated below via the realpath
+    $assetFile = rex_get('asset', 'string');
 
     // relative to the assets-root
-    if (0 === strpos($assetFile, '/assets/')) {
-        $assetFile = '..'. $assetFile;
+    if (str_starts_with($assetFile, '/assets/')) {
+        $assetFile = '..' . $assetFile;
     }
 
     $fullPath = realpath($assetFile);
     $assetDir = rex_path::assets();
 
-    if (0 !== strpos($fullPath, $assetDir)) {
-        throw new Exception('Assets can only be streamed from within the assets folder. "'. $fullPath .'" is not within "'. $assetDir .'"');
+    if (!$fullPath) {
+        throw new rex_http_exception(new Exception('File "' . $assetFile . '" not found'), rex_response::HTTP_NOT_FOUND);
+    }
+    if (!str_starts_with($fullPath, $assetDir)) {
+        throw new rex_http_exception(new Exception('Assets can only be streamed from within the assets folder. "' . $fullPath . '" is not within "' . $assetDir . '"'), rex_response::HTTP_NOT_FOUND);
     }
 
     $ext = rex_file::extension($assetFile);
-    if ('js' === $ext) {
-        $js = rex_file::get($assetFile);
+    if (!in_array($ext, ['js', 'css'], true)) {
+        throw new rex_http_exception(new Exception('Only JS and CSS files can be streamed from the assets folder'), rex_response::HTTP_NOT_FOUND);
+    }
 
-        $js = preg_replace('@^//# sourceMappingURL=.*$@m', '', $js);
+    $content = rex_file::get($assetFile);
+    if (null === $content) {
+        throw new rex_http_exception(new Exception('File "' . $assetFile . '" not found'), rex_response::HTTP_NOT_FOUND);
+    }
+
+    if ('js' === $ext) {
+        $js = preg_replace('@^//# sourceMappingURL=.*$@m', '', $content);
 
         rex_response::sendCacheControl('max-age=31536000, immutable');
         rex_response::sendContent($js, 'application/javascript');
-    } elseif ('css' === $ext) {
-        $styles = rex_file::get($assetFile);
-
+    } else {
         // If we are in a directory off the root, add a relative path here back to the root, like "../"
         // get the public path to this file, plus the baseurl
         $relativeroot = '';
         $pubroot = dirname($_SERVER['PHP_SELF']) . '/' . $relativeroot;
 
         $prefix = $pubroot . dirname($assetFile) . '/';
-        $styles = preg_replace('/(url\(["\']?)([^\/"\'])([^\:\)]+["\']?\))/i', '$1' . $prefix .  '$2$3', $styles);
+        $styles = preg_replace('/(url\(["\']?)([^\/"\'])([^\:\)]+["\']?\))/i', '$1' . $prefix . '$2$3', $content);
 
         rex_response::sendCacheControl('max-age=31536000, immutable');
         rex_response::sendContent($styles, 'text/css');
-    } else {
-        rex_response::setStatus(rex_response::HTTP_NOT_FOUND);
-        rex_response::sendContent('file not found');
     }
-    exit();
+    exit;
 }
 
 // ----- verfuegbare seiten
 $pages = [];
-$page = '';
 
 // ----------------- SETUP
 if (rex::isSetup()) {
     // ----------------- SET SETUP LANG
-    $requestLang = rex_request('lang', 'string');
+    $requestLang = rex_request('lang', 'string', rex::getProperty('lang'));
     if (in_array($requestLang, rex_i18n::getLocales())) {
         rex::setProperty('lang', $requestLang);
     } else {
@@ -70,7 +71,6 @@ if (rex::isSetup()) {
     rex_i18n::setLocale(rex::getProperty('lang'));
 
     $pages['setup'] = rex_be_controller::getSetupPage();
-    $page = 'setup';
     rex_be_controller::setCurrentPage('setup');
 } else {
     // ----------------- CREATE LANG OBJ
@@ -80,9 +80,10 @@ if (rex::isSetup()) {
     $login = new rex_backend_login();
     rex::setProperty('login', $login);
 
-    $rex_user_login = rex_post('rex_user_login', 'string');
-    $rex_user_psw = rex_post('rex_user_psw', 'string');
-    $rex_user_stay_logged_in = rex_post('rex_user_stay_logged_in', 'boolean', false);
+    $passkey = rex_post('rex_user_passkey', 'string', null);
+    $rexUserLogin = rex_post('rex_user_login', 'string');
+    $rexUserPsw = rex_post('rex_user_psw', 'string');
+    $rexUserStayLoggedIn = rex_post('rex_user_stay_logged_in', 'boolean', false);
 
     if (rex_get('rex_logout', 'boolean') && rex_csrf_token::factory('backend_logout')->isValid()) {
         $login->setLogout(true);
@@ -109,15 +110,16 @@ if (rex::isSetup()) {
         rex_response::sendRedirect(rex_url::backendController(['rex_logged_out' => 1]));
     }
 
-    $rex_user_loginmessage = '';
+    $rexUserLoginmessage = '';
 
-    if ($rex_user_login && !rex_csrf_token::factory('backend_login')->isValid()) {
+    if (($rexUserLogin || $passkey) && !rex_csrf_token::factory('backend_login')->isValid()) {
         $loginCheck = rex_i18n::msg('csrf_token_invalid');
     } else {
         // the server side encryption of pw is only required
         // when not already encrypted by client using javascript
-        $login->setLogin($rex_user_login, $rex_user_psw, rex_post('javascript', 'boolean'));
-        $login->setStayLoggedIn($rex_user_stay_logged_in);
+        $login->setLogin($rexUserLogin, $rexUserPsw, rex_post('javascript', 'boolean'));
+        $login->setPasskey('' === $passkey ? null : $passkey);
+        $login->setStayLoggedIn($rexUserStayLoggedIn);
         $loginCheck = $login->checkLogin();
     }
 
@@ -127,15 +129,14 @@ if (rex::isSetup()) {
         }
 
         // login failed
-        $rex_user_loginmessage = $login->getMessage();
+        $rexUserLoginmessage = $login->getMessage();
 
         // Fehlermeldung von der Datenbank
         if (is_string($loginCheck)) {
-            $rex_user_loginmessage = $loginCheck;
+            $rexUserLoginmessage = $loginCheck;
         }
 
         $pages['login'] = rex_be_controller::getLoginPage();
-        $page = 'login';
         rex_be_controller::setCurrentPage('login');
 
         if ('login' !== rex_request('page', 'string', 'login')) {
@@ -157,19 +158,28 @@ if (rex::isSetup()) {
         }
 
         rex::setProperty('user', $user);
-    }
 
-    if ('' === $rex_user_loginmessage && rex_get('rex_logged_out', 'boolean')) {
-        $rex_user_loginmessage = rex_i18n::msg('login_logged_out');
-    }
-
-    // Safe Mode
-    if (null !== ($safeMode = rex_get('safemode', 'boolean', null))) {
-        if ($safeMode) {
-            rex_set_session('safemode', true);
-        } else {
-            rex_unset_session('safemode');
+        // Safe Mode
+        if (!rex::isLiveMode() && $user->isAdmin() && null !== ($safeMode = rex_get('safemode', 'boolean', null))) {
+            if ($safeMode) {
+                rex_set_session('safemode', true);
+            } else {
+                rex_unset_session('safemode');
+                if (rex::getProperty('safe_mode')) {
+                    $configFile = rex_path::coreData('config.yml');
+                    $config = array_merge(
+                        rex_file::getConfig(rex_path::core('default.config.yml')),
+                        rex_file::getConfig($configFile),
+                    );
+                    $config['safe_mode'] = false;
+                    rex_file::putConfig($configFile, $config);
+                }
+            }
         }
+    }
+
+    if ('' === $rexUserLoginmessage && rex_get('rex_logged_out', 'boolean')) {
+        $rexUserLoginmessage = rex_i18n::msg('login_logged_out');
     }
 }
 
@@ -177,8 +187,8 @@ rex_be_controller::setPages($pages);
 
 // ----- Prepare Core Pages
 if (rex::getUser()) {
-    rex_be_controller::appendLoggedInPages();
     rex_be_controller::setCurrentPage(trim(rex_request('page', 'string')));
+    rex_be_controller::appendLoggedInPages();
 
     if ('profile' !== rex_be_controller::getCurrentPage() && rex::getProperty('login')->requiresPasswordChange()) {
         rex_response::sendRedirect(rex_url::backendPage('profile'));
@@ -195,6 +205,7 @@ rex_view::addJsFile(rex_url::coreAssets('clipboard-copy-element.js'), [rex_view:
 rex_view::setJsProperty('backend', true);
 rex_view::setJsProperty('accesskeys', rex::getProperty('use_accesskeys'));
 rex_view::setJsProperty('session_keep_alive', rex::getProperty('session_keep_alive', 0));
+rex_view::setJsProperty('cookie_params', rex_login::getCookieParams());
 
 // ----- INCLUDE ADDONS
 include_once rex_path::core('packages.php');
@@ -212,6 +223,10 @@ if ($user = rex::getUser()) {
     if (rex::getProperty('login')->requiresPasswordChange()) {
         // profile is available for everyone, no additional checks required
         rex_be_controller::setCurrentPage('profile');
+    } elseif (!rex_be_controller::getCurrentPage()) {
+        // trigger api functions before page permission check/redirection, if page param is not set.
+        // the api function is responsible for checking permissions.
+        rex_api_function::handleCall();
     }
 
     // --- page pruefen und benoetigte rechte checken
@@ -224,10 +239,13 @@ rex_view::setJsProperty('page', $page);
 // page variable validated
 rex_extension::registerPoint(new rex_extension_point('PAGE_CHECKED', $page, ['pages' => $pages], true));
 
-// trigger api functions
-// If the backend session is timed out, rex_api_function would throw an exception
-// so only trigger api functions if page != login
-if ('login' != $page) {
+if (in_array($page, ['profile', 'login'], true)) {
+    rex_view::addJsFile(rex_url::coreAssets('webauthn.js'), [rex_view::JS_IMMUTABLE => true]);
+}
+
+if ($page) {
+    // trigger api functions after PAGE_CHECKED, if page param is set
+    // the api function is responsible for checking permissions.
     rex_api_function::handleCall();
 }
 

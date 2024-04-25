@@ -8,8 +8,6 @@
 class rex_addon_manager extends rex_package_manager
 {
     /**
-     * Constructor.
-     *
      * @param rex_addon $addon Addon
      */
     protected function __construct(rex_addon $addon)
@@ -17,9 +15,6 @@ class rex_addon_manager extends rex_package_manager
         parent::__construct($addon, 'addon_');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function install($installDump = true)
     {
         $installed = $this->package->isInstalled();
@@ -27,7 +22,7 @@ class rex_addon_manager extends rex_package_manager
         $return = parent::install($installDump);
         $this->generatePackageOrder = true;
 
-        if (true === $return) {
+        if ($return) {
             if (!$installed) {
                 foreach ($this->package->getSystemPlugins() as $plugin) {
                     $manager = rex_plugin_manager::factory($plugin);
@@ -42,9 +37,6 @@ class rex_addon_manager extends rex_package_manager
         return $return;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function uninstall($installDump = true)
     {
         $isActivated = $this->package->isAvailable();
@@ -62,19 +54,17 @@ class rex_addon_manager extends rex_package_manager
         return parent::uninstall($installDump);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function activate()
     {
         $this->generatePackageOrder = false;
         $state = parent::activate();
         $this->generatePackageOrder = true;
 
-        if (true !== $state) {
+        if (!$state) {
             return false;
         }
 
+        /** @var SplObjectStorage<rex_plugin, rex_plugin_manager> $plugins */
         $plugins = new SplObjectStorage();
         // create the managers for all available plugins
         foreach ($this->package->getAvailablePlugins() as $plugin) {
@@ -107,9 +97,6 @@ class rex_addon_manager extends rex_package_manager
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function checkDependencies()
     {
         $check = $addonCheck = parent::checkDependencies();
@@ -130,9 +117,6 @@ class rex_addon_manager extends rex_package_manager
         return $check;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function wrongPackageId($addonName, $pluginName = null)
     {
         if (null !== $pluginName) {

@@ -96,6 +96,9 @@ MIT-Lizenz, siehe `LICENSE.md` des AddOns und Release notes
 * REXDude
 * Spectrum Color Picker
 * Global Settings ist ein Fork des Meta Info Addons
-* Sysix
-* polarpixel
+* @eaCe
+* @Sysix
+* @polarpixel
+* @skerbis
+* @alxndr-w
 

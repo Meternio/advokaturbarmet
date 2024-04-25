@@ -1,141 +1,200 @@
-# MForm - REDAXO Addon für bessere Input-Formulare
+# MForm - REDAXO Addon for better input forms
 
-MForm ist ein REDAXO Addon, welches das Erstellen von Modul-Formularen erheblich erleichtert. Dabei nutzt MForm Templates welche es dem Administrator ermöglichen den Modul-Style seinen Vorstellungen anzupassen. MForm stellt alle gängigen Modul-Input-Formular-Elemente und zusätzlice Widgets bereit welche sich einfach einbinden lassen. MForm eweitert zudem YForm und rex_form um zusätzliche Widgets, z.B. ein Custom-Link-Feld und Image-List für Galerien. 
+![Screenshot](https://github.com/FriendsOfREDAXO/mform/blob/assets/screen_mform7.png?raw=true)
 
-![Screenshot](https://raw.githubusercontent.com/FriendsOfREDAXO/mform/assets/mform.png)
-![Screenshot](https://raw.githubusercontent.com/FriendsOfREDAXO/mform/assets/imglist.png)
+MForm is a REDAXO Addon, which makes the creation of module input forms much easier. MForm uses templates which enable the administrator to customize the module appearance. MForm provides all common module input form elements and additonal widgets which can be easily integrated. MForm also extends **YForm** and **rex_form** with additional widgets, e.g. a custom link field and image list for galleries. 
 
-Eine detailierte Beschreibung wie Modul-Input-Formulare mit beliebigen Elementen versehen werden können lässt sich im [Doku-Plugin](https://github.com/FriendsOfREDAXO/mform/blob/master/plugins/docs/docs/de_de/main_navi.md) finden.
+The included **Demo library** allows you to try out module codes immediately. Modules can be installed and tested directly. The codes are all annotated. 
+
+## Features
+
+- Creation of module inputs via PHP
+- Output of forms customizable via fragments
+- Custom widgets for linking (also YForm) and images
+- Factory that allows form parts to be easily swapped out 
+- REDAXO JSON value handling
+- Multi-column forms
+- Inline form elements
+- Module examples for direct installation
+- HMTL5 form elements 
+- SQL fields
+- Collapse, Tabs 
+- Accordions Wrapper elements Via Checkbox 
+- Radio or Select controllable collapse elements
+- Full MBlock compatibility
+- Datalists 
+
+**Notes**
+
+* The MForm form builder is only designed to generate REDAXO module input forms!
+* Currently the imagelist widget is not mblock compatible
 
 
-**Hinweis**
+## Installation:
 
-* Der MForm Formular-Builder ist ausschließlich dafür geeignet REDAXO Modul-Input-Formulare zu generieren!
+MForm can be installed directly via the Redaxo installer. [MForm Redaxo Addon Page](http://www.redaxo.org/de/download/addons/?addon_id=967&searchtxt=mform&cat_id=-1)
 
+1. log in to REDAXO
+2. in backend under "Installer > Download new" search "MForm" and under "Function" click "view"
+3. click on "download" in the list of the current version under "function
+4. install and activate MForm under "AddOns"
 
-## Installation
-
-1. Letzten [release](https://github.com/FriendsOfREDAXO/mform/releases/latest) downloaden
-2. Zip Archiv entpacken
-3. Entpackten Folder in `mform` umbenennen
-4. MForm Ordner in den REDAXO Addon Ordner `redaxo/src/addons/` verschieben
-5. In REDAXO einloggen und unter "AddOns" MForm installieren und aktivieren
-
-## Alternative Installationen
-
-MForm kann auch direkt über den Redaxo-Installer Installiert werden. [MForm Redaxo Addon Page](http://www.redaxo.org/de/download/addons/?addon_id=967&searchtxt=mform&cat_id=-1)
-
-1. In REDAXO einloggen
-2. Im Backend unter "Installer > Neue herunterladen" "MForm" suche und unter "Funktion" "ansehen" klicken
-3. Bei der aktuelle Version in der Liste unter "Funktion" "herunterladen" klicken
-4. Unter "AddOns" MForm installieren und aktivieren
 
 ## Usage
 
-MForm muss im Modul-Input eines REDAXO Moduls als PHP Code notiert werden.
+MForm must be notated as PHP code in the module input of a REDAXO module.
 
 
-### Instanziierung  
+### Instancing 
 
-    // instantiate
-    $MForm = new MForm();
+```php
+// instantiate
+$MForm = MForm::factory();
+```
 
-Der MForm Classe kann im Konstruktor der Templatename übergeben werden. Dabei entspricht der Templatename dem Prefix des Templateordners.
+Any number of MForm forms can be created, which can also be instantiated directly as element properties.
 
-    // instantiate
-    $MForm = new MForm('table');
+```php
+// instantiate
+$MForm = MForm::factory() // init 
+    ->addFieldsetArea('My fieldset', MForm::factory() // use fieldset method and init new mform instance 
+            ->addTextField(1, ['label' => 'My input']) // add text field with rex_value_id 1 and label attribute
+    );
+```
 
+### Form elements
 
-### Formularelemente
+The main form elements provided by MForm are added by methods.
 
-Die wesentlichen Formularelemente die MForm bereitstellt werden durch Methoden hinzugefügt.
+```php
+$MForm = MForm::factory()
+    ->addHeadline("Headline") // add headline
+    ->addTextField(1, ['label' => 'Input', 'style' => 'width:200px']); // add text field with rex_value_id 1
+```
 
-    // add headline
-    $MForm->addHeadline("Headline");
-    
-    // add text field
-    $MForm->addTextField(1, array('label'=>'Input', 'style'=>'width:200px'));
+All MForm methods expect optional attributes, parameters and options. These can also be subsequently assigned to the element by setters.
 
-Alle MForm Methoden erwarten optional Attribute, Parameter und Optionen. Diese können auch durch Setter nachträglich dem Element zugewiesen werden.
+```php
+// add text field
+$MForm = MForm::factory()
+    ->addTextField(1) // add text field with rex_value_id 1
+    ->setLabel('Text Field') 
+    ->setAttributes(['style' => 'width:200px', 'class' => 'test-field']);
+```
+The `REX_VALUE-Key` must be passed to each form input method as a mandatory field. Informational elements do not need an ID.
 
-    // add text field
-    $MForm->addTextField(1);
-    $MForm->setLabel('Text Field');
-    $MForm->setAttributes(array('style'=>'width:200px', 'class'=>'test-field'));
+##### Full JSON value support
 
-Der `REX_VALUE-Key` muss jeder Formular-Input-Methode als Pflichtfeld übergeben werden. Informative Elemente benötigen keine ID.
+MForm supports `REX_VALUE-ARRAYs` so there is no longer any `REX_VALUE` limitation. Note that each x.0 key must be passed as a string.
 
+```php
+// add text field
+$MForm = MForm::factory()
+    ->addTextField("1.0")
+    ->addTextField(1.1)
+    ->addTextField("1.2.Titel");
+```
 
-##### Full JSON Value Support
+### Compose form
 
-MForm unterstützt `REX_VALUE-ARRAYs` wodurch es praktisch keine `REX_VALUE`-Limitierung mehr gibt. Zu beachten ist, dass jeder x.0 Key als Sting übergeben werden muss.
+To generate the composed form, the `show` method must be used.
 
-    // add text field
-    $MForm->addTextField("1.0");
-    $MForm->addTextField(1.1);
-    $MForm->addTextField("1.2.Titel");
+```php
+ // create output
+echo $MForm->show();
 
+// without var
+echo MForm::factory()
+    ->addTextField(1, ['label' => 'Input', 'style' => 'width:200px']) // add text field with rex_value_id 1
+    ->show();
+```
 
-### Formular erzeugen
+### Element methods
 
-Um das komponierte Formular erzeugen zu lassen muss muss die `show` Methode genutzt werden.
+MForm provides the following element methods:
 
-    // create output
-    echo $MForm->show();
-
-
-### Element-Methoden
-
-MForm stellt folgende Element-Methoden bereit: 
-
-* Strukturelle-Elemente
-  * `addFieldset`
-  * `closeFieldset`
-  * `addTab`
-  * `closeTab`
-* Text-Input- und Hidden-Elemente
+* Structural wrapper elements
+  * `addFieldsetArea`
+  * `addCollapseElement`
+  * `addAccordionElement`
+  * `addTabElement`
+  * `addColumnElement`
+  * `addInlineElement`
+* Text input and hidden elements
   * `addTextField`
   * `addHiddenField`
   * `addTextAreaField`
   * `addTextReadOnlyField`
   * `addTextAreaReadOnlyField`
-* Select-Elemente
+* Select elements
   * `addSelectField`
   * `addMultiSelectField`
-* Checkbox- und Radio-Elemente
+* Checkbox and radio elements
   * `addCheckboxField`
   * `addRadioField`
-* Informelle-Elemente
+* Informal elements
   * `addHtml`
   * `addHeadline`
   * `addDescription`
-* System-Button-Elemente
+  * `addAlert`
+  * `addAlertDanger`, `addAlertError`
+  * `addAlertInfo`
+  * `addAlertSuccess`
+  * `addAlertWarning`
+* System button elements
   * `addLinkField`
   * `addLinklistField`
   * `addMediaField`
   * `addMedialistField`
-* Custom-Elemente 
+* Custom elements 
   * `addCustomLinkField`
   * `addImagelistField`
   * `addInputField`
-* Spezielle `setter`-Methoden
+* Special 'setter' methods
+  * `setAttribute`
+  * `setAttributes`
+  * `setCategory`
+  * `setCollapseInfo`
+  * `setDefaultValue`
+  * `setDisableOption`
+  * `setDisableOptions`
+  * `setFormItemColClass`
+  * `setFull`
   * `setLabel`
-  * `setPlaceholder`
+  * `setLabelColClass`
   * `setMultiple`
+  * `setOption`
+  * `setOptions`
+  * `setParameter`
+  * `setParameters`
+  * `setPlaceholder`
   * `setSize`
+  * `setSqlOptions`
+  * `setTabIcon`
+  * `setToggleOptions`
+  * `setTooltipInfo`
 
+## Output 
 
-##### Geplante Elemente
+MForm uses the REDAXO variables provided by REDAXO. Either as classic or as JSON values. 
+See the [REDAXO doc / german](https://www.redaxo.org/doku/main/redaxo-variablen) for information.
 
-* Callback-Element
-  * `callback`
-* Strukturelle-Elemente
-  * `columns`
-* Informelle-Elemente
-  * `addInfo`
-  * `addWarning`
-  * `addError`
+## License
 
-## Lizenz
+MForm is licensed under the [MIT License](LICENSE.md).
 
-MForm ist unter der [MIT Lizenz](LICENSE.md) lizensiert.
+## Changelog
+
+see [CHANGELOG.md](https://github.com/FriendsOfREDAXO/mform/blob/master/CHANGELOG.md)
+
+## Author
+
+**Friends Of REDAXO**
+
+* http://www.redaxo.org
+* https://github.com/FriendsOfREDAXO
+
+**Project lead**
+
+[Joachim Dörr](https://github.com/joachimdoerr)
+

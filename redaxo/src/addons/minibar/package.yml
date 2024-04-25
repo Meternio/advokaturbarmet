@@ -1,10 +1,13 @@
 package: minibar
-version: '2.2.2'
+version: '2.4.3'
 author: 'Friends Of REDAXO'
 supportpage: https://github.com/FriendsOfREDAXO/minibar
 
 load: late
 requires:
-    redaxo: ^5.7.0
+    redaxo: ^5.16.0-beta1
     php:
-        version: '>=7.1'
+        version: '>=8.1'
+
+default_config:
+      compile: 1;

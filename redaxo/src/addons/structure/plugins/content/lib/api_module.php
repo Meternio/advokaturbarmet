@@ -5,28 +5,21 @@
  */
 class rex_module
 {
-    /**
-     * @var int
-     */
-    private $id;
-    /**
-     * @var string|null
-     */
-    private $key;
+    private int $id;
+    private ?string $key = '';
 
-    public function __construct(int $module_id)
+    public function __construct(int $moduleId)
     {
-        $this->id = $module_id;
-        $this->key = '';
+        $this->id = $moduleId;
     }
 
-    public static function forKey(string $module_key): ?self
+    public static function forKey(string $moduleKey): ?self
     {
         $mapping = self::getKeyMapping();
 
-        if (false !== $id = array_search($module_key, $mapping, true)) {
+        if (false !== $id = array_search($moduleKey, $mapping, true)) {
             $module = new self($id);
-            $module->key == $module_key;
+            $module->key = $moduleKey;
 
             return $module;
         }

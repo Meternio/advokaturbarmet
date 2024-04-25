@@ -7,45 +7,56 @@
  * @author <a href="http://www.yakamara.de">www.yakamara.de</a>
  */
 
-class rex_yform_manager_table implements ArrayAccess
+final class rex_yform_manager_table implements ArrayAccess
 {
-    protected $values = [];
+    public static array $tableLayouts = [];
+    public static string $defaultTableLayout = 'yform/manager/page/layout.php';
 
+    protected $values = [];
     protected $columns = [];
 
-    /** @var rex_yform_manager_field[] */
+    /** @var array<rex_yform_manager_field> */
     protected $fields = [];
 
-    /** @var rex_yform_manager_field[] */
+    /** @var array<rex_yform_manager_field> */
     protected $relations;
 
-    protected static $debug = false;
+    protected static bool $debug = false;
 
-    /** @var self[] */
+    /** @var array<self> */
     protected static $tables = [];
-    protected static $loadedAllTables = false;
+    protected static bool $loadedAllTables = false;
 
     private static $cache;
+    protected array $relatedTableNames = [];
+    protected array $fieldValues = [];
 
     private function __construct(array $data)
     {
         $this->values = $data['table'];
         $this->columns = $data['columns'];
+        $this->relatedTableNames = $data['related_tables'];
+        $this->fieldValues = $data['fields'];
+    }
 
-        $this->fields = [];
-        foreach ($data['fields'] as $field) {
-            try {
-                $this->fields[] = new rex_yform_manager_field($field);
-            } catch (Exception $e) {
-                // ignore missing fields
-            }
+    public static function setTableLayout(string $tableName, string $path): void
+    {
+        self::$tableLayouts[$tableName] = $path;
+    }
+
+    public function getTableLayout(): string
+    {
+        $tableLayout = self::$defaultTableLayout;
+        if (isset(self::$tableLayouts[$this->getTableName()])) {
+            $tableLayout = self::$tableLayouts[$this->getTableName()];
         }
+        return $tableLayout;
     }
 
     /**
      * @param string $tableName
      *
-     * @return null|rex_yform_manager_table
+     * @return rex_yform_manager_table|null
      */
     public static function get($tableName)
     {
@@ -56,15 +67,25 @@ class rex_yform_manager_table implements ArrayAccess
         $cache = self::getCache();
 
         if (!isset($cache[$tableName])) {
-            return self::$tables[$tableName] = null;
+            unset(self::$tables[$tableName]);
+            return null;
         }
 
         return self::$tables[$tableName] = new self($cache[$tableName]);
     }
 
+    public static function require(string $tableName): self
+    {
+        $table = self::get($tableName);
+
+        if (!$table) {
+            throw new rex_exception('Table "' . $tableName . '" does not exist');
+        }
+
+        return $table;
+    }
+
     /**
-     * @param int $tableId
-     *
      * @return rex_yform_manager_table|null
      */
     public static function getById(int $tableID)
@@ -81,7 +102,7 @@ class rex_yform_manager_table implements ArrayAccess
     }
 
     /**
-     * @return rex_yform_manager_table[]
+     * @return array<rex_yform_manager_table>
      */
     public static function getAll()
     {
@@ -100,21 +121,35 @@ class rex_yform_manager_table implements ArrayAccess
         return self::$tables;
     }
 
-    public static function table()
+    public static function table(): string
     {
         return rex::getTablePrefix() . 'yform_table';
     }
 
     // -------------------------------------------------------------------------
 
-    public function getTableName()
+    public function getTableName(): string
     {
         return $this->values['table_name'];
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->values['name'];
+    }
+
+    public function getNameLocalized(): string
+    {
+        $table_name = $this->getTableName();
+        $name = $this->getName();
+        if ($name === $table_name) {
+            $name = 'translate:' . $name;
+        }
+        $name = rex_i18n::translate($name, false);
+        if (preg_match('/^\[translate:(.*?)\]$/', $name, $match)) {
+            $name = $match[1];
+        }
+        return rex_i18n::translate($name, false);
     }
 
     public function getId()
@@ -122,7 +157,7 @@ class rex_yform_manager_table implements ArrayAccess
         return $this->values['id'];
     }
 
-    public function hasId()
+    public function hasId(): bool
     {
         $columns = rex_sql::showColumns($this->getTableName());
         foreach ($columns as $column) {
@@ -133,49 +168,54 @@ class rex_yform_manager_table implements ArrayAccess
         return false;
     }
 
-    public function isActive()
+    public function isActive(): bool
     {
         return 1 == $this->values['status'];
     }
 
-    public function isHidden()
+    public function isHidden(): bool
     {
         return 1 == $this->values['hidden'];
     }
 
-    public function isSearchable()
+    public function isSearchable(): bool
     {
         return 1 == $this->values['search'];
     }
 
-    public function isImportable()
+    public function isImportable(): bool
     {
         return 1 == $this->values['import'];
     }
 
-    public function isExportable()
+    public function isExportable(): bool
     {
         return 1 == $this->values['export'];
     }
 
-    public function isMassDeletionAllowed()
+    public function isMassDeletionAllowed(): bool
     {
         return 1 == $this->values['mass_deletion'];
     }
 
-    public function isMassEditAllowed()
+    public function isMassEditAllowed(): bool
     {
         return 1 == $this->values['mass_edit'];
     }
 
-    public function overwriteSchema()
+    public function overwriteSchema(): bool
     {
         return (1 == $this->values['schema_overwrite']) ? true : false;
     }
 
-    public function hasHistory()
+    public function hasHistory(): bool
     {
         return 1 == $this->values['history'];
+    }
+
+    public function parseLayout(rex_fragment $fragment): string
+    {
+        return $fragment->parse($this->getTableLayout());
     }
 
     public function getSortFieldName()
@@ -196,7 +236,7 @@ class rex_yform_manager_table implements ArrayAccess
         return $this->values['list_amount'];
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->values['description'];
     }
@@ -204,10 +244,20 @@ class rex_yform_manager_table implements ArrayAccess
     /**
      * Fields of yform Definitions.
      *
-     * @return rex_yform_manager_field[]
+     * @return array<rex_yform_manager_field>
      */
     public function getFields(array $filter = [])
     {
+        if (0 == count($this->fields)) {
+            foreach ($this->fieldValues as $field) {
+                try {
+                    $this->fields[] = new rex_yform_manager_field($field);
+                } catch (Exception $e) {
+                    // ignore missing fields
+                }
+            }
+        }
+
         if (!$filter) {
             return $this->fields;
         }
@@ -224,12 +274,12 @@ class rex_yform_manager_table implements ArrayAccess
     }
 
     /**
-     * @return rex_yform_manager_field[]
+     * @return array<rex_yform_manager_field>
      */
     public function getValueFields(array $filter = [])
     {
         $fields = [];
-        foreach ($this->fields as $field) {
+        foreach ($this->getFields() as $field) {
             if ('value' !== $field->getType()) {
                 continue;
             }
@@ -250,7 +300,7 @@ class rex_yform_manager_table implements ArrayAccess
     }
 
     /**
-     * @return rex_yform_manager_field[]
+     * @return array<rex_yform_manager_field>
      */
     public function getRelations()
     {
@@ -264,7 +314,7 @@ class rex_yform_manager_table implements ArrayAccess
     /**
      * @param string $table
      *
-     * @return rex_yform_manager_field[]
+     * @return array<rex_yform_manager_field>
      */
     public function getRelationsTo($table)
     {
@@ -272,11 +322,9 @@ class rex_yform_manager_table implements ArrayAccess
     }
 
     /**
-     * @param string $column
-     *
-     * @return rex_yform_manager_field
+     * @return rex_yform_manager_field|null
      */
-    public function getRelation($column)
+    public function getRelation(string $column)
     {
         $relations = $this->getRelations();
         return $relations[$column] ?? null;
@@ -300,13 +348,18 @@ class rex_yform_manager_table implements ArrayAccess
         return ['source' => $source, 'target' => $target];
     }
 
+    public function getRelationTableNames(): array
+    {
+        return $this->relatedTableNames;
+    }
+
     // Database Fielddefinition
     public function getColumns()
     {
         return $this->columns;
     }
 
-    public function getMissingFields()
+    public function getMissingFields(): array
     {
         $xfields = $this->getValueFields();
         $rfields = self::getColumns();
@@ -318,11 +371,6 @@ class rex_yform_manager_table implements ArrayAccess
             }
         }
         return $c;
-    }
-
-    public function getPermKey()
-    {
-        return 'yform[table:' . $this->getTableName() . ']';
     }
 
     public function toArray()
@@ -381,7 +429,7 @@ class rex_yform_manager_table implements ArrayAccess
     /**
      * @param int $id
      *
-     * @return null|rex_yform_manager_dataset
+     * @return rex_yform_manager_dataset|null
      */
     public function getDataset($id)
     {
@@ -407,6 +455,7 @@ class rex_yform_manager_table implements ArrayAccess
     }
 
     // ------------------------------------------- Array Access
+    #[ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         if (null === $offset) {
@@ -416,16 +465,19 @@ class rex_yform_manager_table implements ArrayAccess
         }
     }
 
+    #[ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return isset($this->values[$offset]);
     }
 
+    #[ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         unset($this->values[$offset]);
     }
 
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->values[$offset];
@@ -436,7 +488,7 @@ class rex_yform_manager_table implements ArrayAccess
         return $this->getTableName();
     }
 
-    public static function deleteCache()
+    public static function deleteCache(): void
     {
         rex_file::delete(self::cachePath());
         self::$cache = null;
@@ -444,15 +496,16 @@ class rex_yform_manager_table implements ArrayAccess
         self::$loadedAllTables = false;
     }
 
-    private static function getCache()
+    private static function getCache(): mixed
     {
         if (null !== self::$cache) {
             return self::$cache;
         }
 
         $cachePath = self::cachePath();
-        if (file_exists($cachePath)) {
-            return self::$cache = rex_file::getCache($cachePath);
+        self::$cache = rex_file::getCache($cachePath);
+        if (self::$cache) {
+            return self::$cache;
         }
 
         self::$cache = [];
@@ -462,9 +515,8 @@ class rex_yform_manager_table implements ArrayAccess
 
         $tables = $sql->getArray('select * from ' . self::table() . ' order by prio');
         foreach ($tables as $table) {
-            $tableName = $table['table_name'];
+            $tableName = (string) $table['table_name'];
             self::$cache[$tableName]['table'] = $table;
-
             self::$cache[$tableName]['columns'] = [];
             try {
                 foreach (rex_sql::showColumns($tableName) as $column) {
@@ -480,8 +532,18 @@ class rex_yform_manager_table implements ArrayAccess
 
         $fields = $sql->getArray('select * from ' . rex_yform_manager_field::table() . ' order by prio');
         foreach ($fields as $field) {
-            if (isset(self::$cache[$field['table_name']])) {
-                self::$cache[$field['table_name']]['fields'][] = $field;
+            if (isset(self::$cache[(string) $field['table_name']])) {
+                self::$cache[(string) $field['table_name']]['fields'][] = $field;
+            }
+        }
+
+        foreach (self::$cache as $tableName => $data) {
+            self::$cache[(string) $tableName]['related_tables'] = [];
+            $table = new self(self::$cache[(string) $tableName]);
+            foreach ($table->getFields() as $field) {
+                foreach ($field->getRelationTableNames() as $relatedTable) {
+                    self::$cache[(string) $tableName]['related_tables'][$relatedTable] = $relatedTable;
+                }
             }
         }
 
@@ -490,8 +552,18 @@ class rex_yform_manager_table implements ArrayAccess
         return self::$cache;
     }
 
-    private static function cachePath()
+    private static function cachePath(): string
     {
         return rex_path::pluginCache('yform', 'manager', 'tables.cache');
+    }
+
+    public function isGranted(string $type, rex_user $user): bool
+    {
+        return rex_yform_manager_table_authorization::onAttribute($type, $this, $user);
+    }
+
+    public function getCSRFKey(): string
+    {
+        return 'table_field-' . $this->getTableName();
     }
 }

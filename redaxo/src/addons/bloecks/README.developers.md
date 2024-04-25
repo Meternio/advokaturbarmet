@@ -7,9 +7,17 @@ Die Installation der benötigten Pakete erfolgt über npm:
 
 	$ npm install
 
-Danach kann der Build-Workflow gestartet werden:
+Auf dem System muss [Grunt CLI](https://gruntjs.com/getting-started#installing-the-cli) vorhanden sein. Dies kann mittels `grunt --version` geprüft werden. Falls es fehlt, kann es mittels npm global installiert werden:
+
+	$ npm install -g grunt-cli
+
+Danach kann der Build-Workflow gestartet werden Dev+Debugging:
 
 	$ grunt
+
+Für die Erstellung der Distributiion
+        
+	$ grunt --production
 	
 Es werden dabei folgende Aktionen durchgeführt:
 

@@ -1,6 +1,89 @@
 Changelog
 =========
 
+Version 2.13.2 – 16.12.2022
+---------------------------
+
+### Bugfixes
+
+* Seit 2.13.1 kam es bei Nutzung von `rex_media_manager::create` teils zur Auslieferung der Bilder in Originalgröße (@gharlan)
+
+
+Version 2.13.1 – 13.12.2022
+---------------------------
+
+### Bugfixes
+
+* Wenn die Datei aus dem Cache kommt, war im Objekt der `media_path` nicht korrekt gesetzt (relevant für EPs etc.) (@dergel, @gharlan)
+
+
+Version 2.13.0 – 25.07.2022
+---------------------------
+
+### Neu
+
+* Cache-Order für generierte Bilder kann per `rex_media_manager::setCacheDirectory` geändert werden (@gharlan)
+
+### Bugfixes
+
+* `rex_managed_media::getMediaFilename` lieferte uneinheitliche Ergebnisse, nun einheitlich den neuen Dateinamen (@gharlan)
+
+
+Version 2.12.3 – 09.05.2022
+---------------------------
+
+### Bugfixes
+
+* Effekt `image_format`: Bei `.jpg`-Dateien (nicht `.jpeg`) war die neue Extension im Header nicht korrekt (@gharlan)
+
+
+Version 2.12.2 – 03.05.2022
+---------------------------
+
+### Bugfixes
+
+* Effekt `image_format`: Bei `.jpeg`-Dateien (nicht `.jpg`) war die neue Extension im Header nicht korrekt (@gharlan)
+* Beim Löschen von Medien wurde deren Verwendung im Media Manager (z.B. als Wasserzeichen) nicht geprüft (@TobiasKrais)
+
+
+Version 2.12.1 – 29.11.2021
+---------------------------
+
+### Bugfixes
+
+* Klickfläche für den Hinzufügen-Link vergrößert (@schuer)
+
+
+Version 2.12.0 – 17.11.2021
+---------------------------
+
+### Neu
+
+* System-Mediatypen reduziert auf `rex_media_small`, `rex_media_medium`, `rex_media_large` (@schuer)
+* System-Mediatypen sind nicht mehr bearbeitbar (es war sowieso nicht updatesicher möglich) (@gharlan, @bloep)
+
+
+Version 2.11.1 – 21.06.2021
+---------------------------
+
+### Bugfixes
+
+* Effekt `resize`: Warning vermeiden, wenn nur Höhe oder nur Breite gesetzt wurde (@Hirbod)
+
+
+Version 2.11.0 – 03.03.2021
+---------------------------
+
+### Neu
+
+* Neuer Effekt `image_format`, über den das Bildformat geändert werden kann (JPG, PNG, GIF, WEBP) (@aeberhard)
+
+### Bugfixes
+
+* System-Mediatypen konnten umbenannt werden (@staabm)
+* Effekt `image_properties`: Der Effekt wirkte sich nur aus, wenn noch weitere Bildeffekte aktiv waren (@gharlan)
+
+
 Version 2.10.1 – 11.11.2020
 ---------------------------
 

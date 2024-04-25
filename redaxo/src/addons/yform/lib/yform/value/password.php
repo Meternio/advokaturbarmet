@@ -1,37 +1,30 @@
 <?php
 
 /**
- * yform.
- *
- * @author jan.kristinus[at]redaxo[dot]org Jan Kristinus
- * @author <a href="http://www.yakamara.de">www.yakamara.de</a>
+ * Class rex_yform_value_password.
  */
 
-class rex_yform_value_password extends rex_yform_value_abstract
+class rex_yform_value_password extends rex_yform_value_text
 {
     public function enterObject()
     {
-        if ($this->getValue() == '' && !$this->params['send']) {
-            $this->setValue($this->getElement(3));
-        }
+        $attributes = empty($this->getElement('attributes')) ? [] : json_decode($this->getElement('attributes'), true);
+        $attributes['type'] = 'password';
+        $this->setElement('attributes', json_encode($attributes));
 
-        if ($this->needsOutput()) {
-            $this->params['form_output'][$this->getId()] = $this->parse(['value.password.tpl.php', 'value.text.tpl.php'], ['type' => 'password', 'value' => '']);
-        }
-
-        $this->params['value_pool']['email'][$this->getName()] = $this->getValue();
-        if ($this->saveInDb('4')) {
-            $this->params['value_pool']['sql'][$this->getName()] = $this->getValue();
-        }
+        parent::enterObject();
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
-        return 'password|name|label|default_value|[no_db]';
+        return 'password|name|label|defaultwert|[no_db]|[attributes]|[notice]|[prepend]|[append]';
     }
 
-    public function isDeprecated()
+    public function getDefinitions(): array
     {
-        return true;
+        $return = parent::getDefinitions();
+        $return['type'] = 'password';
+        $return['description'] = rex_i18n::msg('yform_values_password_description');
+        return $return;
     }
 }

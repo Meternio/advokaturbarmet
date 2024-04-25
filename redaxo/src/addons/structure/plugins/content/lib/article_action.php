@@ -9,12 +9,19 @@ class rex_article_action
     public const PRESAVE = 'presave';
     public const POSTSAVE = 'postsave';
 
+    /** @var int */
     private $moduleId;
+    /** @var string */
     private $event;
+    /** @var int */
     private $mode;
+    /** @var bool */
     private $save = true;
+    /** @var array */
     private $messages = [];
+    /** @var rex_sql */
     private $sql;
+    /** @var array{search: list<string>, replace: list<int>} */
     private $vars;
 
     public function __construct($moduleId, $function, rex_sql $sql)
@@ -39,6 +46,9 @@ class rex_article_action
         ];
     }
 
+    /**
+     * @return void
+     */
     public function setRequestValues()
     {
         $request = ['value' => 20, 'media' => 10, 'medialist' => 10, 'link' => 10, 'linklist' => 10];
@@ -58,6 +68,10 @@ class rex_article_action
         }
     }
 
+    /**
+     * @param self::PREVIEW|self::PRESAVE|self::POSTSAVE $type
+     * @return void
+     */
     public function exec($type)
     {
         if (!in_array($type, [self::PREVIEW, self::PRESAVE, self::POSTSAVE])) {
@@ -71,38 +85,58 @@ class rex_article_action
         $ga->setQuery('SELECT a.id, `' . $type . '` as code FROM ' . rex::getTable('module_action') . ' ma,' . rex::getTable('action') . ' a WHERE `' . $type . '` != "" AND ma.action_id=a.id AND module_id=? AND (a.' . $type . 'mode & ?)', [$this->moduleId, $this->mode]);
 
         foreach ($ga as $row) {
-            $action = $row->getValue('code');
+            $action = (string) $row->getValue('code');
             $action = str_replace($this->vars['search'], $this->vars['replace'], $action);
             $action = rex_var::parse($action, rex_var::ENV_BACKEND | rex_var::ENV_INPUT, 'action', $this->sql);
-            require rex_stream::factory('action/' . $row->getValue('id') . '/' . $type, $action);
+
+            $articleId = (int) $row->getValue('id');
+            require rex_stream::factory('action/' . $articleId . '/' . $type, $action);
         }
     }
 
+    /**
+     * @return void
+     */
     protected function setSave($save)
     {
         $this->save = $save;
     }
 
+    /**
+     * @return void
+     */
     protected function addMessage($message)
     {
         $this->messages[] = $message;
     }
 
+    /**
+     * @return bool
+     */
     public function getSave()
     {
         return $this->save;
     }
 
+    /**
+     * @return array
+     */
     public function getMessages()
     {
         return $this->messages;
     }
 
+    /**
+     * @return string
+     */
     public function getEvent()
     {
         return $this->event;
     }
 
+    /**
+     * @return void
+     */
     protected function setValue($id, $value)
     {
         if ($id < 1 || $id > 20) {
@@ -111,6 +145,9 @@ class rex_article_action
         $this->sql->setValue('value' . $id, $value);
     }
 
+    /**
+     * @return void
+     */
     protected function setMedia($id, $value)
     {
         if ($id < 1 || $id > 10) {
@@ -119,6 +156,9 @@ class rex_article_action
         $this->sql->setValue('media' . $id, $value);
     }
 
+    /**
+     * @return void
+     */
     protected function setMediaList($id, $value)
     {
         if ($id < 1 || $id > 10) {
@@ -127,6 +167,9 @@ class rex_article_action
         $this->sql->setValue('medialist' . $id, $value);
     }
 
+    /**
+     * @return void
+     */
     protected function setLink($id, $value)
     {
         if ($id < 1 || $id > 10) {
@@ -135,6 +178,9 @@ class rex_article_action
         $this->sql->setValue('link' . $id, $value);
     }
 
+    /**
+     * @return void
+     */
     protected function setLinkList($id, $value)
     {
         if ($id < 1 || $id > 10) {
@@ -143,26 +189,41 @@ class rex_article_action
         $this->sql->setValue('linklist' . $id, $value);
     }
 
+    /**
+     * @return string|null
+     */
     protected function getValue($id)
     {
         return $this->sql->getValue('value' . $id);
     }
 
+    /**
+     * @return string|null
+     */
     protected function getMedia($id)
     {
         return $this->sql->getValue('media' . $id);
     }
 
+    /**
+     * @return string|null
+     */
     protected function getMediaList($id)
     {
         return $this->sql->getValue('medialist' . $id);
     }
 
+    /**
+     * @return string|null
+     */
     protected function getLink($id)
     {
         return $this->sql->getValue('link' . $id);
     }
 
+    /**
+     * @return string|null
+     */
     protected function getLinkList($id)
     {
         return $this->sql->getValue('linklist' . $id);

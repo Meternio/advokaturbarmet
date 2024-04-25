@@ -9,26 +9,28 @@
 
 class rex_yform_action_showtext extends rex_yform_action_abstract
 {
-    public function executeAction()
+    public function executeAction(): void
     {
         $text = $this->getElement(2);
 
-        $text = rex_i18n::translate($text, null);
+        $text = rex_i18n::translate($text, false);
 
-        if ($this->getElement(5) == '0') {
-            $text = nl2br(htmlspecialchars($text));
+        if ('0' == $this->getElement(5)) {
+            $text = nl2br(rex_escape($text));
         }
 
         $text = $this->getElement(3) . $text . $this->getElement(4);
 
         foreach ($this->params['value_pool']['email'] as $search => $replace) {
-            $text = str_replace('###' . $search . '###', $replace, $text);
+            if (is_scalar($search) && is_scalar($replace)) {
+                $text = str_replace('###' . $search . '###', $replace, $text);
+            }
         }
 
         $this->params['output'] .= $text;
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'action|showtext|Antworttext|&lt;p&gt;|&lt;/p&gt;|[0 for specialchars + nl2br]';
     }

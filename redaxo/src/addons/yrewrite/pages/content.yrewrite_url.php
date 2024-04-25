@@ -7,7 +7,9 @@
  *
  * @package redaxo\yrewrite
  *
+ * @psalm-scope-this rex_addon
  * @var rex_addon $this
+ * @var array{article_id: int, clang: int, ctype: int} $params
  */
 
 ob_start();
@@ -44,7 +46,7 @@ if ($isStartarticle) {
            IF(yrewrite_url_type = "REDIRECTION_INTERNAL", yrewrite_redirection, "") AS yrewrite_redirection_internal,
            IF(yrewrite_url_type = "REDIRECTION_EXTERNAL", yrewrite_redirection, "") AS yrewrite_redirection_external
         FROM '.rex::getTable('article').'
-        WHERE id='.$article_id.' and clang_id='.$clang
+        WHERE id='.$article_id.' and clang_id='.$clang,
     );
     $yform->setObjectparams('sql_object', $sql);
 
@@ -63,6 +65,7 @@ if ($isStartarticle) {
     $yform->setValueField('text', ['yrewrite_url', $addon->i18n('url_type_custom'), 'notice' => '&nbsp;', 'required' => 'required']);
 
     $yform->setValueField('be_link', ['yrewrite_redirection_internal', $addon->i18n('url_type_redirection_internal')]);
+    $yform->setValidateField('compare_value', ['yrewrite_redirection_internal', $article_id, '==', rex_i18n::msg('yrewrite_warning_redirect_to_self')]);
 
     $yform->setValueField('text', ['yrewrite_redirection_external', $addon->i18n('url_type_redirection_external'), 'attributes' => [
         'type' => 'url',
@@ -70,7 +73,7 @@ if ($isStartarticle) {
         'placeholder' => 'https://example.com',
     ]]);
 
-    $yform->setActionField('callback', [function () use ($yform) {
+    $yform->setActionField('callback', [static function () use ($yform) {
         switch ($yform->objparams['value_pool']['sql']['yrewrite_url_type']) {
             case 'REDIRECTION_INTERNAL':
                 $yform->objparams['value_pool']['sql']['yrewrite_redirection'] = $yform->objparams['value_pool']['sql']['yrewrite_redirection_internal'];
@@ -83,23 +86,23 @@ if ($isStartarticle) {
         unset($yform->objparams['value_pool']['sql']['yrewrite_redirection_external']);
     }]);
 
-    $yform->setValidateField('customfunction', ['name' => 'yrewrite_url', 'function' => function ($func, $yrewrite_url) {
-        return strlen($yrewrite_url) > 250;
+    $yform->setValidateField('customfunction', ['name' => 'yrewrite_url', 'function' => static function ($func, $yrewrite_url) {
+        return $yrewrite_url && strlen($yrewrite_url) > 250;
     }, 'params' => [], 'message' => rex_i18n::msg('yrewrite_warning_nottolong')]);
 
-    $yform->setValidateField('customfunction', ['name' => 'yrewrite_url', 'function' => function ($func, $yrewrite_url) {
-        if ($yrewrite_url == '') {
+    $yform->setValidateField('customfunction', ['name' => 'yrewrite_url', 'function' => static function ($func, $yrewrite_url) {
+        if ('' == $yrewrite_url) {
             return false;
         }
-        return !preg_match('/^[%_\.+\-\/a-zA-Z0-9]+$/', $yrewrite_url);
+        return !preg_match('/^[%#_\.+\-\/a-zA-Z0-9]+$/', $yrewrite_url);
     }, 'params' => [], 'message' => rex_i18n::msg('yrewrite_warning_chars')]);
 
-    $yform->setValidateField('customfunction', ['name' => 'yrewrite_url', 'function' => function ($func, $yrewrite_url, $params, $field) {
-        if ($yrewrite_url == '') {
+    $yform->setValidateField('customfunction', ['name' => 'yrewrite_url', 'function' => static function ($func, $yrewrite_url, $params, $field) {
+        if ('' == $yrewrite_url) {
             return false;
         }
         $return = (($a = rex_yrewrite::getArticleIdByUrl($params['domain'], $yrewrite_url)) && (key($a) != $params['article_id'] || current($a) != $params['clang']));
-        if ($return && $yrewrite_url != '') {
+        if ($return && '' != $yrewrite_url) {
             $field->setElement('message', rex_i18n::msg('yrewrite_warning_urlexists', key($a)));
         } else {
             $return = false;
@@ -123,9 +126,9 @@ if ($isStartarticle) {
 
     echo $form;
 
-    if ("AUTO" === rex_article::get($article_id, $clang)->getValue('yrewrite_url_type')) {
+    if ('AUTO' === rex_article::get($article_id, $clang)->getValue('yrewrite_url_type')) {
         $autoUrl = rex_getUrl();
-        if (0 === strpos($autoUrl, $domain->getUrl())) {
+        if (str_starts_with($autoUrl, $domain->getUrl())) {
             $autoUrl = substr($autoUrl, strlen($domain->getUrl()));
         } else {
             $autoUrl = substr($autoUrl, strlen($domain->getPath()));

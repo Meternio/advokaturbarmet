@@ -19,11 +19,9 @@ if ($table) {
         $page->setLinkVars(['page' => 'yform/manager/table_field']);
         echo $page->getFieldPage();
     } catch (Exception $e) {
-        $message = nl2br($e->getMessage()."\n".$e->getTraceAsString());
+        $message = nl2br($e->getMessage() . "\n" . $e->getTraceAsString());
         echo rex_view::warning($message);
     }
 } else {
-    if (!$table) {
-        echo rex_view::warning(rex_i18n::msg('yform_table_not_found'));
-    }
+    echo rex_view::warning(rex_i18n::msg('yform_table_not_found'));
 }

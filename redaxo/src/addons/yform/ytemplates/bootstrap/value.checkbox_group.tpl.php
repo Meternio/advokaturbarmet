@@ -1,7 +1,14 @@
 <?php
 
+/**
+ * @var rex_yform_value_checkbox $this
+ * @psalm-scope-this rex_yform_value_checkbox
+ */
+
+$options ??= [];
+
 $notices = [];
-if ($this->getElement('notice') != '') {
+if ('' != $this->getElement('notice')) {
     $notices[] = rex_i18n::translate($this->getElement('notice'), false);
 }
 if (isset($this->params['warning_messages'][$this->getId()]) && !$this->params['hide_field_warning_messages']) {
@@ -10,20 +17,20 @@ if (isset($this->params['warning_messages'][$this->getId()]) && !$this->params['
 
 $notice = '';
 if (count($notices) > 0) {
-    $notice = '<p class="help-block">' . implode('<br />', $notices) . '</p>';
+    $notice = '<p class="help-block small">' . implode('<br />', $notices) . '</p>';
 }
 
 ?>
 
-<?php if (trim($this->getLabel()) != ''): ?>
+<?php if ('' != trim($this->getLabel())): ?>
 <div class="checkbox-group form-group">
-    <label class="control-label"><?php echo $this->getLabel() ?></label>
+    <label class="control-label"><?= $this->getLabel() ?></label>
 
-<?php endif; ?>
+<?php endif ?>
 
 <?php foreach ($options as $k => $v): ?>
     <?php
-    $class_group = trim('checkbox ' . $this->getHTMLClass($k) . ' ' . $this->getWarningClass());
+    $class_group = trim('checkbox ' . $this->getHTMLClass() . ' ' . $this->getWarningClass());
     ?>
     <div class="<?= $class_group ?>" id="<?= $this->getHTMLId($k) ?>">
         <label>
@@ -32,8 +39,8 @@ if (count($notices) > 0) {
         </label>
     </div>
 <?php endforeach ?>
-<?php echo $notice; ?>
+<?= $notice ?>
 
-<?php if (trim($this->getLabel()) != ''): ?>
+<?php if ('' != trim($this->getLabel())): ?>
 </div>
-<?php endif; ?>
+<?php endif ?>

@@ -5,6 +5,9 @@ Mit MBlock ist es möglich, innerhalb eines Moduls beliebig viele Datenblöcke z
 
 _English:_ MBlock lets you create an unlimited number of data blocks within a single module. These data blocks can be sorted per click or drag & drop.
 
+> Please note: The examples are valid for MForm version 7 and higher. When using older MForm versions, please refer to the documentation of the respective version. 
+
+
 ![Screenshot](https://raw.githubusercontent.com/FriendsOfREDAXO/mblock/assets/mblock.png)
 
 ## Modulbeispiele / Module examples
@@ -27,7 +30,7 @@ $id = 1;
 $mform = new MForm();
 
 // fieldset
-$mform->addFieldset('Team member');
+$mform->addFieldsetArea('Team member');
 
 // textinput
 $mform->addTextField("$id.0.name", array('label'=>'Name')); // use string for x.0 json values
@@ -45,7 +48,7 @@ __Output:__
 <?php
 
 echo '<pre>';
-print_r(rex_var::toArray("REX_VALUE[1]"));
+dump(rex_var::toArray("REX_VALUE[1]"));
 echo '</pre>';
 ```
 
@@ -86,7 +89,7 @@ __Output:__
 <?php
 
 echo '<pre>';
-print_r(rex_var::toArray("REX_VALUE[1]"));
+dump(rex_var::toArray("REX_VALUE[1]"));
 echo '</pre>';
 ```
 

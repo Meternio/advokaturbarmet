@@ -7,45 +7,27 @@
  *
  * @package redaxo\core
  */
+#[AllowDynamicProperties]
 class rex_clang
 {
-    /**
-     * @var bool
-     */
-    private static $cacheLoaded = false;
-    /**
-     * @var self[]
-     */
-    private static $clangs = [];
-    /**
-     * @var int
-     */
+    private static bool $cacheLoaded = false;
+    /** @var array<int, self> */
+    private static array $clangs = [];
+    /** @var int|null */
     private static $currentId;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $id;
-    /**
-     * @var string
-     */
+    /** @var string */
     private $code;
-    /**
-     * @var string
-     */
+    /** @var string */
     private $name;
-    /**
-     * @var int
-     */
+    /** @var int */
     private $priority;
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $status;
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     /**
      * Checks if the given clang exists.
@@ -120,6 +102,7 @@ class rex_clang
      * @param int $id Clang id
      *
      * @throws rex_exception
+     * @return void
      */
     public static function setCurrentId($id)
     {
@@ -182,33 +165,25 @@ class rex_clang
     /**
      * Checks whether the clang has the given value.
      *
-     * @param string $value
+     * @param string $key
      *
      * @return bool
      */
-    public function hasValue($value)
+    public function hasValue($key)
     {
-        return isset($this->$value) || isset($this->{'clang_' . $value});
+        return isset($this->$key) || isset($this->{'clang_' . $key});
     }
 
     /**
      * Returns the given value.
      *
-     * @param string $value
+     * @param string $key
      *
      * @return mixed
      */
-    public function getValue($value)
+    public function getValue($key)
     {
-        if (isset($this->$value)) {
-            return $this->$value;
-        }
-
-        if (isset($this->{'clang_' . $value})) {
-            return $this->{'clang_' . $value};
-        }
-
-        return null;
+        return $this->$key ?? $this->{'clang_' . $key} ?? null;
     }
 
     /**
@@ -229,7 +204,7 @@ class rex_clang
      *
      * @param bool $ignoreOfflines
      *
-     * @return int[]
+     * @return list<int>
      */
     public static function getAllIds($ignoreOfflines = false)
     {
@@ -242,7 +217,7 @@ class rex_clang
      *
      * @param bool $ignoreOfflines
      *
-     * @return self[]
+     * @return array<int, self>
      */
     public static function getAll($ignoreOfflines = false)
     {
@@ -259,6 +234,7 @@ class rex_clang
 
     /**
      * Loads the cache if not already loaded.
+     * @return void
      */
     private static function checkCache()
     {
@@ -291,6 +267,7 @@ class rex_clang
 
     /**
      * Resets the intern cache of this class.
+     * @return void
      */
     public static function reset()
     {

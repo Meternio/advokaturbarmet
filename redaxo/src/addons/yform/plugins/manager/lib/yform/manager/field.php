@@ -6,12 +6,21 @@ class rex_yform_manager_field implements ArrayAccess
     protected $definitions = [];
     protected static $debug = false;
     protected static $types = ['value', 'validate', 'action'];
+    protected static $protected_fields = ['id', 'table_name', 'prio', 'type_id', 'type_name', 'db_type', 'list_hidden', 'search', 'name', 'label', 'not_required'];
 
+    /** @var rex_yform_value_abstract|rex_yform_validate_abstract */
+    protected $object;
+
+    /**
+     * rex_yform_manager_field constructor.
+     *
+     * @throws Exception
+     */
     public function __construct(array $values)
     {
         $class = 'rex_yform_' . $values['type_id'] . '_' . $values['type_name'];
 
-        if (count($values) == 0 || !class_exists($class)) {
+        if (0 == count($values) || !class_exists($class)) {
             throw new Exception(rex_i18n::msg('yform_field_not_found'));
         }
 
@@ -20,7 +29,7 @@ class rex_yform_manager_field implements ArrayAccess
         if (isset($this->definitions['values'])) {
             $i = 'validate' === $values['type_id'] ? 2 : 1;
             foreach ($this->definitions['values'] as $key => $value) {
-                if (isset($values['f' . $i]) && (!isset($values[$key]) || null === $values[$key] || '' === $values[$key])) {
+                if (isset($values['f' . $i]) && (!isset($values[$key]) || '' === $values[$key])) {
                     $values[$key] = $values['f' . $i];
                 }
                 ++$i;
@@ -34,7 +43,10 @@ class rex_yform_manager_field implements ArrayAccess
         return rex::getTablePrefix() . 'yform_field';
     }
 
-    // value, validate, action
+    /**
+     * value, validate, action.
+     * @return false|mixed
+     */
     public function getType()
     {
         $type_id = $this->values['type_id'];
@@ -44,7 +56,18 @@ class rex_yform_manager_field implements ArrayAccess
         return $type_id;
     }
 
-    // rex_yform_select
+    /**
+     * @return null|mixed|rex_yform_validate_abstract|rex_yform_value_abstract
+     */
+    public function getObject()
+    {
+        return $this->object;
+    }
+
+    /**
+     * example: rex_yform_select.
+     * @return mixed|string
+     */
     public function getTypeName()
     {
         if (!isset($this->values['type_name'])) {
@@ -73,7 +96,7 @@ class rex_yform_manager_field implements ArrayAccess
 
     public function getDatabaseFieldType()
     {
-        if (!isset($this->values['db_type']) || $this->values['db_type'] == '') {
+        if (!isset($this->values['db_type']) || '' == $this->values['db_type']) {
             return $this->object->getDatabaseFieldDefaultType();
         }
         return $this->values['db_type'];
@@ -97,6 +120,20 @@ class rex_yform_manager_field implements ArrayAccess
     public function getDatabaseFieldDefault()
     {
         return $this->object->getDatabaseFieldDefault();
+    }
+
+    public function getRelationTableNames()
+    {
+        $tables = [];
+        if ('be_manager_relation' == $this->getTypeName()) {
+            if ('' != $this->values['table']) {
+                $tables[] = $this->values['table'];
+            }
+            if (array_key_exists('relation_table', $this->values) && '' != $this->values['relation_table']) {
+                $tables[] = $this->values['relation_table'];
+            }
+        }
+        return $tables;
     }
 
     public function getHooks()
@@ -150,14 +187,20 @@ class rex_yform_manager_field implements ArrayAccess
         return false;
     }
 
-    // deprecated
-    // sobald die yform value klassen umgebaut worden sind.
     public function toArray()
     {
-        return $this->values;
+        $keys = array_unique(
+            array_merge(
+                self::$protected_fields,
+                array_keys($this->definitions['values'] ?? []),
+            ),
+        );
+
+        return array_intersect_key($this->values, array_flip($keys));
     }
 
     // ------------------------------------------- Array Access
+    #[ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         if (null === $offset) {
@@ -167,16 +210,19 @@ class rex_yform_manager_field implements ArrayAccess
         }
     }
 
+    #[ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return isset($this->values[$offset]);
     }
 
+    #[ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         unset($this->values[$offset]);
     }
 
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->values[$offset];

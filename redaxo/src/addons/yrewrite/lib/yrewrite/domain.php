@@ -42,7 +42,7 @@ class rex_yrewrite_domain
         $this->mountId = $mountId;
         $this->startId = $startId;
         $this->notfoundId = $notfoundId;
-        $this->clangs = is_null($clangs) ? rex_clang::getAllIds() : $clangs;
+        $this->clangs = null === $clangs ? rex_clang::getAllIds() : $clangs;
         $this->startClang = $startClang;
         $this->startClangAuto = $startClangAuto;
         $this->startClangHidden = $startClangHidden;
@@ -190,17 +190,14 @@ class rex_yrewrite_domain
     }
 
     /**
-     * @return string
+     * @return int
      */
     public function getAutoRedirectDays()
     {
         return $this->autoRedirectDays;
     }
 
-    /**
-     * @return string
-     */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getName();
     }

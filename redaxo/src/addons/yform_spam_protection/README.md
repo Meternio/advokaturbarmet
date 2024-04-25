@@ -1,6 +1,8 @@
-# Spamschutz für REDAXO 5 YForm 3.x
+# Spamschutz für REDAXO 5 YForm
 
 Das Addon `yform_spam_protection` kombiniert verschiedene Maßnahmen, um zuverlässig **Spam und Bots abzuwehren**. Die Einrichtung ist in **weniger als 5 Minuten** erledigt.
+
+![yform spam protectiopn](https://github.com/FriendsOfREDAXO/yform_spam_protection/assets/3855487/eb12295b-5fdb-41bc-a582-740e448330d8)
 
 ## Features
 
@@ -9,6 +11,7 @@ Das Addon `yform_spam_protection` kombiniert verschiedene Maßnahmen, um zuverl�
 * **Barrierefrei** – ohne Rechenaufgabe oder Bild-Captcha. 
 * **DSGVO-konform** – sofern keine Konfiguration mit externen Anbietern gewählt wird.
 * **Mehrsprachig** - Die Fehlermeldung kann je Sprache durch Addons wie Sprog oder XOutputFilter angepasst werden.
+* **reCaptcha Plugin** - ermöglicht die Einbindung von google recaptcha
 
 Weitere geplante Features unter [https://github.com/FriendsOfREDAXO/yform_spam_protection/issues](https://github.com/FriendsOfREDAXO/yform_spam_protection/issues)
 
@@ -20,7 +23,7 @@ Weitere geplante Features unter [https://github.com/FriendsOfREDAXO/yform_spam_p
 
 **PHP-Schreibweise**
 ```php
-        $yform->setValueField('spam_protection', array("honeypot","Bitte nicht ausfüllen.","Ihre Anfrage wurde als Spam erkannt und gelöscht. Bitte versuchen Sie es in einigen Minuten erneut oder wenden Sie sich persönlich an uns.", 0));
+$yform->setValueField('spam_protection', array("honeypot","Bitte nicht ausfüllen.","Ihre Anfrage wurde als Spam erkannt und gelöscht. Bitte versuchen Sie es in einigen Minuten erneut oder wenden Sie sich persönlich an uns.", 0));
 ```
 
 **Pipe-Schreibweise**
@@ -28,7 +31,7 @@ Weitere geplante Features unter [https://github.com/FriendsOfREDAXO/yform_spam_p
 spam_protection|honeypot|Bitte nicht ausfüllen|Ihre Anfrage wurde als Spam erkannt und gelöscht. Bitte versuchen Sie es in einigen Minuten erneut oder wenden Sie sich persönlich an uns.|0
 ```
 
-> Hinweis: Bei der Installation wird folgende Datenbanktabelle erstellt: `rex_yform_spam_protection_frequency`. Diese beinhaltet die IP-Adresse des Besuchers und löscht diese nach Ablauf eines in den Einstellungen festgelegten Zeitraums.
+> Hinweis: Bei der Installation wird folgende Datenbanktabelle erstellt: `rex_tmp_yform_spam_protection_frequency`. Diese beinhaltet die IP-Adresse des Besuchers und löscht diese nach Ablauf eines in den Einstellungen festgelegten Zeitraums.
 
 ## Funktionsweise
 
@@ -53,34 +56,37 @@ Wenn das Feld ausgefüllt wurde, deutet dies auf einen Spambot hin. Die Validier
 
 > Tipp: Die Umsetzung ist barrierefrei, da Autofill für dieses Feld deaktiviert wurde und dadurch sichergestellt ist, dass Screenreader oder unerfahrene Internetnutzer dieses Feld nicht versehentlich ausfüllen.
 
-### GeoIP-Sperre (geplant)
-
-Besucher-IP-Adressen, die nicht in den erwarteten Haupt- und Zielregionen liegen, sind mit hoher Wahrscheinlichkeit Spambots.
-
-> Hinweis: Es ist jedoch nicht auszuschließen, dass durch VPN-Verbindungen oder Besucher im Urlaub oder auf Geschäftsreise dadurch versehentlich ausgesperrt werden. Diese Option sollte nur in Ausnahmefällen aktiviert werden.
-
-### Top-Level-Domain-Sperre (geplant)
-
-Bei Formularen mit Eingabe der E-Mail-Adresse, bspw. einem Kontaktformular, können Absender gesperrt werden, deren Top-Level-Domain ungewöhnlich erscheinen.
-
-> Hinweis:  Es ist jedoch nicht auszuschließen, dass Kontakte im Ausland dadurch versehentlich ausgesperrt werden. Diese Option sollte nur in Ausnahmefällen aktiviert werden.
-
-### Sprach-Sperre (geplant)
-
-Bei Formularen mit Eingabe einer Nachricht, bspw. einem Kontaktformular, können Absender gesperrt werden, die sich in einer unerwartetten Sprache melden: Bspw. `englisch`, wenn die Firma nur eine deutschsprachige Website betreibt, oder `russisch`, obwohl die Website sich nicht an Besucher au0erhalb der EU richtet. 
-
-> Hinweis:  Es ist jedoch nicht auszuschließen, dass Kontakte im Ausland dadurch versehentlich ausgesperrt werden. Diese Option sollte nur in Ausnahmefällen aktiviert werden.
-
 ## Einstellungen
 
 * Im REDAXO-Backend unter `YForm` > `Spamschutz` optional Einstellungen vornehmen.
 
 ## Achtung
-Einige Einstellungen haben aktuell noch keine Funktion. Beteilige dich an der Umsetzung unter [https://github.com/FriendsOfREDAXO/yform_spam_protection/issues](https://github.com/FriendsOfREDAXO/yform_spam_protection/issues) oder unterstütze den Initiator finanziell für die Weiterentwicklung und Wartung: [https://github.com/sponsors/alexplusde](https://github.com/sponsors/alexplusde)
+Einige Einstellungen haben aktuell noch keine Funktion. Beteilige dich an der Umsetzung unter [https://github.com/FriendsOfREDAXO/yform_spam_protection/issues](https://github.com/FriendsOfREDAXO/yform_spam_protection/issues)
 
 ## Tipps und Tricks
 
 Der 4. Parameter am Feld aktiviert den Debug-Modus
+
+
+```
+spam_protection|honeypot|Bitte nicht ausfüllen|Fehlermeldung|1
+```
+
+Bei mehreren Formularen auf einer Seite musst Du jedem Formular einen eindeutigen Namen mitgeben:
+
+**PHP-Schreibweise**
+```php
+$yform->setObjectparams('form_name','zweites_formular');
+```
+
+**Pipe-Schreibweise**
+```
+objparams|form_name|zweites_formular
+```
+
+Sollte trotz aller beachteten Timings und obigem Tipp zu mehreren Formularen beim Versenden der Fehler „session-microtime nicht eingehalten...“ (bei eingeschalteten Debug-Modus) dauerhaft kommen, so ist zu prüfen, ob das Formular evtl. nicht zweimal abgesendet wird. 
+
+Mögliche Ursache dafür ist, dass im Template beispielsweise `REX_ARTICLE[]` oder `$this->getArticle()` mehr als einmal verwendet werden.
 
 ## Lizenz
 

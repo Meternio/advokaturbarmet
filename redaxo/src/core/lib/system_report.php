@@ -9,9 +9,7 @@ class rex_system_report
     public const TITLE_PACKAGES = 'Packages';
     public const TITLE_PHP = 'PHP';
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     /**
      * @return self
@@ -22,7 +20,7 @@ class rex_system_report
     }
 
     /**
-     * @return array[]
+     * @return array<string, array<string, string|bool>>
      */
     public function get()
     {
@@ -59,7 +57,7 @@ class rex_system_report
             try {
                 $sql = rex_sql::factory($dbId);
 
-                $dbData['Version'] = $sql->getDbType().' '.$sql->getDbVersion();
+                $dbData['Version'] = $sql->getDbType() . ' ' . $sql->getDbVersion();
 
                 if (1 === $dbId) {
                     $dbData['Character set'] = rex::getConfig('utf8mb4') ? 'utf8mb4' : 'utf8';
@@ -76,7 +74,7 @@ class rex_system_report
             if (1 === $dbId) {
                 $data['Database'] = $dbData;
             } else {
-                $data['Database '.$dbId] = $dbData;
+                $data['Database ' . $dbId] = $dbData;
             }
         }
 
@@ -120,7 +118,7 @@ class rex_system_report
 
         foreach ($report as $groupLabel => $group) {
             $rows = [];
-            $labelWidth = (int) max(13, mb_strlen($groupLabel));
+            $labelWidth = max(13, mb_strlen($groupLabel));
             $valueWidth = 10;
 
             foreach ($group as $label => $value) {
@@ -129,33 +127,36 @@ class rex_system_report
                 }
 
                 $rows[$label] = $value;
-                $labelWidth = (int) max($labelWidth, mb_strlen($label));
-                $valueWidth = (int) min(30, max($valueWidth, mb_strlen($value)));
+                $labelWidth = max($labelWidth, mb_strlen($label));
+                $valueWidth = min(30, max($valueWidth, mb_strlen($value)));
             }
 
-            $content .= '| '.str_pad($groupLabel, $labelWidth).' | '.str_repeat(' ', $valueWidth)." |\n";
-            $content .= '| '.str_repeat('-', $labelWidth - 1).': | :'.str_repeat('-', $valueWidth - 1)." |\n";
+            $content .= '| ' . str_pad($groupLabel, $labelWidth) . ' | ' . str_repeat(' ', $valueWidth) . " |\n";
+            $content .= '| ' . str_repeat('-', $labelWidth - 1) . ': | :' . str_repeat('-', $valueWidth - 1) . " |\n";
 
             foreach ($rows as $label => $value) {
-                $content .= '| '.str_pad($label, $labelWidth, ' ', STR_PAD_LEFT).' | '.str_pad($value, $valueWidth)." |\n";
+                $content .= '| ' . str_pad($label, $labelWidth, ' ', STR_PAD_LEFT) . ' | ' . str_pad($value, $valueWidth) . " |\n";
             }
 
             $content .= "\n\n";
         }
 
         $content = rtrim($content);
-        $database = $report['Database']['Version'] ?? $report['Database 1']['Version'];
+        $database = isset($report['Database']['Version']) ? ', ' . (string) $report['Database']['Version'] : '';
 
         return <<<OUTPUT
-<details>
-<summary>System report (REDAXO {$report['REDAXO']['Version']}, PHP {$report['PHP']['Version']}, {$database})</summary>
+            <details>
+            <summary>System report (REDAXO {$report['REDAXO']['Version']}, PHP {$report['PHP']['Version']}{$database})</summary>
 
-$content
+            $content
 
-</details>
-OUTPUT;
+            </details>
+            OUTPUT;
     }
 
+    /**
+     * @return string
+     */
     private function getBrowser()
     {
         if (!isset($_SERVER['HTTP_USER_AGENT'])) {
@@ -171,7 +172,7 @@ OUTPUT;
             return $match[0];
         }
         if (preg_match('@\b(?:OPR|Opera)/(\S+)@i', $browser, $match)) {
-            return 'Opera/'.$match[1];
+            return 'Opera/' . $match[1];
         }
         if (preg_match('@\bEdge/\S+@i', $browser, $match)) {
             return $match[0];
@@ -183,7 +184,7 @@ OUTPUT;
             return $match[0];
         }
         if (preg_match('@\bVersion/(\S+) Safari/\S+@i', $browser, $match)) {
-            return 'Safari/'.$match[1];
+            return 'Safari/' . $match[1];
         }
         if (preg_match('@\bMSIE/\S+@i', $browser, $match)) {
             return $match[0];

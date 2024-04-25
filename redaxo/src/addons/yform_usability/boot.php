@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the yform/usability package.
  *
@@ -9,45 +10,66 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace yform\usability;
 
+use rex;
+use rex_addon;
+use rex_be_controller;
+use rex_csrf_token;
+use rex_extension;
+use rex_file;
+use rex_scss_compiler;
+use rex_url;
+use rex_view;
+use rex_yform;
 
-\rex_extension::register('FE_OUTPUT', function ($params)
-{
-    // api endpoint
-    $api_result = \rex_api_yform_usability_api::factory();
-    if ($api_result && $api_result->hasMessage())
-    {
-        header('Content-Type: application/json');
-        echo $api_result->getResult()->toJSON();
-        exit;
-    }
-    return $params->getSubject();
-}, \rex_extension::EARLY);
+$addon = rex_addon::get('yform_usability');
+
+// init all extension points
+Extensions::init();
 
 
-
-if (\rex::isBackend() && \rex::getUser())
-{
-    if ($this->getProperty('compile') || \rex_addon::get('project')->getProperty('compile')  || !file_exists($this->getAssetsPath('styles.css')))
-    {
-        $compiler   = new \rex_scss_compiler();
-        $scss_files = [$this->getPath('assets/scss/styles.scss')];
-        $compiler->setRootDir($this->getPath('assets/'));
+if (rex::isBackend() && rex::getUser()) {
+    if ($addon->getProperty('compile')) {
+        $compiler   = new rex_scss_compiler();
+        $scss_files = [$addon->getPath('assets/scss/styles.scss')];
+        $compiler->setRootDir($addon->getPath('assets/'));
         $compiler->setScssFile($scss_files);
-        $compiler->setCssFile($this->getPath('assets/styles.css'));
+        $compiler->setCssFile($addon->getPath('assets/styles.css'));
         $compiler->compile();
-        \rex_file::copy($this->getPath('assets/styles.css'), $this->getAssetsPath('styles.css'));
-        \rex_file::delete($this->getPath('assets/styles.css'));
+        rex_file::copy($addon->getPath('assets/styles.css'), $addon->getAssetsPath('styles.css'));
+        //\rex_file::delete($addon->getPath('assets/styles.css'));
 
-        \rex_file::copy($this->getPath('assets/vendor/Sortable.min.js'), $this->getAssetsPath('vendor/Sortable.min.js'));
-        \rex_file::copy($this->getPath('assets/script.js'), $this->getAssetsPath('script.js'));
+        rex_file::copy($addon->getPath('assets/vendor/Sortable.min.js'), $addon->getAssetsPath('vendor/Sortable.min.js'));
+        rex_file::copy($addon->getPath('assets/script.js'), $addon->getAssetsPath('script.js'));
     }
-    \rex_view::setJsProperty('frontend_url', \rex_url::frontendController());
-    \rex_view::addCssFile($this->getAssetsUrl('styles.css?mtime=' . filemtime($this->getAssetsPath('styles.css'))));
-    \rex_view::addJsFile($this->getAssetsUrl('vendor/Sortable.min.js?mtime=' . filemtime($this->getAssetsPath('script.js'))));
-    \rex_view::addJsFile($this->getAssetsUrl('script.js?mtime=' . filemtime($this->getAssetsPath('script.js'))));
 
-    \rex_extension::register('YFORM_DATA_LIST', ['\yform\usability\Extensions', 'yform_data_list']);
-    \rex_extension::register('REX_LIST_GET', ['\yform\usability\Extensions', 'rex_list_get']);
+    rex_view::setJsProperty('ajax_url', rex_url::frontendController(
+        rex_csrf_token::factory('rex_api_yform_usability_api')->getUrlParams()));
+    rex_view::addCssFile($addon->getAssetsUrl('styles.css?mtime=' . filemtime($addon->getAssetsPath('styles.css'))));
+
+    switch (rex_be_controller::getCurrentPagePart(1)) {
+        case 'content':
+            break;
+        default:
+            rex_view::addJsFile($addon->getAssetsUrl('vendor/Sortable.min.js?mtime=' . filemtime($addon->getAssetsPath('script.js'))));
+            rex_view::addJsFile($addon->getAssetsUrl('script.js?mtime=' . filemtime($addon->getAssetsPath('script.js'))));
+            break;
+    }
+
+    rex_yform::addTemplatePath($addon->getPath('ytemplates'));
+    rex_extension::register('PACKAGES_INCLUDED', [Usability::class, 'init']);
+    rex_extension::register('YFORM_MANAGER_DATA_PAGE', [Extensions::class, 'ext_yformManagerDataPage']);
+    rex_extension::register('YFORM_DATA_LIST', [Extensions::class, 'ext_yformDataList']);
+    rex_extension::register('YFORM_MANAGER_REX_INFO', [Extensions::class, 'ext_yformManagerRexInfo']);
+    rex_extension::register('YFORM_DATA_LIST_QUERY', [Extensions::class, 'ext_yformDataListSql']);
+    rex_extension::register('REX_LIST_GET', [Extensions::class, 'ext_rexListGet']);
+    rex_extension::register('YFORM_DATA_LIST_ACTION_BUTTONS', [Extensions::class, 'yform_data_list_action_buttons']);
+
+}
+
+// includes ytemplates in cli environment(for cronjob tasks)
+if ('cli' === PHP_SAPI && !rex::isSetup()) {
+    rex_yform::addTemplatePath($addon->getPath('ytemplates'));
 }

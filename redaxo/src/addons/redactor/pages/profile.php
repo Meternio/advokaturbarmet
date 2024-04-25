@@ -24,6 +24,7 @@ if ($func == 'copy') {
         if ($sql->getRows() == 1) {
             $profile = $profile[0];
             unset($profile['id']);
+            $profile['name'] = $profile['name'].' '.rex_i18n::msg('redactor_profile_name_copy');
             $sqlInsert = rex_sql::factory();
             try {
                 $sqlInsert->setTable(rex::getTable('redactor_profile'));
@@ -86,6 +87,11 @@ if ($func == 'add' || $func == 'edit') {
     $field = $form->addTextAreaField('plugins');
     $field->setLabel(rex_i18n::msg('redactor_profile_plugins'));
     $field->setNotice(rex_i18n::msg('redactor_profile_plugins_notice'));
+
+    $field = $form->addTextAreaField('settings');
+    $field->setAttribute('class', 'form-control codemirror');
+    $field->setLabel(rex_i18n::msg('redactor_profile_settings'));
+    $field->setNotice(rex_i18n::msg('redactor_profile_settings_notice'));
 
     if ($func == 'edit') {
         $form->addParam('id', $id);

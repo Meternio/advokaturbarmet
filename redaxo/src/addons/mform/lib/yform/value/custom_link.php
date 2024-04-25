@@ -2,7 +2,7 @@
 /**
  * Author: Joachim Doerr
  * Date: 2019-02-26
- * Time: 10:27
+ * Time: 10:27.
  */
 
 class rex_yform_value_custom_link extends rex_yform_value_abstract
@@ -20,7 +20,7 @@ class rex_yform_value_custom_link extends rex_yform_value_abstract
         $this->params['value_pool']['sql'][$this->getName()] = $this->getValue();
     }
 
-    public function getDefinitions()
+    public function getDefinitions(): array
     {
         return [
             'type' => 'value',
@@ -36,17 +36,18 @@ class rex_yform_value_custom_link extends rex_yform_value_abstract
                 'types' => ['type' => 'text',    'label' => rex_i18n::msg('yform_values_custom_link_media_types')],
                 'media_category' => ['type' => 'text',    'label' => rex_i18n::msg('yform_values_custom_link_media_category')],
                 'category' => ['type' => 'be_link',    'label' => rex_i18n::msg('yform_values_custom_link_link_category')],
+                'ylink' => ['type' => 'text',    'label' => rex_i18n::msg('yform_values_custom_link_ylink')],
                 'notice' => ['type' => 'text',    'label' => rex_i18n::msg('yform_values_defaults_notice')],
             ],
             'description' => rex_i18n::msg('yform_values_custom_link_description'),
             'formbuilder' => false,
-            'db_type' => ['text']
+            'db_type' => ['text'],
         ];
     }
 
     public static function getListValue($params)
     {
-        if ($params['value'] == '') {
+        if ('' == $params['value']) {
             return '-';
         }
         return rex_var_custom_link::getCustomLinkText($params['value']);

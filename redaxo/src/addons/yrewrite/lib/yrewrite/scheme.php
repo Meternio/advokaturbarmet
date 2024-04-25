@@ -29,9 +29,7 @@ class rex_yrewrite_scheme
     }
 
     /**
-     * @param int                 $clang
-     * @param rex_yrewrite_domain $domain
-     *
+     * @param int $clang
      * @return string
      */
     public function getClang($clang, rex_yrewrite_domain $domain)
@@ -44,10 +42,7 @@ class rex_yrewrite_scheme
     }
 
     /**
-     * @param string              $path
-     * @param rex_category        $cat
-     * @param rex_yrewrite_domain $domain
-     *
+     * @param string $path
      * @return string
      */
     public function appendCategory($path, rex_category $cat, rex_yrewrite_domain $domain)
@@ -56,10 +51,7 @@ class rex_yrewrite_scheme
     }
 
     /**
-     * @param string              $path
-     * @param rex_article         $art
-     * @param rex_yrewrite_domain $domain
-     *
+     * @param string $path
      * @return string
      */
     public function appendArticle($path, rex_article $art, rex_yrewrite_domain $domain)
@@ -71,9 +63,6 @@ class rex_yrewrite_scheme
     }
 
     /**
-     * @param rex_article         $art
-     * @param rex_yrewrite_domain $domain
-     *
      * @return string|false
      */
     public function getCustomUrl(rex_article $art, rex_yrewrite_domain $domain)
@@ -84,16 +73,13 @@ class rex_yrewrite_scheme
             }
             return $this->getClang($art->getClangId(), $domain) . $this->suffix;
         }
-        if ($url = $art->getValue('yrewrite_url')) {
+        if ($url = (string) $art->getValue('yrewrite_url')) {
             return $url;
         }
         return false;
     }
 
     /**
-     * @param rex_article         $art
-     * @param rex_yrewrite_domain $domain
-     *
      * @return rex_structure_element|false
      */
     public function getRedirection(rex_article $art, rex_yrewrite_domain $domain)
@@ -102,9 +88,7 @@ class rex_yrewrite_scheme
     }
 
     /**
-     * @param string              $path
-     * @param rex_yrewrite_domain $domain
-     *
+     * @param string $path
      * @return null|string|string[]
      */
     public function getAlternativeCandidates($path, rex_yrewrite_domain $domain)
@@ -137,7 +121,7 @@ class rex_yrewrite_scheme
         $string = str_replace(
             ['Ä',  'Ö',  'Ü',  'ä',  'ö',  'ü',  'ß',  'À', 'à', 'Á', 'á', 'ç', 'È', 'è', 'É', 'é', 'ë', 'Ì', 'ì', 'Í', 'í', 'Ï', 'ï', 'Ò', 'ò', 'Ó', 'ó', 'ô', 'Ù', 'ù', 'Ú', 'ú', 'Č', 'č', 'Ł', 'ł', 'ž', '/', '®', '©', '™'],
             ['Ae', 'Oe', 'Ue', 'ae', 'oe', 'ue', 'ss', 'A', 'a', 'A', 'a', 'c', 'E', 'e', 'E', 'e', 'e', 'I', 'i', 'I', 'i', 'I', 'i', 'O', 'o', 'O', 'o', 'o', 'U', 'u', 'U', 'u', 'C', 'c', 'L', 'l', 'z', '-', '',  '',  ''],
-            $string
+            $string,
         );
         $string = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $string);
         $string = preg_replace('/[^\w -]+/', '', $string);

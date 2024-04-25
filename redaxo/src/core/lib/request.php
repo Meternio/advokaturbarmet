@@ -11,10 +11,12 @@ class rex_request
      * Returns the variable $varname of $_GET and casts the value.
      *
      * @param string $varname Variable name
-     * @param string $vartype Variable type
-     * @param mixed  $default Default value
+     * @param mixed $vartype Variable type
+     * @param mixed $default Default value
      *
      * @return mixed
+     *
+     * @psalm-taint-escape ($vartype is 'bool'|'boolean'|'int'|'integer'|'double'|'float'|'real' ? 'html' : null)
      */
     public static function get($varname, $vartype = '', $default = '')
     {
@@ -25,10 +27,12 @@ class rex_request
      * Returns the variable $varname of $_POST and casts the value.
      *
      * @param string $varname Variable name
-     * @param string $vartype Variable type
-     * @param mixed  $default Default value
+     * @param mixed $vartype Variable type
+     * @param mixed $default Default value
      *
      * @return mixed
+     *
+     * @psalm-taint-escape ($vartype is 'bool'|'boolean'|'int'|'integer'|'double'|'float'|'real' ? 'html' : null)
      */
     public static function post($varname, $vartype = '', $default = '')
     {
@@ -39,10 +43,12 @@ class rex_request
      * Returns the variable $varname of $_REQUEST and casts the value.
      *
      * @param string $varname Variable name
-     * @param string $vartype Variable type
-     * @param mixed  $default Default value
+     * @param mixed $vartype Variable type
+     * @param mixed $default Default value
      *
      * @return mixed
+     *
+     * @psalm-taint-escape ($vartype is 'bool'|'boolean'|'int'|'integer'|'double'|'float'|'real' ? 'html' : null)
      */
     public static function request($varname, $vartype = '', $default = '')
     {
@@ -53,8 +59,8 @@ class rex_request
      * Returns the variable $varname of $_SERVER and casts the value.
      *
      * @param string $varname Variable name
-     * @param string $vartype Variable type
-     * @param mixed  $default Default value
+     * @param mixed $vartype Variable type
+     * @param mixed $default Default value
      *
      * @return mixed
      */
@@ -67,8 +73,8 @@ class rex_request
      * Returns the variable $varname of $_SESSION and casts the value.
      *
      * @param string $varname Variable name
-     * @param string $vartype Variable type
-     * @param mixed  $default Default value
+     * @param mixed $vartype Variable type
+     * @param mixed $default Default value
      *
      * @throws rex_exception
      *
@@ -94,9 +100,10 @@ class rex_request
      * Sets a session variable.
      *
      * @param string $varname Variable name
-     * @param mixed  $value   Value
+     * @param mixed $value Value
      *
      * @throws rex_exception
+     * @return void
      */
     public static function setSession($varname, $value)
     {
@@ -113,6 +120,7 @@ class rex_request
      * @param string $varname Variable name
      *
      * @throws rex_exception
+     * @return void
      */
     public static function unsetSession($varname)
     {
@@ -127,6 +135,7 @@ class rex_request
      * clear redaxo session contents within the current namespace (the session itself stays alive).
      *
      * @throws rex_exception
+     * @return void
      */
     public static function clearSession()
     {
@@ -141,10 +150,12 @@ class rex_request
      * Returns the variable $varname of $_COOKIE and casts the value.
      *
      * @param string $varname Variable name
-     * @param string $vartype Variable type
-     * @param mixed  $default Default value
+     * @param mixed $vartype Variable type
+     * @param mixed $default Default value
      *
      * @return mixed
+     *
+     * @psalm-taint-escape ($vartype is 'bool'|'boolean'|'int'|'integer'|'double'|'float'|'real' ? 'html' : null)
      */
     public static function cookie($varname, $vartype = '', $default = '')
     {
@@ -155,8 +166,8 @@ class rex_request
      * Returns the variable $varname of $_FILES and casts the value.
      *
      * @param string $varname Variable name
-     * @param string $vartype Variable type
-     * @param mixed  $default Default value
+     * @param mixed $vartype Variable type
+     * @param mixed $default Default value
      *
      * @return mixed
      */
@@ -169,8 +180,8 @@ class rex_request
      * Returns the variable $varname of $_ENV and casts the value.
      *
      * @param string $varname Variable name
-     * @param string $vartype Variable type
-     * @param mixed  $default Default value
+     * @param mixed $vartype Variable type
+     * @param mixed $default Default value
      *
      * @return mixed
      */
@@ -182,22 +193,28 @@ class rex_request
     /**
      * Searches the value $needle in array $haystack and returns the casted value.
      *
-     * @param array      $haystack Array
-     * @param string|int $needle   Value to search
-     * @param string     $vartype  Variable type
-     * @param mixed      $default  Default value
+     * @param array $haystack Array
+     * @param string|int $needle Value to search
+     * @param mixed $vartype Variable type
+     * @param mixed $default Default value
      *
      * @throws InvalidArgumentException
      *
      * @return mixed
+     *
+     * @psalm-taint-specialize
      */
     private static function arrayKeyCast(array $haystack, $needle, $vartype, $default = '')
     {
         if (!is_scalar($needle)) {
-            throw new InvalidArgumentException('Scalar expected for $needle in arrayKeyCast(), got '. gettype($needle) .'!');
+            throw new InvalidArgumentException('Scalar expected for $needle in arrayKeyCast(), got ' . gettype($needle) . '!');
         }
 
         if (array_key_exists($needle, $haystack)) {
+            if (is_array($vartype) && '' !== $default && is_scalar($vartype[0] ?? null) && $vartype[0] !== $default) {
+                array_unshift($vartype, $default);
+            }
+
             return rex_type::cast($haystack[$needle], $vartype);
         }
 
@@ -211,10 +228,11 @@ class rex_request
      * Returns the HTTP method of the current request.
      *
      * @return string HTTP method in lowercase (head,get,post,put,delete)
+     * @psalm-return lowercase-string
      */
     public static function requestMethod()
     {
-        return isset($_SERVER['REQUEST_METHOD']) ? strtolower($_SERVER['REQUEST_METHOD']) : 'get';
+        return strtolower(rex::getRequest()->getMethod());
     }
 
     /**
@@ -229,7 +247,7 @@ class rex_request
      */
     public static function isXmlHttpRequest()
     {
-        return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 'XMLHttpRequest' == $_SERVER['HTTP_X_REQUESTED_WITH'];
+        return rex::getRequest()->isXmlHttpRequest();
     }
 
     /**
@@ -241,7 +259,11 @@ class rex_request
      */
     public static function isPJAXRequest()
     {
-        return isset($_SERVER['HTTP_X_PJAX']) && 'true' == $_SERVER['HTTP_X_PJAX'];
+        if ('cli' === PHP_SAPI) {
+            return false;
+        }
+
+        return 'true' == rex::getRequest()->headers->get('X-Pjax');
     }
 
     /**
@@ -257,7 +279,7 @@ class rex_request
             return false;
         }
 
-        return isset($_SERVER['HTTP_X_PJAX_CONTAINER']) && $_SERVER['HTTP_X_PJAX_CONTAINER'] == $containerId;
+        return $containerId === rex::getRequest()->headers->get('X-Pjax-Container');
     }
 
     /**
@@ -267,7 +289,7 @@ class rex_request
      */
     public static function isHttps()
     {
-        return !empty($_SERVER['HTTPS']) && 'off' !== strtolower($_SERVER['HTTPS']);
+        return rex::getRequest()->isSecure();
     }
 
     /**
@@ -281,6 +303,6 @@ class rex_request
         // so we can e.g. clear the backend session without
         // logging out the users from the frontend
         $suffix = rex::isBackend() ? '_backend' : '';
-        return rex::getProperty('instname'). $suffix;
+        return rex::getProperty('instname') . $suffix;
     }
 }

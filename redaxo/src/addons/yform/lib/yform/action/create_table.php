@@ -9,12 +9,12 @@
 
 class rex_yform_action_create_table extends rex_yform_action_abstract
 {
-    public function executeAction()
+    public function executeAction(): void
     {
         $table_name = $this->getElement(2);
         $table_name = str_replace('%TABLE_PREFIX%', rex::getTablePrefix(), $table_name);
-
         $table_exists = false;
+        $cols = [];
 
         $tables = rex_sql::factory()->getArray('show tables');
         foreach ($tables as $table) {
@@ -39,7 +39,7 @@ class rex_yform_action_create_table extends rex_yform_action_abstract
         }
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'action|create_table|tablename';
     }

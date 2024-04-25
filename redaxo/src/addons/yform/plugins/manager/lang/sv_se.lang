@@ -8,7 +8,7 @@ yform_alltables = Alla tabeller
 yform_back_to_overview = Tillbaa till översikten
 yform_updatetable = aktualisera tabell/er
 yform_tablesupdated = Tabell/er aktualiserades
-
+yform_errors_occurred = Fel uppstod
 yform_help_empty = Tomma inmatningar kan sökas med (empty)
 yform_help_multipleselect = Välj flera samtidigt genom att håller ned CTRL eller CMD
 yform_updatetable_with_delete = med fältradering
@@ -128,6 +128,7 @@ yform_visible = Synligt
 
 # edit.inc.php
 yform_thankyouforupdate = Datasatsen aktualiserades.
+yform_thankyouforupdates = Datasatser aktualiserades.
 yform_thankyouforentry = Datasatsen tillfogades.
 yform_editdata = Redigera datasats
 yform_editdata_collection = Redigera {0} datasatser
@@ -137,9 +138,11 @@ yform_searchtext = Sökbegrepp
 yform_searchfields = Fälten som ska sökas igenom
 yform_id = ID
 yform_function = Funktion
+yform_function_button = Handling
 yform_add = tillfoga
 yform_add_apply = ta över
 yform_edit = redigera
+yform_view = visa
 yform_save = spara
 yform_save_apply = ta över
 yform_delete = radera
@@ -251,7 +254,6 @@ yform_manager_multi_edit_field = Redigera fält  "{0}"
 yform_values_be_link_description = 				Ett select-fält för att välja ut en <b>REDAXO-artikel</b>
 yform_values_be_manager_relation_description = 	Ett select-fält / popup till <b> länka flera poster </ b> med poster från en annan tabell.
 yform_values_be_media_description = 			Ett fält att välja på eller fler <b> filer från mediapoolen (filhanteraren) </ b>.
-yform_values_be_select_category_description =	Ett fält för att välja en eller flera <b> kategorier </ b> från REDAXO-strukturen.
 yform_values_be_table_description = 			En uppsättning inmatningsfält för att mata in <b> tabelldata</ b>.
 yform_values_prio_description =					Ett select-fält som används för att <b> sortera poster i en viss order </ b>.
 
@@ -269,22 +271,6 @@ yform_values_be_media_category = Medienpool (filhanterare) kategori
 yform_values_be_media_types = Types
 yform_values_be_media_types_notice = Format: jpg,gif
 yform_values_be_media_multiple = Multiselect
-yform_values_be_select_category_ignore_offlines = Ignorera offline kategorier
-yform_values_be_select_category_check_perms = Kontrollera behörigheter
-yform_values_be_select_category_homepage = Tillfoga "Homepage"-inlägg (Root)
-yform_values_be_select_category_homepage_title = Hemsida
-yform_values_be_select_category_category = Root-ID
-yform_values_be_select_category_clang = Språk
-yform_values_be_select_category_multiple = Multiselect möjligt
-yform_values_be_select_category_size = Höjd av select box
-yform_values_be_select_media_category_ignore_offlines = Ignorera offline kategorier
-yform_values_be_select_media_category_check_perms = Kontrollera rättigheterna
-yform_values_be_select_media_category_homepage = Skapa "top-level"-kategori (root)
-yform_values_be_select_media_category_homepage_title = Top-level (root)
-yform_values_be_select_media_category_category = Root-ID
-yform_values_be_select_media_category_clang = Språk
-yform_values_be_select_media_category_multiple = Fler urval möjligt
-yform_values_be_select_media_category_size = Höjd av urvalsmenyn
 yform_values_be_table_columns = Beteckning av kolumnerna (kvantitet, pris, någoting)
 yform_values_be_link_multiple = Multiselect
 yform_values_prio_fields = Display
@@ -297,3 +283,11 @@ yform_will_set_to = kommer att bli
 yform_field_add = Tillfoga fält
 yform_field_update = Updatera fält
 yform_field_db_type = Databas fälttyp
+
+yform_manager_table_data_view_roles = Datavy begränsad till
+yform_manager_table_data_edit_roles = Databehandling begränsad till
+
+yform_manager_table_nopermission = Ingen behörighet till den här tabellen
+
+yform_manager_tables_edit = Tabeller med redigeringsrättigheter
+yform_manager_tables_view = Tabeller med påsiktsrättigheter

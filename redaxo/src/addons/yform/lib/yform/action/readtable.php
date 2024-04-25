@@ -9,7 +9,7 @@
 
 class rex_yform_action_readtable extends rex_yform_action_abstract
 {
-    public function executeAction()
+    public function executeAction(): void
     {
         if (!isset($this->params['value_pool']['email'][$this->getElement(4)])) {
             return;
@@ -22,7 +22,7 @@ class rex_yform_action_readtable extends rex_yform_action_abstract
         }
         $data = $gd->getArray('select * from ' . $this->getElement(2) . ' where ' . $gd->escapeIdentifier($this->getElement(3)) . ' = ' . $gd->escape($value) . ' ');
 
-        if (count($data) == 1) {
+        if (1 == count($data)) {
             $data = current($data);
             foreach ($data as $k => $v) {
                 $this->params['value_pool']['email'][$k] = $v;
@@ -30,7 +30,7 @@ class rex_yform_action_readtable extends rex_yform_action_abstract
         }
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'action|readtable|tablename|feldname|label';
     }

@@ -74,7 +74,7 @@ class rex_install_webservice
             $socket = rex_socket::factoryUrl($url);
             $response = $socket->doGet();
             if ($response->isOk()) {
-                $filename = basename($url);
+                $filename = rex_path::basename($url);
                 $file = rex_path::addonCache('install', md5($filename) . '.' . rex_file::extension($filename));
                 $response->writeBodyTo($file);
                 return $file;
@@ -167,7 +167,7 @@ class rex_install_webservice
      */
     private static function getPath($path)
     {
-        $path = false === strpos($path, '?') ? rtrim($path, '/') . '/?' : $path . '&';
+        $path = !str_contains($path, '?') ? rtrim($path, '/') . '/?' : $path . '&';
         $path .= 'rex_version=' . rex::getVersion();
 
         static $config;
@@ -192,7 +192,7 @@ class rex_install_webservice
         self::loadCache();
         if ($pathBegin) {
             foreach (self::$cache as $path => $cache) {
-                if (0 === strpos($path, $pathBegin)) {
+                if (str_starts_with($path, $pathBegin)) {
                     unset(self::$cache[$path]);
                 }
             }

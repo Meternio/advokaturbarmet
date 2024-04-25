@@ -1,7 +1,239 @@
 Changelog
 =========
 
-Version 3.4.1 – 03.08.2019
+Version 4.2.0 - 22.02.2024
+--------------------------
+
+### Korrekturen
+
+* Feld: be_manager_relation um table type 'int(10) unsigned' ergänzt
+* Feld: choice um table type 'int(10) unsigned' ergänzt
+* Fehler beim E-Mail-Template löschen korrigiert
+* Unique ID der shadow Formulare für inline Darstellungen verbessert.
+* Textkorrekturen
+* Manager: Javascriptumbau um besser mit strickten CSP Headern umgehen zu können
+* Feld: index wird nun getrimt
+* Widget Debug JS Alert() entfernt
+* Workflows in github ergänzt
+* Dokumentation verbessert
+* field: Callback um pre/post/normal ergänzt
+* REST API: Erweitert um Funktionen zur Bearbeitung der Feldausgabe preFunc/postFunc/getItemFunc
+* REST API: "*" nun möglich um alle Felder freizugeben
+* Optimierung der visuellen Ausgabe von Daten in Listen
+* objparam: warning_intro ergänzt.
+* Fehler bei Choice und identischen Feldern behoben
+* field: be_table: YForm Verwendung verbessert
+
+Dank geht an Norbert Michel, Markus Staab, Alexander Walther, Thomas Blum, Thomas Rolinger, Thomas Skerbis und Daniel Weingart
+
+Version 4.1.1 - 03.04.2023
+--------------------------
+
+### Korrekturen
+
+* Fehler beim Import von Tabellen im Manager behoben.
+
+
+Version 4.1.0 - 16.03.2023
+--------------------------
+### Neu
+
+* PHP >= 8.1 und REDAXO mindestens 5.15
+* Date/Datetime-Feld Default-Modifikationen eingebaut
+* Tools-Plugin angepasst und Dateiauswahl um Today.. erweitert
+* Felder: postSave Functions, damit sich Felder direkt an die Speicherung dranhängen können
+* BE Ansicht: Umbau auf Fragment und Tablelayoutoption. Man kann man die Ausgaben/Layouts der BE Tabellen/Formulare anpassen
+* dataset save - add history enable/disable feature ergänzt
+* BE Tabellen: Klonen von Datensätzen nun möglich
+* Dokumentation, Tippfehler
+* index-Feld mit salt ergänzt, hashvalue nun dadurch deprecated und ersetzbar
+* neue Methode um eine Url zum Datensatz zu erhalten
+* Felder: date/datetime/time/datestamp Anzeigeformat um Notice ergänzt
+* CodeStyle verbessert
+* Manager: in den Backendliste sind nun mehr CSS Classen verfügbar um die Darstellung gezielter beeinflussen zu können
+* Relationsfelder sind nun optimiert, sodass eine Frontend verwendung einfacher wird.
+* Performance verbessert. Besonders beim Import und bei der Generierung von Tabellen
+* be_link search added in backend
+* manager: search in backend bei texten um ! (nicht) Suchen ergänzt
+* NONCE Felder ergänzt, da REDAXO 5.15 nun NONCE Felder unterstützt
+* manager: Liste der Datensätz: AktionsButton umgebaut. Waren nicht sinnvoll erweiterbar
+
+### Korrekturen
+
+* Upload in HistoryView war fehlerhaft
+* checkbox: Ausgabewerte wurden im Table Manager in der Listenansicht nicht berücksichtigt
+* Relations-Felder wurden nicht immer richtig übernommen.
+* fieldset-Feld: Keys der Optionen fehlten
+* In Whooops Pfad zum E-Mail-Template klickbar gemacht
+* YTemplate Checkbox angepasst - Leerzeichen entfernt
+* rex_yform_manager_collection: Methode current existiert in PHP 8 nicht mehr
+* REST API mit REDAXO im Unterordner korrigiert
+* REST API mit ähnlichen Endpointbezeichnungen gehen wieder.
+* Textähnliche Felder werden in der Ausgabe nun auf 100 begrenzt. Doku wurde ergänzt mit Beschreibung wie man das individuell anpassen kann
+* Nicht vorhandene REX_YFORM_DATA Felder erzeugen nun keine Notices mehr
+* Uploadfeld war fehlerhaft. Konfiguration verbessert.
+* Fehler bei Errormeldungen wenn Objekte nicht vorhanden sind behoben
+* Signiature Feld funktionierte bei Touch devices nicht richtig
+* historie: Speichern von 0 Werten korrigiert
+
+
+### Sicherheit
+
+* YORM. Das Escapen von Identifieren ist nun eingebaut. Wurde vorher nicht darauf geachtet, wären SQL Injections möglich gewesen.
+
+Danke Thomas Blum, Gregor Harlan, Christoph Boecker, Alexander Walther, Daniel Weitenauer, Michael Rainer, jganthaler, Jelle Schutter, Gerald Urbas, Robert Rupf, cukabeka, Daniel Bagel, Norbert Micheel
+
+
+Version 4.0.4 - 07.10.2022
+--------------------------
+
+### Korrekturen/Ergänzungen
+* PHP Versionsabfrage war falsch. package angepasst.
+* PHP >= 7.4
+
+
+Version 4.0.3 - 30.09.2022
+--------------------------
+
+### Korrekturen/Ergänzungen
+* be_relation
+  * be_relation_view ytemplate eingeführt
+  * be_manager suche verbessert 
+* EMail Attachments werden an die E-Mail beim Versand nun angehängt (Danke Marco Hanke)
+* History
+  * In der Viewansicht wurden falsche Choice-Werte angezeigt.
+  * Suche eingebaut nach ID, User, Datum und Aktion
+* date/datetime Picker angepasst
+* form hidden Feld Ausgabe flexibler
+* EP `YFORM_EXECUTE_FIELDS` ergänzt
+* Datenexport angepasst. Filter wurden nicht verarbeitet
+* Type-Fixes, Textkorrekturen, generate_key: "no_db" ( Danke Norbert Micheel)
+* google_geocode Texte verbesser (Danke Alex Walther und Thoomas Blum)
+* PHP8.1 Anpassungen (Danke Christoph Boecker)
+* Composer Korrekturen
+* Query::findId um Alias ergänzt (Danke Christoph Boecker)
+* Upload Feld erweitert um json Config und callback (für z.B. Virenscanner)
+* Doku ergänzt (Danke Alex Walther und Netzproductions)
+* Korrektur Formversand/Article ID (Danke Thomas Skerbis)
+* Verbessertes Tracking (Danke Markus Staab)
+* REST API Filter wieder zum laufen gebracht
+* Codestyle und PHP 8.1 Optimierungen. Danke an Markus Staab für REXSTAN
+* Datestamp wird nun im Frontend im Formular ausgeblendet
+* E-Mail Validierung verbessert (Danke Wolfgang Bund)
+* EP YFORM_DATA_LIST_LINKS wird nun auch bei table edit UND view ausgeführt#1262
+* Choice Group in Table View Ansicht hatte Fehler geworfen
+
+
+Version 4.0.2 - 09.03.2022
+--------------------------
+
+### Korrekturen/Ergänzungen
+* Fehlerhafte Auswertung und Darstellung der be_relation Werte
+
+
+Version 4.0.1 - 09.03.2022
+--------------------------
+
+### Korrekturen/Ergänzungen
+* SQL Debugmeldungen beim Install/Update entfernt
+* DOCs korrigiert. 
+* PSALM ergönzt. in .tools -> `./vendor/vimeo/psalm/psalm`
+* Erste phpunit Tests, CS korrigiert. in redaxo -> `phpunit  -c redaxo/src/addons/yform/.tools/phpunit.xml.dist`
+  * Erster YForm Test. Anlegen, Löschen, Relations 
+* be_media Fehler und multiple Nutzung korrigiert
+* selectpicker funktioniere bei Choice nicht
+* darkmode sortable korrigiert
+* Altlasten - Schriften entfernt
+* Warnung bei Massenbearbeitung ergänzt
+* Relation mit Relationstabellen und Speicher, Ausgabe, YForm korrigiert
+* Warning in uuid entfernt
+* Falsche YForm Navigation wenn nur yform[email] ohne Admin korrigiert
+
+Version 4.0.0 – 28.12.2021
+--------------------------
+
+### wichtige Änderungen
+* Der Manager ist technisch stark umgebaut worden. Bitte unbedingt Info dazu lesen
+* Viele deprecated Felder sind entfernt worden. Bitte genau durchlesen und beachten
+* Wenn eigene Values und abgeleitete Methoden z.B. für z.B. getDefinitions genutzt werden, müssen jetzt die return types übergeben werden
+* Die Links im Table-Manager sind jetzt mit CSRF-Schutz versehen. Weitere Infos dazu in der Doku. 
+
+
+### deprecated / entfernt
+* Validierung nach email entfernt. Bitte mit type und email ersetzen
+* Felder captcha, captcha_calc,recaptcha(_v3) sind entfernt worden und werden auch bei der Installation direkt aus den Datenbanken entfernt, bitte stattdessen das addon yform_spam_protection verwenden
+* Feld float entfernt, Bitte stattdessen das number Feld verwenden. Im Table-Manager wird es bei installation/Update automatisch zu number umgewandelt
+* Felder checkbox_sql, radio, radio_sql, select_sql, select entfernt. Die Felder werden im Table-Manager bei Installation/Update zu choice umgewandelt. Bitte stattdessen das choice Feld verwenden
+* Feld password entfernt. Wird automatisch mit text ersetzt und sollte mit ycom und ycom_password ersetzt werden
+* Feld generate_password entfernt. Bitte stattdessen generate_key verwenden.
+* classic ytemplates entfernt, da diese nicht und nie vollständig waren und fehler produzierten. wurde wohl auch nie genutzt
+* E-Mail Templates *** ### Ersetzungen entfernt
+* Doppelten EP YFORM_MANAGER_DATA_PAGE
+* remembervalues Feld entfernt
+* mediafile entfernt
+* be_media_category und be_select_category entfernt
+* Tools: select2 entfernt, Ersatz kommt durch REDAXO Core, ist in der YForm Dokumentation beschrieben
+
+### Neu
+* läuft nun auch auf PHP 8
+* ❤️ Neue Rechtestruktur. Es gibt nun Ansichtsrechte und/oder Editierrechte für Rollen
+* Viewansicht ergänzt. Automatische Viewansicht bei Relationstabellen.
+* UUID Feld ergönzt
+* Migration von Tabellen ohne Änderungen der Tabelle möglich
+* Manager: Umbau der Suchen, Exporte etc. von eigenen SQL Einbindungen zu Yorm. EPs laufen hier nun anders.
+* rex_yform_list ergänzt. Ersetzt rex_list und YORM Queries entgegennehmen
+* EP: YFORM_DATA_LIST_QUERY statt YFORM_DATA_LIST_SQL (nun entfernt)
+* EP: YFORM_LIST_GET statt REX_LIST_GET (aus der rex list)
+* YFORM_DATA_TABLE_EXPORT nun mit anderen Parametern ($query als Subject)
+* Manager: fragment layout nun relevanter für BE Ausgaben. Tiefere Änderungen möglich. 
+* First View ist nun Manager Page wenn vorhanden
+* Signature Feld ergänzt
+* Manager: Liste von Datensätzen mit Actionbuttons angepasst, besserer Überblick und Erweiterbarkeit 
+* Darkmode optimiert
+
+### Korrekturen, Anpassungen, Bugs
+* Export Tabellen und Felder optimiert. Danke @christophboecker
+* Tablesetexport ist nun auf die nötigsten Felder beschränkt, kein Overhead mehr
+* Dokuansicht korrigiert, ergänzt und optisch verbessert
+* E-Mail Templateansicht erweitert
+* E-Mail Versand, plain message Striptags entfernt
+* E-Mail Template werden nun nach key validiert
+* Manager: Datesuche korrigiert
+* Manager: Tabellenansicht verbessert
+* Fehlermeldungen bei nicht speicherbaren Formularen sind nun klarer
+* Codestyling
+* REST-API: include bei URL Params ergänzt und Felder einschränken zu können, die man gerne hätte
+* REST-API: Eigene Header nun möglich
+* Relation Typansicht/reihenfolge geändert
+* be_relations verbessert. Suchen gingen nicht richtig wenn eigene Relationstabellen verwendet wurden.
+* be_table Bugs behoben, date felder gingen nicht
+* time-Feld: notices bei ergänzt
+* number-Feld: Attributes ergänzt und nun auch als type number möglich
+* date-feld umd typ HTML-date ergänzt
+* empty name nun auch in der Suche
+* Int Feld um BigInt erweitert
+* Choice. Callback bei Labels nun möglich
+* choice-Feld: Attributes ergänzt
+* date/datetime/datestamp angepasst und angeglichen, flexiblere Angaben möglich, Nur noch Standard-ISO Eingaben möglich
+* time angepasst. Stundenraster/Minutenraster entfern
+* validate type - time Überprüfung verbesser
+* datestamp hat nun auch eine Suche und Aktualierungen werden dem Redakteur deutlicher dargestellt
+* upload Feld angepasst um System Fehlermeldungen und einen Reset Button
+* Übersetzung der Tabellen bei den Benuterrechten geht wieder
+* Suchen mit Relationen mit Relationstabellen sind korrigiert
+* Tools Bibliotheken aktualisiert
+* viele statische Codetests wurde durchgeführt.
+
+Danke Christoph Boecker, Alexander Walther, Norbert Micheel, Thomas Blum, Dirk Schürjohann, Robert Rupf, Markus Staab, Thomas Skerbis, Tobias Krais, Wolfgang Bund, Jelle Schutter, Marco Hanke
+
+Version 3.4.2 – 21.06.2021
+--------------------------
+
+### Korrekturen, Anpassungen, Bugs
+
+* Media-Widgets: Kompatibilität zu REDAXO 5.12.1
+
+Version 3.4.1 – 03.08.2020
 --------------------------
 
 ### Korrekturen, Anpassungen, Bugs

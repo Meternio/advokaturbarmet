@@ -14,7 +14,7 @@ class rex_yform_validate_unique extends rex_yform_validate_abstract
         $cd = rex_sql::factory();
 
         $table = $this->params['main_table'];
-        if ($this->getElement('table') != '') {
+        if ('' != $this->getElement('table')) {
             $table = $this->getElement('table');
         }
 
@@ -28,7 +28,7 @@ class rex_yform_validate_unique extends rex_yform_validate_abstract
                 if (is_array($value)) {
                     $value = implode(',', $value);
                 }
-                if (count($fields) == 1 && $this->getElement('empty_option') == 1) {
+                if (1 == count($fields) && 1 == $this->getElement('empty_option')) {
                     $qfields[$Object->getId()] = $cd->escapeIdentifier($Object->getName()) . '=' . $cd->escape($value) . '  AND ' . $cd->escape($value) . '!=""';
                 } else {
                     $qfields[$Object->getId()] = $cd->escapeIdentifier($Object->getName()) . '=' . $cd->escape($value) . '';
@@ -44,7 +44,7 @@ class rex_yform_validate_unique extends rex_yform_validate_abstract
         }
 
         $sql = 'select * from ' . $table . ' WHERE ' . implode(' AND ', $qfields) . ' LIMIT 1';
-        if ($this->params['main_where'] != '') {
+        if ('' != $this->params['main_where']) {
             $sql = 'select * from ' . $table . ' WHERE ' . implode(' AND ', $qfields) . ' AND !(' . $this->params['main_where'] . ') LIMIT 1';
         }
 
@@ -57,12 +57,12 @@ class rex_yform_validate_unique extends rex_yform_validate_abstract
         }
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'validate|unique|name[,name2]|warning_message|[table]|emptyoption[1/0]';
     }
 
-    public function getDefinitions()
+    public function getDefinitions(): array
     {
         return [
             'type' => 'validate',

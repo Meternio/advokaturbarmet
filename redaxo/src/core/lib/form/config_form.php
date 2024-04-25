@@ -13,13 +13,13 @@ class rex_config_form extends rex_form_base
     private $namespace;
 
     /**
-     * @param string      $namespace `rex_config` namespace, usually the package key
-     * @param null|string $fieldset
-     * @param bool        $debug
+     * @param string $namespace `rex_config` namespace, usually the package key
+     * @param string|null $fieldset
+     * @param bool $debug
      */
     protected function __construct($namespace, $fieldset = null, $debug = false)
     {
-        parent::__construct($fieldset, md5($namespace.$fieldset), 'post', $debug);
+        parent::__construct($fieldset, md5($namespace . $fieldset), 'post', $debug);
 
         $this->namespace = $namespace;
 
@@ -30,9 +30,9 @@ class rex_config_form extends rex_form_base
     }
 
     /**
-     * @param string      $namespace `rex_config` namespace, usually the package key
-     * @param null|string $fieldset
-     * @param bool        $debug
+     * @param string $namespace `rex_config` namespace, usually the package key
+     * @param string|null $fieldset
+     * @param bool $debug
      *
      * @return static
      */
@@ -49,7 +49,7 @@ class rex_config_form extends rex_form_base
         $attr = ['type' => 'submit', 'internal::useArraySyntax' => false, 'internal::fieldSeparateEnding' => true];
         $this->addControlField(
             null,
-            $this->addField('button', 'save', rex_i18n::msg('form_save'), $attr, false)
+            $this->addField('button', 'save', rex_i18n::msg('form_save'), $attr, false),
         );
     }
 
@@ -60,10 +60,10 @@ class rex_config_form extends rex_form_base
 
     protected function save()
     {
-        foreach ($this->getSaveElements() as $fieldsetName => $fieldsetElements) {
+        foreach ($this->getSaveElements() as $fieldsetElements) {
             foreach ($fieldsetElements as $element) {
                 // read-only-fields nicht speichern
-                if (false !== strpos($element->getAttribute('class'), 'form-control-static')) {
+                if ($element->isReadOnly()) {
                     continue;
                 }
 

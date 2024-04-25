@@ -48,7 +48,7 @@ if (rex::isBackend()) {
 		        $page = rex_be_controller::getPageObject('global_settings/settings');
 
 		        if (count(rex_clang::getAll(false)) > 1) {
-		            $clang_id = str_replace('clang', '', rex_be_controller::getCurrentPagePart(3));
+		            $clang_id = str_replace('clang', '', (string) rex_be_controller::getCurrentPagePart(3));
 		            $clangAll = \rex_clang::getAll();
 
 		            foreach ($clangAll as $id => $clang) {
@@ -72,4 +72,6 @@ if (rex::isBackend()) {
 	rex_extension::register('GLOBAL_SETTINGS_CHANGED', function () {
 		rex_global_settings::deleteCache();
 	});
+
+    rex_extension::register('MEDIA_IS_IN_USE', 'rex_global_settings_helper::isMediaInUse');
 }

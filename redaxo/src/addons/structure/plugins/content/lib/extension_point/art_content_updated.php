@@ -2,18 +2,18 @@
 
 /**
  * @package redaxo\structure\content
+ *
+ * @extends rex_extension_point<string>
  */
 class rex_extension_point_art_content_updated extends rex_extension_point
 {
     public const NAME = 'ART_CONTENT_UPDATED';
 
-    /** @var rex_article */
-    private $article;
+    private rex_article $article;
+    private string $action;
 
-    /** @var string */
-    private $action;
-
-    public function __construct(rex_article $article, string $action, $subject = null, array $params = [], $readonly = false)
+    /** @param array<string, mixed> $params */
+    public function __construct(rex_article $article, string $action, string $subject = '', array $params = [], bool $readonly = false)
     {
         // for BC 'simple' attach params
         $params['article_id'] = $article->getId();

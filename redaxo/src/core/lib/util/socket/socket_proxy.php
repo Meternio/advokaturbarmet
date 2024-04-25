@@ -9,25 +9,19 @@
  */
 class rex_socket_proxy extends rex_socket
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $destinationHost;
-    /**
-     * @var int
-     */
+    /** @var int */
     protected $destinationPort;
-    /**
-     * @var bool
-     */
+    /** @var bool */
     protected $destinationSsl;
 
     /**
      * Sets the destination.
      *
      * @param string $host Host name
-     * @param int    $port Port number
-     * @param bool   $ssl  SSL flag
+     * @param int $port Port number
+     * @param bool $ssl SSL flag
      *
      * @return $this Current socket
      */
@@ -37,7 +31,7 @@ class rex_socket_proxy extends rex_socket
         $this->destinationPort = $port;
         $this->destinationSsl = $ssl;
 
-        $this->addHeader('Host', $host . ':' . $port);
+        $this->addHeader('Host', $host);
 
         return $this;
     }
@@ -56,9 +50,6 @@ class rex_socket_proxy extends rex_socket
         return $this->setDestination($parts['host'], $parts['port'], $parts['ssl'])->setPath($parts['path']);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function openConnection()
     {
         parent::openConnection();
@@ -72,7 +63,9 @@ class rex_socket_proxy extends rex_socket
             if (!$response->isOk()) {
                 throw new rex_socket_exception(sprintf('Couldn\'t connect to proxy server, server responds with "%s %s"', $response->getStatusCode(), $response->getStatusMessage()));
             }
-            stream_socket_enable_crypto($this->stream, true, STREAM_CRYPTO_METHOD_SSLv3_CLIENT);
+            stream_context_set_option($this->stream, 'ssl', 'SNI_enabled', true);
+            stream_context_set_option($this->stream, 'ssl', 'peer_name', $this->destinationHost);
+            stream_socket_enable_crypto($this->stream, true, STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT);
         } else {
             unset($this->headers['Connection']);
             $this->addHeader('Proxy-Connection', 'Close');

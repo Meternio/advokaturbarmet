@@ -11,10 +11,10 @@ class rex_yrewrite_path_generator
     /** @var rex_yrewrite_domain[][] */
     private $domains;
 
-    /** @var array */
+    /** @var array<string, array<int, array<int, string>>> */
     private $paths;
 
-    /** @var array */
+    /** @var array<string, array<int, array<int, array>>> */
     private $redirections;
 
     public function __construct(rex_yrewrite_scheme $scheme, array $domains, array $paths, array $redirections)
@@ -25,11 +25,13 @@ class rex_yrewrite_path_generator
         $this->redirections = $redirections;
     }
 
+    /** @return array<string, array<int, array<int, string>>> */
     public function getPaths(): array
     {
         return $this->paths;
     }
 
+    /** @return array<string, array<int, array<int, array>>> */
     public function getRedirections(): array
     {
         return $this->redirections;
@@ -126,11 +128,20 @@ class rex_yrewrite_path_generator
         $articleId = $article->getId();
         $clangId = $article->getClangId();
 
+        $url = $this->scheme->getCustomUrl($article, $domain);
+
+        if (!is_string($url)) {
+            $url = $this->scheme->appendArticle($path, $article, $domain);
+        }
+
+        $url = ltrim($url, '/');
+
         $urlType = $article->getValue('yrewrite_url_type');
 
         if ('REDIRECTION_EXTERNAL' === $urlType) {
             $this->redirections[$domainName][$articleId][$clangId] = [
                 'url' => $article->getValue('yrewrite_redirection'),
+                'path' => $url,
             ];
 
             unset($this->paths[$domainName][$articleId][$clangId]);
@@ -139,7 +150,7 @@ class rex_yrewrite_path_generator
         }
 
         if ('REDIRECTION_INTERNAL' === $urlType) {
-            $redirection = rex_article::get($article->getValue('yrewrite_redirection'), $clangId);
+            $redirection = rex_article::get((int) $article->getValue('yrewrite_redirection'), $clangId);
         } else {
             $redirection = $this->scheme->getRedirection($article, $domain);
         }
@@ -148,6 +159,7 @@ class rex_yrewrite_path_generator
             $this->redirections[$domainName][$articleId][$clangId] = [
                 'id' => $redirection->getId(),
                 'clang' => $redirection->getClangId(),
+                'path' => $url,
             ];
 
             unset($this->paths[$domainName][$articleId][$clangId]);
@@ -155,15 +167,9 @@ class rex_yrewrite_path_generator
             return;
         }
 
+        $this->paths[$domainName][$articleId][$clangId] = $url;
+
         unset($this->redirections[$domainName][$articleId][$clangId]);
-
-        $url = $this->scheme->getCustomUrl($article, $domain);
-
-        if (!is_string($url)) {
-            $url = $this->scheme->appendArticle($path, $article, $domain);
-        }
-
-        $this->paths[$domainName][$articleId][$clangId] = ltrim($url, '/');
     }
 
     private function generatePaths(rex_yrewrite_domain $domain, $path, rex_category $category)

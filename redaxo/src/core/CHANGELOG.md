@@ -1,6 +1,416 @@
 Changelog
 =========
 
+Version 5.17.1 – 07.04.2024
+---------------------------
+
+### Bugfixes
+
+* Exception-Messages wurden teils an Nicht-Admins ausgegeben (@gharlan)
+* `rex_sql`: In der Debug-Ausgabe wurden in der `fullquery` Integerwerte als Strings eingesetzt (@gharlan)
+
+
+Version 5.17.0 – 12.03.2024
+---------------------------
+
+### Neu
+
+* `rex_get`/`rex_post` etc.: Es kann ein Array mit möglichen Werten als Typ übergeben werden (@gharlan)
+* `rex_http_exception`: 
+    - Bei 4xx-Fehlercode wird nur noch bei Debug-Mode oder Backend-Admin ins Systemlog geschrieben (@gharlan)
+    - Verwendung an weiteren sinnvollen Stellen mit 4xx-Code (@gharlan)
+* `rex_log_file`: Neue `::factory()`-Methode, Nutzung von `new rex_log_file` ist deprecated (@dergel)
+* `rex_api_function`: Neue Methode `register` um API-Functions explizit registrieren zu können (relevant bei Namespaces) (@gharlan)
+* `rex_form`:
+    - `maxlength`- und `minlength`-Attribute werden automatisch entsprechend des Validators gesetzt (@gharlan)
+    - Neue Methode `disableSpellcheckAndAutoCorrect` um entsprechende Attribute zu setzen (@gharlan)
+* Formularfelder: Validierungen und geeignete weitere Feldattribute ergänzt (@gharlan)
+* HTML-Element `<search>` wird an geeigneten Stellen verwendet (@gharlan)
+* Code-Optimierungen (@tbaddade, @gharlan)
+
+### Bugfixes
+
+* Setup: Bei "Update der Datenbank" kam es bei Charset-Änderungen teils zum Fehler (@gharlan)
+* `rex_file`: `put` und `move` funktionierten teilweise nicht, wenn mehrere Filesysteme/Mounts involviert sind (@dergel)
+* `rex_list`: Der Page-Parameter wurde den Links nicht immer mitgegeben, sodass man nach Löschung z.B. auf der ersten Seite landete (@gharlan)
+* `rex_sql`: In `checkDbConnection` wurde ein relevanter Fehlercode nicht berücksichtigt (@gharlan)
+* Wenn nach Login das Passwort automatisch rehasht wurde, musste man sich danach erneut einloggen (@gharlan)
+* Wenn nach DB-Import der aktuelle Benutzer nicht mehr existiert, kam es zum Fehler (statt nur zum Logout) (@gharlan)
+
+
+Version 5.16.1 – 24.02.2024
+---------------------------
+
+### Bugfixes
+
+* DB-Verbindung:
+    - Die Konstante `PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT` wurde ohne Prüfung genutzt (nur bei Nutzung von mysqlnd verfügbar) (@gharlan)
+    - Die Option `ssl_ca` konnte nicht einzeln genutzt werden, nur in Kombi mit `ssl_cert` und `ssl_key` (@gharlan)
+
+
+Version 5.16.0 – 09.02.2024
+---------------------------
+
+### Neu
+
+* Neuer Live-Mode (über die `config.yml` aktivierbar), der problematische Bereiche im Backend für Produktivumgebungen sperrt (@gharlan)
+* Safe-Mode ist nur noch als eingeloggter Admin aktivierbar, oder neu alternativ global über die `config.yml` (@gharlan)
+* Setup: PHP-Version wird ausgegeben (@staabm)
+* DB-Config: Neue Option `ssl_verify_server_cert` (@gharlan)
+* Packages installieren/aktivieren etc. wird ohne PJAX durchgeführt (@tbaddade)
+* `rex_list`:
+    - Default-Sortierung soll nicht mehr über die Query übergeben werden, sondern über neuen separaten Parameter (@gharlan)
+      ACHTUNG: Bei Übergabe über die Query funktioniert aus Sicherheitsgründen die Sortierung bei Klick auf eine Spalte nicht mehr
+    - Neue Methoden um das Markup via Kindklassen leichter anpassen zu können (@staabm)
+* `rex_sql`: `getArrayValue` liefert bei `null` ein leeres Array und behandelt ungültiges JSON besser (@staabm)
+* `rex_file`: Neue Methode `append` (@skerbis)
+* `rex_response`: `sendFile` abbrechen, wenn die Verbindung zum Client abgebrochen wurde (@staabm)
+* `rex_version`: `gitHash` beschleunigt (@staabm)
+* `Permissions-Policy`-Header wird nicht mehr gesetzt, da Google FLoC beerdigt hat (@eznix86)
+* Text-Optimierungen (@Koala, @skerbis, @staabm)
+* Übersetzungen:
+    - Russisch hinzugefügt (@cosmopolityan)
+    - Italienisch korrigiert/ergänzt (@michael-kreatif)
+* JS: AJAX-Loader-Indicator als `rex_loader`-API ausgelagert (@staabm)
+* Schema für `package.yml` optimiert (@staabm, @gharlan)
+* Code-Stabilität durch statische Code-Analyse verbessert (@staabm, @bloep, @gharlan)
+
+### Bugfixes
+
+* Escaping korrigiert/ergänzt (@staabm, @gharlan)
+* Core-Update stabilisiert (@gharlan)
+* Setup: gz-komprimierte Backups wurden nicht zum Import angeboten (@gharlan)
+* Systemlog: Farbe für `success`-Meldungen korrigiert (@danspringer)
+* `rex_sql`: Bei zusätzlichen Datenbanken wurde die Verbindung nicht korrekt initialisiert bzgl. SQL-Mode und Charset (@alxndr-w)
+* `rex_markdown`: PHP-Highlighting mit PHP 8.3 korrigiert (@bloep)
+* `rex_file`: `delete`-Methode stabilisiert (@staabm)
+* `rex_autoload`: Kompatibilität zu symfony/cache hergestellt (@staabm)
+* `dump()`: Layout in Kombination mit UiKit korrigiert (@skerbis)
+* `package.yml`: Deprecated-Meldunge vermeiden, wenn `supportpage` gleich `null` ist (@tbaddade)
+* Popup-Schließung korrigiert (@tbaddade)
+* `rex_logger`: Kompatibilität zu neueren PSR-Log-Versionen hergestellt (@michael-kreatif)
+* Whoops-Page bei sehr großen Fehlermeldungen korrigiert (@staabm)
+
+
+Version 5.15.1 – 18.03.2023
+---------------------------
+
+### Bugfixes
+
+* Passkeys funktionierten in Chrome nicht (@gharlan)
+* Setup/Systembericht: MariaDB-Versionen wurden teils fälschlich als veraltet markiert (@skerbis)
+* REX_VARs in PHP-Strings zusammen mit String-Interpolation funktionierten nicht (`"REX_VALUE[1] $myvar"`) (@gharlan)
+* Commands `config:get/set` und `db:connection-options` konnten nicht verwenden werden, wenn die DB nocht nicht existiert (@gharlan)
+* Bessere Exception in `rex_fragment::parse` (@staabm)
+* `#[SensitiveParameter]` fehlte noch an manchen Parametern (@gharlan)
+
+
+Version 5.15.0 – 28.02.2023
+---------------------------
+
+### Neu
+
+* Neue PHP-Mindestversion 8.1 (@gharlan)
+* Login optional per Passkey/WebAuthn statt Benutzername/Passwort (@gharlan)
+* Sessions:
+    - Backend-Sessions werden einzeln in der Datenbank gespeichert; im Profil wird die Liste der offenen Session ausgegeben und Sessions können einzeln beendet werden (@bloep, @gharlan)
+    - Neue Option `session_max_overall_duration` in `config.yml` (@staabm)
+    - `session.use_strict_mode` wird immer aktiviert (@gharlan)
+    - `session.save_path/sid_length/sid_bits_per_character` können über `config.yml` gesetzt werden (@gharlan)
+    - Neuer EP `SESSION_REGENERATED` (@gharlan)
+* Syslog:
+    - Darstellung im Backend optimiert (@tbaddade, @gharlan)
+    - Aufgerufene URL wird mitgeloggt (@gharlan)
+    - Zeitstempel inkl. Zeitzonen-Offset in Logdatei (@dergel) 
+* `dump`: Suchfunktion innerhalb der Dumpausgabe aktiviert (@tbaddade, @gharlan)
+* `rex_form`: Label kann optional über Felder gesetzt werden (`setLabelOnTop`) (@christophboecker)
+* `rex_formatter`: Methode `truncate` nutzt richtiges Ellipsis-Zeichen (@skerbis)
+* `rex_response`: Neue Methode `getNonce` (wird an vielen Stellen im Backend bereits verwendet) (@dergel, @gharlan)
+* Console-Commands: Autocomplete für Argumente/Optionen (@staabm, @gharlan)
+* Search-Fragment: Value kann vorbelegt werden (@aeberhard)
+* Optimierung Fehlermeldung, wenn PHP-Version zu niedrig (@gharlan)
+* Code-Stabilität durch statische Code-Analyse verbessert (@bloep, @thorol, @staabm, @gharlan)
+* Vendor-Updates (u.a. Symfony 6) (@gharlan)
+
+### Bugfixes
+
+* `rex_backend_login`: "Headers already sent"-Fehler vermeiden (@gharlan)
+
+
+Version 5.14.3 – 20.02.2023
+---------------------------
+
+### Bugfixes
+
+* Whoops: Session-ID und Eingeloggt-bleiben-Cookie werden maskiert (@gharlan)
+* `rex_sql`:
+    - bei Aufruf von `escape` wurden teils vorher gesetzte Werte (Table etc.) wieder geleert (@gharlan)
+    - nach `getArray` lieferte `getFieldnames` falsche Werte (@gharlan)
+* `rex_sql_foreign_key`: Es fehlte `NO ACTION` als Variante für `ON UPDATE/DELETE` (@tyrant88)
+* `rex_escape`: `stdClass`-Objekte wurden direkt geändert, statt ein Clone zu erzeugen (@gharlan)
+* `rex_string::buildQuery`: Deprecated-Meldung entfernt (@tyrant88)
+* `rex_markdown`: Deprecated-Meldungen entfernt (@gharlan)
+* Command `user:set-password`: Login-Versuche wurden nicht zurückgesetzt (@dergel)
+* Syslog: Debug-Meldungen erschienen in Rot statt in neutraler Farbe (@gharlan)
+* EOL-Daten für PHP/MariaDB aktualisiert (@staabm, @gharlan)
+* Englische Übersetzung korrigiert (@dgrothaus-mc)
+* Vendor-Updates (@skerbis, @gharlan)
+
+
+Version 5.14.2 – 13.12.2022
+---------------------------
+
+### Bugfixes
+
+* Update der externen Bibliotheken, dadurch Deprecation-Meldungen in PHP 8.2 entfernt (@gharlan)
+* Nach Setup über die Console war der `instname` nicht gesetzt (@gharlan)
+* `rex_sql`: Bei `escapeLikeWildcards` wurde der Backslash nicht escaped (@gharlan)
+* PHP-Funktion `error_log` nur aufrufen, wenn vorhanden (ist bei manchen Hostern deaktiviert) (@gharlan)
+* Rechtschreibung korrigiert (@eaCe)
+
+
+Version 5.14.1 – 02.08.2022
+---------------------------
+
+### Bugfixes
+
+* `rex_sql`: Fehlercode stand teils nicht mehr korrekt zur Verfügung, dadurch Fehler im Setup (@gharlan)
+* `rex_backend_login`: Cookie-Einstellungen aus `config.yml` wurden für Eingeloggt-bleiben-Cookie nicht berücksichtigt (@dergel)
+
+
+Version 5.14.0 – 25.07.2022
+---------------------------
+
+### Neu
+
+* Setup: 
+    - Lizenzschritt entfernt (@gharlan)
+    - Bei erneutem Setup ist die bisherige Sprache vorausgewählt (@gharlan)
+* `rex_backend_login`:
+    - Neue `backend_login_policy` (in `config.yml`) mit Optionen `login_tries_until_blocked`, `login_tries_until_delay`, `relogin_delay` und `enable_stay_logged_in` (@staabm)
+    - Neue Methode `increaseLoginTries` (@staabm)
+* `rex_password_policy`: Neue Methode `getHtmlAttributes`, die passend zur Policy die Attribute `minlength`, `maxlength` und `passwordrules` liefert (wird im Backend an passenden Stellen auch verwendet) (@gharlan)
+* `rex_form_base`:
+    - Neue Methode `setFormAttribute` (@pherzberger)
+    - In `addFieldset` können Attribute als zweiten Parameter übergeben werden (@gharlan)
+* `rex_select`: Optgroups können per `endOptgroup` beendet werden (@gharlan)
+* `rex_context`: Neue Methoden `getParams`, `hasParam`, `removeParam` (@tbaddade)
+* `rex_be_page`: Neuer Setter `setTitle` (@DanielWeitenauer)
+* `rex_socket`:
+    - gzip-Unterstützung, aktivierbar per `acceptCompression()` (@pherzberger)
+    - Beispiel-Code optimiert (@marcohanke)
+* `rex_path`: Neue Methode `findBinaryPath` (@staabm)
+* `rex_type`: Neue Type-Assertion-Methoden wie `int`, `nullOrInt` etc. (@gharlan)
+* `rex_sql`: Bei `factory` wird noch nicht die DB-Verbindung geöffnet, sondern erst wenn wirklich notwendig (@Sysix)
+* Neuer EP `PACKAGE_CACHE_DELETED` (@gharlan)
+* Eingabefelder teils mit spezifischeren Typen (`type="email"` etc.) und `required`/`autocomplete`-Attributen (@gharlan)
+* System/Log: "Slow Query Log" wird als Subpage angeboten, wenn in der DB aktiviert (@staabm)
+* Aktualisierung Übersetzungen: schwedisch (@interweave-media)
+* Autoloading: Wenn eine Klasse nicht gefunden wird, wird automatisch der Autoload-Cache geleert (@staabm)
+* PHP 8.2: `SensitiveParameter`-Attribut wird an geeigneten Stellen verwendet (@staabm)
+* Code-Stabilität durch statische Code-Analyse verbessert (@staabm, @gharlan)
+
+### Bugfixes
+
+* `rex_request`: Vermeidung von Exceptions in der cli (@staabm)
+* `rex_socket_proxy`: Der `Host`-Header wurde fälschlich inkl. Port gesetzt (@gharlan)
+* Cookie `rex_htaccess_check` hat nicht die Cookie-Einstellungen aus der `config.yml` verwendet (@staabm)
+* PHP 8.2: Deprecation-Warnings entfernt (@staabm, @gharlan)
+
+
+Version 5.13.3 – 03.05.2022
+---------------------------
+
+### Bugfixes
+
+* `rex_list`: Über `addLinkAttribute` konnten keine eigenen Classes gesetzt werden (@tbaddade)
+* `rex_form`: Bei Fieldsets mit eckigen Klammern im Namen wurden die Werte nicht gespeichert (@gharlan)
+* `rex_formatter`: Behandlung von `0000-00-00` korrigiert (@tbaddade)
+* `rex_get`/`rex_post` etc. warfen Notice, wenn nach String gecastet wurde, und ein Array gesendet wurde (@gharlan)
+* Rex-Vars: Bei `null`-Werten kam es mit PHP 8.1 zu Deprecation-Notices (@gharlan)
+* Command `assets:sync`: Core-Assets wurden nicht korrekt synchronisiert (@gharlan)
+* Cache-Handling der AddOns korrigiert (@gharlan)
+* Systembericht: Bei fehlerhafter DB-Verbindung kam es zu einem Fehler (@gharlan)
+* Beim Abfragen der REDAXO-Version inkl. Git-Hash (z.B. im Systembericht) kam es zu einem Fehler, wenn `exec` nicht verfügbar ist (@gharlan)
+
+
+Version 5.13.2 – 10.01.2022
+---------------------------
+
+### Bugfixes
+
+* "Eingeloggt bleiben" funktionierte nicht mehr korrekt (@gharlan)
+* In der Sprachverwaltung wurde der online/offline-Status nicht mehr farblich unterschieden (@schuer)
+* Klickfläche weiterer Icon-Links vergrößert (@schuer)
+* Setup: Fehlermeldung bzgl. unsicherer Ordner verständlicher gemacht (@skerbis)
+* Cli-Setup: Es wird darauf hingewiesen, dass die Setup-Checks dort nicht die Korrektheit innerhalb der Server-Umgebung garantieren können (@gharlan)
+* `rex_sql`: Die Query-Parameter werden entsprechend ihrer PHP-Typen gebunden, dadurch z.B. Parameter auch in `LIMIT`-Ausdrücken möglich (@gharlan)
+* EOL-Daten für PHP 8 und MariaDB 10.6 hinterlegt (@staabm)
+* Fehlermeldung optimiert, wenn die Datei zu einer Package-Page nicht existiert (@gharlan)
+* Deprecation-Meldungen vermieden (teilweise noch PHP 8.1, ansonsten schon für PHP 8.2) (@gharlan)
+
+
+Version 5.13.1 – 29.11.2021
+---------------------------
+
+### Security
+
+* Bei Passwortänderung wurden die vorhandenen Sessions des Users nicht beendet (@gharlan)
+
+### Neu
+
+* Update der externen Bibliotheken (@gharlan)
+
+### Bugfixes
+
+* Deprecated-Meldungen in PHP 8.1 entfernt (@gharlan)
+* "Eingeloggt bleiben"-Cookies wurden teils unnötig invalidiert (z.B. bei Logout an einem anderen Rechner) (@gharlan)
+* Firewalls haben teils die Assets-URLs blockert (@gharlan)
+* Profilseite: Bei erzwungenem Passwortwechsel verständlichere Erläuterung und Reduzierung auf die Passwort-Felder (@schuer)
+* `rex_sql_table`: Defaultwert `0` wurde nicht gesetzt (@TobiasKrais)
+* `rex_markdown`: Korrekturen beim PHP-Syntaxthighlighting (@gharlan)
+
+
+Version 5.13.0 – 17.11.2021
+---------------------------
+
+### Neu
+
+* Es werden neu die PHP-Extensions `ctype`, `mbstring` und `intl` erfordert (@gharlan)
+* Dark-Mode für das Backend (@schuer): 
+    - Die Theme-Auswahl erfolgt automatisch im Browser
+    - User können auf ihrer Profilseite ein Theme explizit auswählen
+    - Über die `config.yml` kann ein Theme für alle User fest vorgegeben werden
+* `rex_list`:
+    - Spaltenposition können abgefragt/verändert werden über `getColumnPosition`/`setColumnPosition` (@christophboecker)
+    - Paginierung kann deaktiviert werden (@gharlan)
+    - Gesamtanzahl wird nicht mehr über deprecated `SQL_CALC_FOUND_ROWS` abgefragt (@gharlan)
+* `rex_formatter`:
+    - Neue Methoden `intlDateTime`, `intlDate`, `intlTime` für die Datumsformatierung über `IntlDateFormatter` (@gharlan)
+    - Deprecated `strftime`, stattdessen die neuen `intl*`-Methoden verwenden (`strftime` wurde auch in PHP deprecated gesetzt) (@gharlan)
+* `rex_select`: Bei `addSqlOptions` kann als zweiter Parameter die DB-ID gesetzt werden (@christophboecker)
+* `rex_markdown`: Optional kann Highlighting für PHP-Codeblöcke aktiviert werden (wird in den Readme-Ausgaben im Backend verwendet) (@gharlan)
+* `rex_pager`: 
+    - Page/Cursor kann direkt gesetzt werden über `setPage`/`setCursor` (@gharlan)
+    - Page/Cursor wird automatisch validiert und ggf. auf erste/letzte Page angepasst (@gharlan)
+* `rex`: Neue Methode `requireUser` (nicht nullable) (@gharlan)
+* `rex_socket`: Context-Options können gesetzt werden (z.B. `verify_peer` für SSL) (@dergel)
+* `rex_socket_proxy`: Bei https wird TLS v1.2 und SNI verwendet (@develerik)
+* `rex_response`: Neue Konstante `HTTP_BAD_REQUEST` für den entsprechenden HTTP-Status (@christophboecker)
+* `rex_factory_trait` Neue Methode `getExplicitFactoryClass`, dafür `callFactoryClass` deprecated (@gharlan)
+* `dump()`-Ausgaben enthalten einen Link (entsprechend der Editor-Einstellung in REDAXO) zu der Codestelle, wo die Ausgabe ausgelöst wurde (@gharlan)
+* Neuer Console-Command `package:run-update-script`, der das Update-Skript eines Addons manuell anstößt (@gharlan)
+* `use_gzip` wird in der `config.yml` default nicht mehr aktiviert (@gharlan)
+* Aktualisierung Übersetzungen: schwedisch (@interweave-media)
+* System-Page: Basis-Pfad der REDAXO-Installation wird ausgegeben (@skerbis)
+* Im Backend wird der Opt-Out-Header für Google FLoC gesetzt (@staabm)
+* Dark-Mode für die Frontend-Fehlerseite (@gharlan)
+* Update der externen Bibliotheken (@skerbis, @gharlan)
+* Code-Stabilität durch statische Code-Analyse und Tests verbessert (@staabm, @bloep, @gharlan)
+
+### Bugfixes
+
+* Deprecations in PHP 8.1 aufgelöst (@gharlan)
+* Api-Functions haben immer einen gültigen `page`-Parameter erfordert (@gharlan)
+* System-Log: `rex:///`-Pfade wurden nicht mit den Editor-URLs verlinkt (@gharlan)
+
+
+Version 5.12.1 – 21.06.2021
+---------------------------
+
+### Neu
+
+* Update der externen Bibliotheken
+
+### Bugfixes
+
+* `rex_version`:
+    - Methode `compare` für Aufrufe ohne letzten Parameter `$comparator` korrigiert (@gharlan)
+    - Methode `gitHash` für Aufrufe ohne zweiten Parameter `$repo` korrigiert (@gharlan)
+
+
+Version 5.12.0 – 03.03.2021
+---------------------------
+
+### Neu
+
+* Neue PHP-Mindestversion 7.3
+* Update der externen Bibliotheken (u.a. Symfony Components 5.x, jQuery 3.6)
+* `symfony/http-foundation` neu aufgenommen; das Request-Objekt kann über `rex::getRequest()` abgefragt werden (@gharlan)
+* Setup:
+    - Erneutes Setup (über Backend gestartet) aktiviert nicht mehr den globalen Setup-Modus, sondern läuft über einen URL-Token parallel zum normalen Seitenbetrieb (@gharlan)
+    - Erneutes Setup kann jederzeit über Button abgebrochen/beendet werden (@staabm)
+    - Bei erneutem Setup ist „Datenbank existiert schon“ vorausgewählt (@staabm)
+    - Bei erneutem Setup wird die Backend-Session nicht mehr beendet (@gharlan)
+    - Der DB-Host wird separat validiert, mit spezifischer Fehlermeldung (@trailsnail)
+    - Bei „Datenbank erstellen“ wird die Collation `utf8mb4_unicode_ci` genutzt (@ixtension)
+    - „End of life“-Daten für PHP 8.0, MySQL 8.0 und MariaDB 10.5 ergänzt (@staabm)
+    - Lizenztext wird per Markdown geparsed (@schuer)
+    - Textaktualisierungen/-verbesserungen (@schuer, @alxndr-w)
+* Package-Installation: Packages können über neue `successmsg`-Property eine eigene Erfolgsmeldung setzen (@BlackScorp, @staabm)
+* Über das Fragezeichen in der AddOn-Verwaltung ist über eine weitere Subpage die `CHANGELOG.md` der AddOns einsehbar (@staabm, @gharlan)
+* Package-Abhängigkeiten:
+    - Wenn ein nicht vorhandenes Package erfordert wird, wird direkt die Versionsbedingung mit ausgegeben (@skerbis)
+    - In der Fehlermeldung sind die Abhängigkeiten verlinkt (Sprunglink oder Link in den Installer) (@staabm, @skerbis, @gharlan)
+* Im Safe-Mode wird neu auch das `install`-AddOn geladen und ist nutzbar (@alxndr-w, @gharlan)
+* Passwortregeln werden unterhalb der Passwortfelder angezeigt (@gharlan)
+* Systembericht: Fehlerhandling bei invaliden `package.yml` optimiert (@staabm)
+* REDAXO-Logo wird direkt als SVG ausgegeben, dadurch kein Flackern mehr (@schuer)
+* Formulare können aus Textfeldern heraus per Strg/Cmd+Enter abgesendet werden (@schuer)
+* Pflichtfelder werden an vielen Stellen mit einem roten Sternchen markiert (@staabm)
+* Externe Links werden mit einem Icon markiert (@staabm, @schuer)
+* Neues Fragment `core/form/search.php` für Suchfelder wie in der AddOn-Verwaltung, mit zugehöriger JS-Funktion `rex_searchfield_init` (@skerbis)
+* Whoops-Page enthält Button „Report a bug“, der GitHub öffnet mit vorausgefüllter Issue-Maske (@staabm, @schuer)
+* `rex`: Neue Methode `getDbConfig` liefert die DB-Config als Objekt der neuen Klasse `rex_config_db` (@staabm)
+* `rex_markdown`:
+    - Die Umwandlung einfacher Zeilenumbrüche zu `<br/>` (kein Markdown-Standard) kann deaktiviert werden und ist bei der Darstellung von Markdown-Dateien im Backend deaktiviert (@christophboecker)
+    - Die Header-IDs sind im gleichen Format wie auf GitHub (@jelleschutter)
+* `rex_validator`: Rules werden über neue Klasse `rex_validation_rule` abgebildet; Objekte der Klasse können über `addRule` hinzugefügt und über `getRules` abgefragt werden (@staabm)
+* `rex_form`: Pflichtfelder (gesetzt über `notEmpty`-Validator) werden im Label markiert und erhalten das `required`-Attribut (@staabm)
+* `rex_list`: Es können Attribute für die Table-Rows (`<tr>`) gesetzten werden (@christophboecker)
+* `rex_user`: Neue Methode `forLogin` um User über den Benutzernamen abzufragen (@jelleschutter)
+* `rex_file`: Neue Methode `require`, wie `get`, aber wirft Exception, wenn die Datei nicht gelesen werden kann (@staabm)
+* `rex_response`: 
+    - Bei `sendResource` ist der Client-Cache default deaktiviert, und kann vorab per `sendCacheControl` geändert werden (@alxndr-w)
+    - Bei `sendRedirect` kann der Statuscode als zweiter Parameter übergeben werden (@staabm)
+* `rex_package`: Neue Methode `splitId` um eine Package-ID in AddOn- und PlugIn-Part zu trennen (@gharlan)
+* `rex_sql`: 
+    - Neue statische Methode `in`, um die Parameter für die `IN (…)`-Clause mit Escaping zu erhalten (@gharlan)
+    - Neue statische Methode `closeConnection` (@gharlan)
+* `rex_sql_util`: Methode `importDump` prüft, ob es eine `*.sql`-Datei ist (@staabm)
+* `rex_var`: Variablen können auch Ziffern im Namen enthalten (@gharlan)
+* `rex_api_function`: Exception bei ungültigem JSON (@staabm)
+* `rex_editor`: Die Editoren haben Konstanten erhalten, und die Klasse validiert den gesetzen Editor (@staabm)
+* Console:
+    - `config:get/set`: Über neue Option `--package` können die Packages-Properties (statt Core-Properties) verwaltet werden (@staabm)
+    - `config:get/set`: `--type`-Option unterstützt den `octal`-Typ für `fileperm`/`dirperm` (@staabm)
+    - `assets:sync`: Dateivergleich optimiert und Beschreibung/Hilfe verbessert (@staabm)
+    - `setup:run`: Die Ordner/Dateien mit fehlenden Schreibrechten werden im Listen-Style aufgelistet (@staabm)
+* `Server-Timing`-Header im Debug-Modus werden nicht mehr gesendet, da inzwischen das Debug-AddOn existiert und die Header sich als problematisch herausgestellt haben (@gharlan)
+* Optimierte Fehlermeldung, wenn die Datenbankverbindung nicht aufgebaut werden kann (@staabm)
+* Projekt-AddOn: Code-Beispiel für yform-Modelklassen in `boot.php` (@dtpop)
+* Backend-Übersetzungsdateien:
+    - Textkorrekturen/-verbesserungen (@alxndr-w, @pschuchmann, @gharlan)
+    - Aktualisierung Übersetzungen: englisch (@ynamite, @skerbis), schwedisch (@interweave-media)
+* Readme-Dateien der Addons erstellt/erweitert, englische Übersetzungen erstellt, und alte `help.php` entfernt (@skerbis)
+* Einige Deprecated-Methods erhalten in PhpStorm automatische Ersetzungsvorschläge (@staabm)
+* Code-Stabilität durch statische Code-Analyse verbessert (@staabm, @gharlan)
+* Parameternamen in vielen Funktionen/Methoden optimiert (u.a. wegen Named Arguments in PHP 8) (@gharlan)
+
+### Bugfixes
+
+* Setup: Die erforderliche PHP-Extension `filter` wurde nicht geprüft (@gharlan)
+* Wenn die Console mit nicht-unterstützter PHP-Version aufgerufen wird, war die Fehlermeldung dazu teils nicht sichtbar (@staabm)
+* fail2ban-Blocking während des htaccess-Sicherheitschecks wird verhindert (@skerbis, @staabm)
+* Systemlog: Beim Löschen der Logdatei fehlte der CSRF-Schutz (@staabm)
+* Beim Umschalten des Debug-Modus über die Systemeinstellungen erschien/verschwand das Debug-Symbol erst nach nächstem Seitenload (@skerbis)
+* `rex_autoload`: Cache-Handling korrigiert (@gharlan)
+* `rex_markdown`: In Code-Snippets wurde die Zeichenkette `window.location` pauschal entfernt (@gharlan)
+* `rex_form`: Bei aktiviertem Debug-Parameter wurde die Redirect-URL nicht escaped (@gharlan)
+* `rex_extension`: Wenn der Runlevel als String übergeben wurde („EARLY“, „LATE“), wurde stillschweigend immer LATE verwendet; neu wird auf die korrekte Nutzung über die Integer-Konstanten `rex_extension::EARLY/LATE` per Warning hingewiesen (@gharlan)
+* Console-Command `setup:run`: Wenn die Systemvoraussetzungen nicht erfüllt werden, wurde nach der Fehlermeldung trotzdem das Setup fortgesetzt (@gharlan)
+
+
 Version 5.11.2 – 25.01.2021
 ---------------------------
 

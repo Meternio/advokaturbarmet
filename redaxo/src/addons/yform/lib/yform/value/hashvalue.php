@@ -9,14 +9,14 @@
 
 class rex_yform_value_hashvalue extends rex_yform_value_abstract
 {
-    public function postFormAction()
+    public function postFormAction(): void
     {
-        if ($this->params['value_pool']['email'][$this->getElement('field')] != '') {
+        if ('' != $this->params['value_pool']['email'][$this->getElement('field')]) {
             $salt = $this->getElement('salt');
             $origin = $this->params['value_pool']['email'][$this->getElement(3)];
             $func = $this->getElement('function');
 
-            if ($func == '' || !function_exists($func)) {
+            if ('' == $func || !function_exists($func)) {
                 $func = 'md5';
             }
 
@@ -32,12 +32,12 @@ class rex_yform_value_hashvalue extends rex_yform_value_abstract
         }
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'hashvalue|name|[label]|field|(md5/sha1/sha512/...)|[salt]|[no_db]';
     }
 
-    public function getDefinitions()
+    public function getDefinitions(): array
     {
         return [
             'type' => 'value',
@@ -53,6 +53,22 @@ class rex_yform_value_hashvalue extends rex_yform_value_abstract
             'description' => rex_i18n::msg('yform_values_hashvalue_description'),
             'db_type' => ['text', 'varchar(191)'],
             'multi_edit' => false,
+            'deprecated' => rex_i18n::msg('yform_values_hashvalue_deprecated'),
         ];
+    }
+
+    public static function getSearchField($params)
+    {
+        rex_yform_value_text::getSearchField($params);
+    }
+
+    public static function getSearchFilter($params)
+    {
+        return rex_yform_value_text::getSearchFilter($params);
+    }
+
+    public static function getListValue($params)
+    {
+        return rex_yform_value_text::getListValue($params);
     }
 }

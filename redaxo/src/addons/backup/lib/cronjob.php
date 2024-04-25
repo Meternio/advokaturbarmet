@@ -12,14 +12,20 @@ class rex_cronjob_export extends rex_cronjob
         $filename = $this->getParam('filename', self::DEFAULT_FILENAME);
         $filename = str_replace('%REX_SERVER', rex_string::normalize(rex::getServerName(), '-'), $filename);
         $filename = str_replace('%REX_VERSION', rex::getVersion(), $filename);
-        $filename = strftime($filename);
+        $now = new DateTimeImmutable();
+        $filename = str_replace(
+            ['%Y', '%m', '%d', '%H', '%M', '%S'],
+            [$now->format('Y'), $now->format('m'), $now->format('d'), $now->format('H'), $now->format('i'), $now->format('s')],
+            $filename,
+        );
         $file = $filename;
         $dir = rex_backup::getDir() . '/';
         $ext = '.cronjob.sql';
+        $filename .= $ext;
 
-        $tables = rex_backup::getTables();
-        $blacklist_tables = explode('|', $this->getParam('blacklist_tables'));
-        $whitelist_tables = array_diff($tables, $blacklist_tables);
+        $excludedTables = $this->getParam('exclude_tables');
+        $excludedTables = $excludedTables ? explode('|', $excludedTables) : [];
+        $tables = array_diff(rex_backup::getTables(), $excludedTables);
 
         if (is_file($dir . $file . $ext)) {
             $i = 1;
@@ -28,12 +34,28 @@ class rex_cronjob_export extends rex_cronjob
             }
             $file = $file . '_' . $i;
         }
+        $exportFilePath = $dir . $file . $ext;
 
-        if (rex_backup::exportDb($dir . $file . $ext, $whitelist_tables)) {
-            $message = $file . $ext . ' created';
+        if (rex_backup::exportDb($exportFilePath, $tables)) {
+            $message = rex_path::basename($exportFilePath) . ' created';
+
+            if ($this->getParam('compress')) {
+                $compressor = new rex_backup_file_compressor();
+                $gzPath = $compressor->gzCompress($exportFilePath);
+                if ($gzPath) {
+                    rex_file::delete($exportFilePath);
+
+                    $message = rex_path::basename($gzPath) . ' created';
+                    $exportFilePath = $gzPath;
+                    $filename .= '.gz';
+                }
+            }
 
             if ($this->getParam('delete_interval')) {
-                $allSqlfiles = glob(rex_path::addonData('backup', '*'.$ext));
+                $allSqlfiles = array_merge(
+                    glob(rex_path::addonData('backup', '*' . $ext), GLOB_NOSORT),
+                    glob(rex_path::addonData('backup', '*' . $ext . '.gz'), GLOB_NOSORT),
+                );
                 $backups = [];
                 $limit = strtotime('-1 month'); // Generelle Vorhaltezeit: 1 Monat
 
@@ -68,7 +90,7 @@ class rex_cronjob_export extends rex_cronjob
                 }
 
                 if ($countDeleted) {
-                    $message .= ', '.$countDeleted.' old backup(s) deleted';
+                    $message .= ', ' . $countDeleted . ' old backup(s) deleted';
                 }
             }
 
@@ -79,11 +101,11 @@ class rex_cronjob_export extends rex_cronjob
                     return false;
                 }
                 $mail = new rex_mailer();
-                $mail->AddAddress($this->getParam('mailaddress'));
+                $mail->addAddress($this->getParam('mailaddress'));
                 $mail->Subject = rex_i18n::rawMsg('backup_mail_subject');
                 $mail->Body = rex_i18n::rawMsg('backup_mail_body', rex::getServerName());
-                $mail->AddAttachment($dir . $file . $ext, $filename . $ext);
-                if ($mail->Send()) {
+                $mail->addAttachment($exportFilePath, $filename);
+                if ($mail->send()) {
                     $this->setMessage($message . ', mail sent');
 
                     return true;
@@ -120,12 +142,12 @@ class rex_cronjob_export extends rex_cronjob
                 'notice' => rex_i18n::msg('backup_filename_notice'),
             ],
             [
-                'label' => rex_i18n::msg('backup_blacklist_tables'),
-                'name' => 'blacklist_tables',
+                'label' => rex_i18n::msg('backup_exclude_tables'),
+                'name' => 'exclude_tables',
                 'type' => 'select',
                 'attributes' => ['multiple' => 'multiple', 'data-live-search' => 'true'],
                 'options' => array_combine($tables, $tables),
-                'notice' => rex_i18n::msg('backup_blacklist_tables_notice'),
+                'notice' => rex_i18n::msg('backup_exclude_tables_notice'),
             ],
             [
                 'name' => 'sendmail',
@@ -145,6 +167,12 @@ class rex_cronjob_export extends rex_cronjob
             $fields[2]['notice'] = rex_i18n::msg('backup_send_mail_notice');
             $fields[2]['attributes'] = ['disabled' => 'disabled'];
         }
+
+        $fields[] = [
+            'name' => 'compress',
+            'type' => 'checkbox',
+            'options' => [1 => rex_i18n::msg('backup_compress')],
+        ];
 
         $fields[] = [
             'label' => rex_i18n::msg('backup_delete_interval'),

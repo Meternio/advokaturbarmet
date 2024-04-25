@@ -2,7 +2,10 @@
 
 ## Übersicht
 
-Dieses Addon bietet eine Möglichkeit, REDAXO mit mehreren Domains zu betreiben. Mehrere Domains können dann sinnvoll sein, wenn
+Das AddOn YRewrite für REDAXO erweitert das CMS um "sprechende" URLs und unterstützt den Betrieb mehrerer Domains.
+REDAXO ohne Rewriter-AddOn erstellt Urls nach dem Schema `index.php?article_id=13&clang=1`zur Vefügung. YRewrite  bietet lesbare URLs wie z.B. `/de/news/archiv/` in verschiedenen Schemata.
+
+Mehrere Domains können dann sinnvoll sein, wenn
 
 * mehrere Websites eines Kunden in einer Installation verwaltet werden,
 * verschiedene Sprachen (`clang`) einer Website unter unterschiedlichen Domains oder Subdomains erreichbar sind,
@@ -14,11 +17,11 @@ Dieses Addon bietet eine Möglichkeit, REDAXO mit mehreren Domains zu betreiben.
 
 * Mehrere Domains in einer Webseite verwaltbar
 * Sprachabhängigkeiten von Domains zuweisbar
-* SEO Features: Domain- und sprachabhängige robots und sitemap Dateien
+* Domain- und sprachabhängige ROBOTS.txt-Anweisungen und XML-Sitemaps
 * Individuelle URL pro Artikel möglich
-* Seitentitel Schema definierbar / pro Domain/Sprache
+* Seitentitel-Schema definierbar / pro Domain/Sprache
 * Alias Domains die auf die Hauptdomain verweisen
-* Allgemeine Weiterleitungen. URLs zu internen Artikeln, Dateien, externen Artikeln
+* Allgemeine Weiterleitungen. URLs zu internen Artikeln, Dateien, externen Artikeln, sogar Protokoll-Tausch in bspw. `tel:`, `mailto:` u.a.
 * Canonical Urls
 
 ## Installation
@@ -32,9 +35,13 @@ Voraussetzung für die aktuelle Version von YRewrite: REDAXO >= 5.5
 
 ## Setup
 
-Nach der Installation und dem Abschluss des Setups wird eine `.htaccess`-Datei im Hauptverzeichnis erstellt, die für die Verwendung von YRewrite benötigt wird. Auch eine virtuelle `robots.txt` und `sitemap.xml` werden erstellt.
+Unter dem Reiter `Setup` sind die `sitemap.xml` und `robots.txt` je eingerichteter Domain einsehbar. Außerdem lässt sich ein Setup durchführen, bei der die Apache-Konfiguration für YRewrite über eine `.htaccess`-Datei erstellt wird.
 
-Unter dem Reiter `Setup` kann die `.htaccess`-Datei jederzeit neu geschrieben werden Außerdem sind die `sitemap.xml` und `robots.txt` je Domain einsehbar.
+### Apache-Konfiguration für YRewrite
+
+Das Setup ausführen, um eine `.htaccess`-Datei im Hauptverzeichnis zu erstellen, die für die Verwendung von YRewrite benötigt wird. Anschließend werden alle Frontend-URLs in suchmaschinenfreundliche URLs umgeschrieben ("Rewriteing").
+
+> **Hinweis** Sollten nach Abeschluss des Setups die Frontend-URLs nicht funktionieren, bitte prüfen, ob es sich um einen Apache- oder NGINX-Server handelt (siehe unten). Außerdem prüfen, ob das Webhosting-Paket eigene `.htaccess`-Regeln erlaubt.
 
 > **Hinweis:** Das Addon leitet alle Anfragen von `/media/` über das Media-Manager-AddOn. Stelle daher sicher, dass es weder eine Struktur-Kategorie "Media" gibt, noch, dass sich keine deiner Dateien fürs Frontend, bspw. CSS- oder JS-Dateien, darin befinden. Gute Orte hierfür sind die Ordner `/assets/` oder die Verwendung des Theme-AddOns. Sollte es notwendig sein, eine Kategorie namens "Media" zu verwenden, dann müssen [die entsprechenden Zeilen in der .htaccess-Datei](https://github.com/yakamara/redaxo_yrewrite/blob/b519622a3be135f1380e35bf85783cc33e71664f/setup/.htaccess#L96-L97) auskommentiert oder umbenannt werden und diese fortan genutzt werden, wenn Medien aus dem Medien Manager verwendet werden. Dies hat weitere Auswirkungen, z.B. auf geschützte Dateien mit YCom - das Auskommentieren und Umbenennen sollte daher nur von erfahrenen REDAXO-Entwicklern vorgenommen werden.
 
@@ -54,13 +61,15 @@ location / {
 rewrite ^/sitemap\.xml$                           /index.php?rex_yrewrite_func=sitemap last;
 rewrite ^/robots\.txt$                            /index.php?rex_yrewrite_func=robots last;
 rewrite ^/media[0-9]*/imagetypes/([^/]*)/([^/]*)  /index.php?rex_media_type=$1&rex_media_file=$2&$args;
+rewrite ^/media/([^/]*)/([^/]*)                   /index.php?rex_media_type=$1&rex_media_file=$2&$args;
+rewrite ^/media/(.*)                              /index.php?rex_media_type=yrewrite_default&rex_media_file=$1&$query_string;
 rewrite ^/images/([^/]*)/([^/]*)                  /index.php?rex_media_type=$1&rex_media_file=$2&$args;
 rewrite ^/imagetypes/([^/]*)/([^/]*)              /index.php?rex_media_type=$1&rex_media_file=$2;
 
-#!!! WICHTIG !!! Falls Let's Encrypt fehlschlägt, diese Zeile auskommentieren (sollte jedoch funktionieren)
+# !!! WICHTIG !!! Falls Let's Encrypt fehlschlägt, diese Zeile auskommentieren (sollte jedoch funktionieren)
 location ~ /\. { deny  all; }
 
-# Zugriff auf diese Verzeichnisse verbieten
+// Zugriff auf diese Verzeichnisse verbieten
 location ^~ /redaxo/src { deny  all; }
 location ^~ /redaxo/data { deny  all; }
 location ^~ /redaxo/cache { deny  all; }
@@ -96,6 +105,8 @@ Diese Vorgehensweise für alle gewünschten Domains wiederholen.
 
 > **Hinweis:** Domains mit Umlauten bitte derzeit decodiert eintragen. Umwandlung bspw. mit https://www.punycoder.com
 
+> **Hinweis:** Informationen zu Best Practice zu Domains und mehrsprachigen Websites auch unter [Multiregionale und mehrsprachige Websites verwalten](https://developers.google.com/search/docs/advanced/crawling/managing-multi-regional-sites?hl=de) aus der Google Search Central Dokumentation.
+
 ## Alias-Domain hinzufügen
 
 Alias-Domains werden nur dann benötigt, wenn mehrere Domains auf den selben Ordner im Server zeigen, aber keine separaten Websites aufrufen. z.B. `www.meinedomain.de` und `www.meine-domain.de`.
@@ -113,6 +124,8 @@ Unter Weiterleitungen können URLs definiert werden, die dann auf einen bestimmt
 
 > **Hinweis:** Mit dieser Einstellung können nicht bereits vorhandene Artikel / URLs umgeleitet werden, sondern nur URLs, die in der REDAXO-Installation nicht vorhanden sind. Das ist bspw. bei einem Relaunch der Fall, wenn alte URLs auf eine neue Zielseite umgeleitet werden sollen.
 
+> **Tipp**: Damit lässt sich auch ein Artikel oder eine Kategorie zu einem gänzlich anderen URI-Protokoll ändern, bspw. `tel:`, `mailto:` u.a. Diese werden auch an anderer Stelle, bspw. von der `rex_navigation::factory()`, berücksichtigt.
+
 ## Weitere Schritte
 
 Die `sitemap.xml` kann pro Domain bspw. in der Google Search Console eingetragen werden, um die korrekte Indexierung der Domain(s) und deren Seiten zu überprüfen.
@@ -121,11 +134,11 @@ Die `sitemap.xml` kann pro Domain bspw. in der Google Search Console eingetragen
 
 ## YRewrite-Objekt
 
-Siehe auch: https://github.com/yakamara/REDAXO_yrewrite/blob/master/lib/yrewrite.php
+Siehe auch: https://github.com/yakamara/redaxo_yrewrite/blob/main/lib/yrewrite/yrewrite.php
 
 ```
     $yrewrite = new rex_yrewrite;
-    # dump($yrewrite); // optional alle Eigenschaften und Methoden anzeigen
+    // dump($yrewrite); // optional alle Eigenschaften und Methoden anzeigen
 ```
 
 **Methoden**
@@ -135,7 +148,7 @@ Siehe auch: https://github.com/yakamara/REDAXO_yrewrite/blob/master/lib/yrewrite
 
 ## YRewrite-Domain-Objekt
 
-Siehe auch: https://github.com/yakamara/REDAXO_yrewrite/blob/master/lib/domain.php
+Siehe auch: https://github.com/yakamara/redaxo_yrewrite/blob/main/lib/yrewrite/domain.php
 
 ```
 $domain = rex_yrewrite::getCurrentDomain();
@@ -175,7 +188,7 @@ getHost()
 ```
 ## YRewrite-SEO-Objekt
 
-Siehe auch: https://github.com/yakamara/REDAXO_yrewrite/blob/master/lib/seo.php
+Siehe auch: https://github.com/yakamara/redaxo_yrewrite/blob/main/lib/yrewrite/seo.php
 
 
 ```
@@ -248,17 +261,63 @@ rex_yrewrite::getDomainByArticleId(REX_ARTICLE_ID)->getName();
 
 Beispiel-Rückgabewert: `meine-domain.de`
 
-## Meta-Tags auslesen (`description`, `title`, usw.)
+## Meta-Tags auslesen (`description`, `title`, `image` usw.)
 
 Diesen Codeabschnitt in den `<head>`-Bereich des Templates kopieren:
 
-```
+```php
 $seo = new rex_yrewrite_seo();
-echo $seo->getTitleTag();
-echo $seo->getDescriptionTag();
-echo $seo->getRobotsTag();
-echo $seo->getHreflangTags();
-echo $seo->getCanonicalUrlTag();
+echo $seo->getTags();
+```
+
+Dies erzeugt folgende Ausgabe:
+
+```html
+<meta name="description" content="Der Text aus dem Beschreibungs-Feld">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://example.org/de/">
+<link rel="alternate" hreflang="de" href="https://example.org/de/">
+<link rel="alternate" hreflang="en" href="https://example.org/en/">
+<meta property="og:title" content="Artikelname / Websitetitel">
+<meta property="og:description" content="Der Text aus dem Beschreibungs-Feld">
+<meta property="og:image" content="https://example.org/media/yrewrite_seo_image/seo-image.jpg">
+<meta property="og:image:alt" content="Der Bildtitel aus dem Medienpool">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:url" content="https://example.org/de/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Artikelname / Websitetitel">
+<meta name="twitter:description" content="Der Text aus dem Beschreibungs-Feld">
+<meta name="twitter:url" content="https://example.org/de/">
+<meta name="twitter:image" content="https://example.org/media/yrewrite_seo_image/seo-image.jpg">';
+<meta name="twitter:image:alt" content="Der Bildtitel aus dem Medienpool">
+```
+
+## Meta-Tags erweitern / ändern
+
+```php
+rex_extension::register('YREWRITE_SEO_TAGS', function(rex_extension_point $ep) {
+    $tags = $ep->getSubject();
+    
+    // title-Tag ändern
+    $title = rex_escape('Ein geänderter Titel');
+    $tags['title'] = '<title>'.$title.'</title>';
+    $tags['og:title'] = '<meta property="og:title" content="'.$title.'">';
+    $tags['twitter:title'] = '<meta name="twitter:title" content="'.$title.'">';
+    
+    // favicon-Tags hinzufügen
+    $tags['favicon'] = '
+            <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
+            <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+            <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+            <link rel="manifest" href="/assets/favicon/site.webmanifest">
+            <link rel="mask-icon" href="/assets/favicon/safari-pinned-tab.svg" color="#5bbad5">
+            <link rel="shortcut icon" href="/assets/favicon/favicon.ico">
+            <meta name="msapplication-TileColor" content="#ffffff">
+            <meta name="msapplication-config" content="/assets/favicon/browserconfig.xml">
+            <meta name="theme-color" content="#ffffff">';
+    $ep->setSubject($tags);
+});
+
 ```
 
 ## Navigation Factory in Abhängigkeit der gewählten Domain
@@ -450,7 +509,6 @@ class rex_project_rewrite_scheme extends rex_yrewrite_scheme
 
 # Weitere Unterstützung
 
-* Bug melden via GitHub: https://github.com/yakamara/REDAXO_yrewrite/issues/
+* Bug melden via GitHub: https://github.com/yakamara/redaxo_yrewrite/issues/
 * Hilfe via REDAXO Slack-Channel: https://friendsofREDAXO.slack.com/
 * Tricks via FriendsOfREDAXO: https://friendsofredaxo.github.io/tricks/ bei Addons > YRewrite
-

@@ -1,29 +1,49 @@
+<?php
+/**
+ * @var rex_fragment $this
+ * @psalm-scope-this rex_fragment
+ */
+?>
 <!doctype html>
-<html lang="<?php echo  rex_i18n::msg('htmllang'); ?>">
+<html lang="<?= rex_i18n::msg('htmllang') ?>">
 <head>
     <meta charset="utf-8" />
 
-    <title><?php echo $this->pageTitle ?></title>
+    <title><?= $this->pageTitle ?></title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 <?php
+    $user = rex::getUser();
+
+    $colorScheme = 'light dark'; // default: support both
+    if (rex::getProperty('theme')) {
+        // global theme from config.yml
+        $colorScheme = rex_escape((string) rex::getProperty('theme'));
+    } elseif ($user && $user->getValue('theme')) {
+        // user selected theme
+        $colorScheme = rex_escape($user->getValue('theme'));
+    }
+    echo "\n" . '    <meta name="color-scheme" content="' . $colorScheme . '">';
+    echo "\n" . '    <style nonce="' . rex_response::getNonce() . '">:root { color-scheme: ' . $colorScheme . ' }</style>';
+
     $assetDir = rex_path::assets();
 
     foreach ($this->cssFiles as $media => $files) {
         foreach ($files as $file) {
+            $file = (string) $file;
             $path = rex_path::frontend(rex_path::absolute($file));
-            if (!rex::isDebugMode() && 0 === strpos($path, $assetDir) && $mtime = @filemtime($path)) {
-                $file = rex_url::backendController(['asset' => $file, 'buster' => $mtime]);
+            if (!rex::isDebugMode() && str_starts_with($path, $assetDir) && $mtime = @filemtime($path)) {
+                $file = rex_url::backendController(['asset' => ltrim($file, '.'), 'buster' => $mtime]);
             } elseif ($mtime = @filemtime($path)) {
-                $file .= '?buster='. $mtime;
+                $file .= '?buster=' . $mtime;
             }
-            echo "\n" . '    <link rel="stylesheet" type="text/css" media="' . $media . '" href="' . $file .'" />';
+            echo "\n" . '    <link rel="stylesheet" type="text/css" media="' . $media . '" href="' . $file . '" />';
         }
     }
     echo "\n";
-    echo "\n" . '    <script type="text/javascript">';
+    echo "\n" . '    <script type="text/javascript" nonce="' . rex_response::getNonce() . '">';
     echo "\n" . '    <!--';
-    echo "\n" . '    var rex = '.$this->jsProperties.';';
+    echo "\n" . '    var rex = ' . $this->jsProperties . ';';
     echo "\n" . '    //-->';
     echo "\n" . '    </script>';
     foreach ($this->jsFiles as $file) {
@@ -34,13 +54,14 @@
             [$file, $options] = $file;
         }
 
+        $file = (string) $file;
         $path = rex_path::frontend(rex_path::absolute($file));
         if (array_key_exists(rex_view::JS_IMMUTABLE, $options) && $options[rex_view::JS_IMMUTABLE]) {
-            if (!rex::isDebugMode() && 0 === strpos($path, $assetDir) && $mtime = @filemtime($path)) {
-                $file = rex_url::backendController(['asset' => $file, 'buster' => $mtime]);
+            if (!rex::isDebugMode() && str_starts_with($path, $assetDir) && $mtime = @filemtime($path)) {
+                $file = rex_url::backendController(['asset' => ltrim($file, '.'), 'buster' => $mtime]);
             }
         } elseif ($mtime = @filemtime($path)) {
-            $file .= '?buster='. $mtime;
+            $file .= '?buster=' . $mtime;
         }
 
         $attributes = [];
@@ -51,24 +72,20 @@
             $attributes[] = 'defer="defer"';
         }
 
-        echo "\n" . '    <script type="text/javascript" src="' . $file .'" '. implode(' ', $attributes) .'></script>';
+        echo "\n" . '    <script type="text/javascript" src="' . $file . '" ' . implode(' ', $attributes) . ' nonce="' . rex_response::getNonce() . '"></script>';
     }
 ?>
 
-    <?php echo $this->favicon ? '<link rel="shortcut icon" href="' . $this->favicon . '" />' : '' ?>
+    <?= $this->favicon ? '<link rel="shortcut icon" href="' . $this->favicon . '" />' : '' ?>
 
-    <?php echo $this->pageHeader ?>
+    <?= $this->pageHeader ?>
 
 </head>
-<body<?php echo $this->bodyAttr; ?>>
+<body<?= $this->bodyAttr ?>>
 
 <div class="rex-ajax-loader" id="rex-js-ajax-loader">
-    <div class="rex-ajax-loader-elements">
-        <div class="rex-ajax-loader-element1 rex-ajax-loader-element"></div>
-        <div class="rex-ajax-loader-element2 rex-ajax-loader-element"></div>
-        <div class="rex-ajax-loader-element3 rex-ajax-loader-element"></div>
-        <div class="rex-ajax-loader-element4 rex-ajax-loader-element"></div>
-        <div class="rex-ajax-loader-element5 rex-ajax-loader-element"></div>
-    </div>
+    <div class="rex-ajax-loader-element"></div>
+    <div class="rex-ajax-loader-backdrop"></div>
 </div>
+
 <div id="rex-start-of-page" class="rex-page">

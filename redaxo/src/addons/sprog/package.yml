@@ -1,10 +1,10 @@
 package: sprog
-version: '1.2.0'
+version: '1.5.1'
 author: Thomas Blum
 supportpage: www.redaxo.org/de/forum/
 
 requires:
-    redaxo: '^5.5'
+    redaxo: '^5.11'
 
 filter:
     - Sprog\Filter\Format
@@ -24,6 +24,9 @@ page:
     subpages:
         wildcard:
             title: 'translate:wildcard'
+        abbreviation:
+            title: 'translate:abbreviation'
+            perm: sprog[abbreviation]
         copy:
             title: 'translate:copy_content'
             perm: admin[]
@@ -32,9 +35,25 @@ page:
                     title: 'translate:copy_structure_content'
                 structure_metadata:
                     title: 'translate:copy_structure_metadata'
+        artefact:
+            title: 'translate:artefact'
+            perm: admin[]
+            pjax: false
+            subpages:
+                import:
+                    title: 'translate:import'
+                export:
+                    title: 'translate:export'
+#                cleanup:
+#                    title: 'translate:cleanup'
         settings:
             title: 'translate:settings'
             perm: admin[]
+        help:
+            title: 'translate:help'
+            subPath: README.md
+            perm: admin[]
+            itemclass: pull-right
 
 
 pages:

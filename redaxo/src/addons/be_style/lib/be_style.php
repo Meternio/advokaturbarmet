@@ -8,10 +8,14 @@ class rex_be_style
 {
     /**
      * Converts Backend SCSS files to CSS.
+     * @return void
      */
     public static function compile()
     {
-        $scssFiles = rex_extension::registerPoint(new rex_extension_point('BE_STYLE_SCSS_COMPILE', []));
+        /** @var list<array{root_dir?: string, scss_files: string|list<string>, css_file: string, copy_dest?: string}> */
+        $scssFiles = [];
+        $scssFiles = rex_extension::registerPoint(new rex_extension_point('BE_STYLE_SCSS_COMPILE', $scssFiles));
+
         foreach ($scssFiles as $file) {
             $compiler = new rex_scss_compiler();
 

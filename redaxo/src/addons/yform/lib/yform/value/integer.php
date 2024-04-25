@@ -11,7 +11,7 @@ class rex_yform_value_integer extends rex_yform_value_abstract
 {
     public function enterObject()
     {
-        if ($this->getValue() == '' && !$this->params['send']) {
+        if ('' == $this->getValue() && !$this->params['send']) {
             $this->setValue($this->getElement('default'));
         }
 
@@ -21,8 +21,12 @@ class rex_yform_value_integer extends rex_yform_value_abstract
             $this->setValue((int) $this->getValue());
         }
 
-        if ($this->needsOutput()) {
-            $this->params['form_output'][$this->getId()] = $this->parse(['value.integer.tpl.php', 'value.text.tpl.php'], ['prepend' => $this->getElement('unit')]);
+        if ($this->needsOutput() && $this->isViewable()) {
+            if (!$this->isEditable()) {
+                $this->params['form_output'][$this->getId()] = $this->parse(['value.integer-view.tpl.php', 'value.view.tpl.php'], ['prepend' => $this->getElement('unit')]);
+            } else {
+                $this->params['form_output'][$this->getId()] = $this->parse(['value.integer.tpl.php', 'value.text.tpl.php'], ['prepend' => $this->getElement('unit')]);
+            }
         }
 
         $this->params['value_pool']['email'][$this->getName()] = $this->getValue();
@@ -31,12 +35,12 @@ class rex_yform_value_integer extends rex_yform_value_abstract
         }
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'integer|name|label|defaultwert|[no_db]|[notice]|[unit]';
     }
 
-    public function getDefinitions()
+    public function getDefinitions(): array
     {
         return [
             'type' => 'value',
@@ -50,14 +54,14 @@ class rex_yform_value_integer extends rex_yform_value_abstract
                 'notice' => ['type' => 'text',    'label' => rex_i18n::msg('yform_values_defaults_notice')],
             ],
             'description' => rex_i18n::msg('yform_values_integer_description'),
-            'db_type' => ['int'],
+            'db_type' => ['int', 'bigint'],
             'db_null' => true,
         ];
     }
 
     public static function getListValue($params)
     {
-        return (!empty($params['params']['field']['unit']) && $params['subject'] != '') ? $params['params']['field']['unit'].' '.$params['subject'] : $params['subject'];
+        return (!empty($params['params']['field']['unit']) && '' != $params['subject']) ? $params['params']['field']['unit'] . ' ' . $params['subject'] : $params['subject'];
     }
 
     public static function getSearchField($params)
@@ -67,26 +71,37 @@ class rex_yform_value_integer extends rex_yform_value_abstract
 
     public static function getSearchFilter($params)
     {
-        $sql = rex_sql::factory();
-
         $value = $params['value'];
-        $field = $sql->escapeIdentifier($params['field']->getName());
+        /** @var rex_yform_manager_query $query */
+        $query = $params['query'];
+        $field = $query->getTableAlias() . '.' . $params['field']->getName();
 
-        if ($value == '(empty)') {
-            return ' (' . $field . ' = "" or ' . $field . ' IS NULL) ';
+        if ('(empty)' == $value) {
+            return $query->whereNested(static function (rex_yform_manager_query $query) use ($field) {
+                $query
+                    ->where($field, '')
+                    ->where($field, null)
+                ;
+            }, 'OR');
         }
-        if ($value == '!(empty)') {
-            return ' (' . $field . ' <> "" and ' . $field . ' IS NOT NULL) ';
+        if ('!(empty)' == $value) {
+            return $query->whereNested(static function (rex_yform_manager_query $query) use ($field) {
+                $query
+                    ->where($field, '', '<>')
+                    ->where($field, null, '<>')
+                ;
+            }, 'OR');
         }
 
         if (preg_match('/^\s*(-?\d+)\s*\.\.\s*(-?\d+)\s*$/', $value, $match)) {
             $match[1] = (int) $match[1];
             $match[2] = (int) $match[2];
-            return ' ' . $field . ' BETWEEN ' . $match[1] . ' AND ' . $match[2];
+            return $query->whereBetween($field, $match[1], $match[2]);
         }
         preg_match('/^\s*(<|<=|>|>=|<>|!=)?\s*(.*)$/', $value, $match);
         $comparator = $match[1] ?: '=';
         $value = (int) $match[2];
-        return ' ' . $field . ' ' . $comparator . ' ' . $value;
+
+        return $query->where($field, $value, $comparator);
     }
 }

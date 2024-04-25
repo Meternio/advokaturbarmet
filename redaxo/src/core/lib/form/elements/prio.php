@@ -6,61 +6,75 @@
 class rex_form_prio_element extends rex_form_select_element
 {
     /** @var string */
-    private $labelField;
-    /** @var callable */
+    private $labelField = '';
+    /** @var callable(string):string */
     private $labelCallback;
     /** @var string */
-    private $whereCondition;
+    private $whereCondition = '';
     /** @var string */
-    private $primaryKey;
+    private $firstOptionMsg = 'form_field_first_priority';
     /** @var string */
-    private $firstOptionMsg;
-    /** @var string */
-    private $optionMsg;
-    /** @var rex_form */
+    private $optionMsg = 'form_field_after_priority';
+    /**
+     * @var rex_form
+     * @psalm-suppress NonInvariantDocblockPropertyType
+     */
     protected $table;
 
     // 1. Parameter nicht genutzt, muss aber hier stehen,
     // wg einheitlicher Konstrukturparameter
-    public function __construct($tag, rex_form $table, array $attributes = [])
+    /**
+     * @param string $tag
+     * @param array<string, int|string> $attributes
+     */
+    public function __construct($tag, rex_form $form, array $attributes = [])
     {
-        parent::__construct('', $table, $attributes);
-        $this->table = $table;
-
-        $this->labelField = '';
-        $this->whereCondition = '';
-        $this->primaryKey = 'id';
-        $this->firstOptionMsg = 'form_field_first_priority';
-        $this->optionMsg = 'form_field_after_priority';
+        parent::__construct('', $form, $attributes);
+        $this->table = $form;
         $this->select->setSize(1);
 
-        rex_extension::register('REX_FORM_SAVED', [$this, 'organizePriorities']);
-        rex_extension::register('REX_FORM_DELETED', [$this, 'organizePriorities']);
+        rex_extension::register('REX_FORM_SAVED', function (rex_extension_point $ep) {
+            $this->organizePriorities($ep);
+        });
+        rex_extension::register('REX_FORM_DELETED', function (rex_extension_point $ep) {
+            $this->organizePriorities($ep);
+        });
     }
 
     /**
      * Setzt die Datenbankspalte, die das Label für die zu priorisierenden Elemente darstellt.
      *
      * @param string $labelField
+     * @return void
      */
     public function setLabelField($labelField)
     {
         $this->labelField = $labelField;
     }
 
+    /**
+     * @return void
+     */
     public function setLabelCallback(callable $labelCallback)
     {
         $this->labelCallback = $labelCallback;
     }
 
+    /**
+     * @return void
+     */
     public function setWhereCondition($whereCondition)
     {
         $this->whereCondition = $whereCondition;
     }
 
-    public function setPrimaryKey($primaryKey)
+    /**
+     * @deprecated this method has no effect
+     * @return void
+     */
+    public function setPrimaryKey()
     {
-        $this->primaryKey = $primaryKey;
+        // nothing todo.. left here for BC reasons
     }
 
     public function formatElement()
@@ -103,6 +117,9 @@ class rex_form_prio_element extends rex_form_select_element
         return parent::formatElement();
     }
 
+    /**
+     * @return void
+     */
     public function organizePriorities(rex_extension_point $ep)
     {
         if ($this->table->equals($ep->getParam('form'))) {
@@ -112,7 +129,7 @@ class rex_form_prio_element extends rex_form_select_element
                 $this->table->getTableName(),
                 $name,
                 $this->whereCondition,
-                $name . ', updatedate desc'
+                $name . ', updatedate desc',
             );
         }
     }

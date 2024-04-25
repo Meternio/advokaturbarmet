@@ -1,4 +1,29 @@
-# Changelog
+# Changelog: Cache Warmup
+
+
+## [4.0.0](https://github.com/FriendsOfREDAXO/cache_warmup/releases/tag/4.0.0) – 02.07.2022
+
+### Breaking changes
+
+* Erfordert REDAXO 5.4 und PHP 7.4 als Mindestversionen  
+  Alter Code wurde entfernt, um die Komplexität zu verringern! 🦊
+
+
+## [3.7.1](https://github.com/FriendsOfREDAXO/cache_warmup/releases/tag/3.7.1) – 12.06.2022
+
+### Bugfixes
+
+* Externe Pakete aktualisiert
+* Code aufgeräumt
+
+
+## [3.7.0](https://github.com/FriendsOfREDAXO/cache_warmup/releases/tag/3.7.0) – 20.11.2021
+
+### Features
+
+* Dokumentation für den Dark Mode angepasst (REDAXO 5.13)
+* Konflikte mit YForm 4 entfernt
+* PHP-Mindestversion auf 7 erhöht
 
 
 ## [3.6.1](https://github.com/FriendsOfREDAXO/cache_warmup/releases/tag/3.6.1) – 10.10.2019

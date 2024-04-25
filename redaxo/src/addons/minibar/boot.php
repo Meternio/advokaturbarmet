@@ -1,5 +1,19 @@
 <?php
 
+$addon = rex_addon::get('minibar');
+
+if (class_exists('rex_scss_compiler') && $addon->getConfig('compile')  === '1') {
+    $compiler = new rex_scss_compiler();
+
+    $compiler->setRootDir(rex_path::addon('minibar/scss'));
+    $compiler->setScssFile([$addon->getPath('scss/styles.scss')]);
+
+    // Compile in backend assets dir
+    $compiler->setCssFile($addon->getPath('assets/styles.css'));
+    $compiler->compile();
+    $addon->setConfig('compile',0);
+}
+
 $mypage = 'minibar';
 $addon = rex_addon::get('minibar');
 
@@ -15,6 +29,8 @@ if (rex::isFrontend() && rex::isDebugMode()) {
 }
 
 if (rex::isBackend()) {
+    rex_minibar::getInstance()->addElement(new rex_minibar_element_scheme());
+    
     if (rex_be_controller::getCurrentPagePart(1) == 'system') {
         rex_system_setting::register(new rex_system_setting_minibar());
         rex_system_setting::register(new rex_system_setting_minibar_inpopup());

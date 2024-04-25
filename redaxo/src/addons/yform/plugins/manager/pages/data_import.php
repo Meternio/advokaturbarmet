@@ -9,14 +9,14 @@
  * @var rex_yform_manager $this
  */
 
-ini_set('auto_detect_line_endings', true);
+$_csrf_key ??= '';
 
 $show_importform = true;
 $show_list = false;
 
 $fields = [];
 foreach ($this->table->getFields() as $field) {
-    $fields[$field->getName()] = $field;
+    $fields[strtolower($field->getName())] = $field;
 }
 
 $divider = rex_request('divider', 'string', ';');
@@ -30,16 +30,16 @@ if (!in_array($divider, [';', ',', 'tab'])) {
 // 1 = ignore missing fields
 // 2 = addfield if missing
 // 3 = error if fields are missing
-if ($missing_columns != 2 && $missing_columns != 3) {
+if (2 != $missing_columns && 3 != $missing_columns) {
     $missing_columns = 1;
 }
-if ($debug != 1) {
+if (1 != $debug) {
     $debug = 0;
 }
 
-if (rex_request('send', 'int', 0) == 1) {
+if (1 == rex_request('send', 'int', 0)) {
     // Daten wurden übertragen
-    if (!isset($_FILES['file_new']) || $_FILES['file_new']['tmp_name'] == '') {
+    if (!isset($_FILES['file_new']) || '' == $_FILES['file_new']['tmp_name']) {
         echo rex_view::error(rex_i18n::msg('yform_manager_import_error_missingfile'));
     } else {
         $func = '';
@@ -49,7 +49,7 @@ if (rex_request('send', 'int', 0) == 1) {
         $filename = $_FILES['file_new']['tmp_name'];
 
         $div = $divider;
-        if ($div == 'tab') {
+        if ('tab' == $div) {
             $div = "\t";
         }
 
@@ -62,192 +62,187 @@ if (rex_request('send', 'int', 0) == 1) {
 
         $import_start = true;
         $import_start = rex_extension::registerPoint(new rex_extension_point(
-                'YFORM_DATASET_IMPORT',
-                $import_start,
-                [
-                    'divider' => $div,
-                    'table' => $this->table,
-                    'filename' => $filename,
-                    'missing_columns' => $missing_columns,
-                    'debug' => $debug,
-                ]
-            ));
+            'YFORM_DATASET_IMPORT',
+            $import_start,
+            [
+                'divider' => $div,
+                'table' => $this->table,
+                'filename' => $filename,
+                'missing_columns' => $missing_columns,
+                'debug' => $debug,
+            ],
+        ));
 
         if ($import_start) {
             $sql_db = rex_sql::factory();
-            $sql_db->beginTransaction();
-
             $error_message = null;
 
             try {
-                $fp = fopen($filename, 'r');
-                $firstbytes = fread($fp, 3);
-                $bom = pack('CCC', 0xef, 0xbb, 0xbf);
-                if ($bom != $firstbytes) {
-                    rewind($fp);
-                }
+                $sql_db->transactional(function () use ($filename, $show_importform, $div, $fieldarray, $missing_columns, $debug, &$counter, &$dcounter, &$ecounter, &$rcounter, &$icounter, &$errorcounter, $fields) {
 
-                $idColumn = null;
-                while (($line_array = fgetcsv($fp, 30384, $div)) !== false) {
-                    if (count($fieldarray) == 0) {
-                        $fieldarray = $line_array;
-                        $fieldarray = array_map('rex_string::normalize', $fieldarray);
+                    $fp = fopen($filename, 'r');
+                    $firstbytes = fread($fp, 3);
+                    $bom = pack('CCC', 0xEF, 0xBB, 0xBF);
+                    if ($bom != $firstbytes) {
+                        rewind($fp);
+                    }
 
-                        if (in_array('', $fieldarray)) {
-                            echo rex_view::error(rex_i18n::msg('yform_manager_import_error_missingfielddefinition'));
-                            $show_importform = true;
-                            $func = 'import';
-                            break;
-                        }
+                    $idColumn = null;
+                    while (false !== ($line_array = fgetcsv($fp, 30384, $div))) {
+                        if (0 == count($fieldarray)) {
+                            $fieldarray = $line_array;
+                            $fieldarray = array_map('rex_string::normalize', $fieldarray);
 
-                        if (count($fieldarray) != count(array_unique($fieldarray))) {
-                            echo rex_view::error(rex_i18n::msg('yform_manager_import_error_duplicatefielddefinition'));
-                            $show_importform = true;
-                            $func = 'import';
-                            break;
-                        }
-
-                        $mc = [];
-                        foreach ($fieldarray as $k => $v) {
-                            $v = rex_string::normalize($v);
-                            $fieldarray[$k] = $v;
-                            if (!array_key_exists($fieldarray[$k], $fields) && $fieldarray[$k] != 'id') {
-                                $mc[$fieldarray[$k]] = $fieldarray[$k];
-                            }
-                            if ('id' === $fieldarray[$k]) {
-                                $idColumn = $k;
-                            }
-                        }
-
-                        if (count($mc) > 0) {
-                            if ($missing_columns == 3) {
-                                echo rex_view::error(rex_i18n::msg('yform_manager_import_error_missingfields', implode(', ', $mc)));
+                            if (in_array('', $fieldarray)) {
+                                echo rex_view::error(rex_i18n::msg('yform_manager_import_error_missingfielddefinition'));
                                 $show_importform = true;
                                 $func = 'import';
                                 break;
                             }
-                            if ($missing_columns == 2) {
-                                $error = false;
-                                $i = rex_sql::factory();
-                                foreach ($mc as $mcc) {
-                                    rex_sql::factory()
-                                        ->setTable(rex_yform_manager_field::table())
-                                        ->setValue('table_name', $this->table->getTablename())
-                                        ->setValue('prio', 999)
-                                        ->setValue('type_id', 'value')
-                                        ->setValue('type_name', 'text')
-                                        ->setValue('name', $mcc)
-                                        ->setValue('label', 'TEXT `'.$mcc.'`')
-                                        ->setValue('list_hidden', 0)
-                                        ->setValue('db_type', 'text')
-                                        ->insert();
 
-                                    echo rex_view::info(rex_i18n::msg('yform_manager_import_field_added', $mcc));
+                            if (count($fieldarray) != count(array_unique($fieldarray))) {
+                                echo rex_view::error(rex_i18n::msg('yform_manager_import_error_duplicatefielddefinition'));
+                                $show_importform = true;
+                                $func = 'import';
+                                break;
+                            }
+
+                            $mc = [];
+                            foreach ($fieldarray as $k => $v) {
+                                $v = rex_string::normalize($v);
+                                $fieldarray[$k] = $v;
+                                if (!array_key_exists($fieldarray[$k], $fields) && 'id' != $fieldarray[$k]) {
+                                    $mc[$fieldarray[$k]] = $fieldarray[$k];
                                 }
+                                if ('id' === $fieldarray[$k]) {
+                                    $idColumn = $k;
+                                }
+                            }
 
-                                rex_yform_manager_table_api::generateTablesAndFields();
-
-                                if ($error) {
-                                    echo rex_view::error(rex_i18n::msg('yform_manager_import_error_import_stopped'));
+                            if (count($mc) > 0) {
+                                if (3 == $missing_columns) {
+                                    echo rex_view::error(rex_i18n::msg('yform_manager_import_error_missingfields', implode(', ', $mc)));
                                     $show_importform = true;
+                                    $func = 'import';
                                     break;
                                 }
+                                if (2 == $missing_columns) {
+                                    $i = rex_sql::factory();
 
-                                $fields = [];
-                                foreach (rex_yform_manager_table::get($this->table->getTableName()) as $field) {
-                                    $fields[$field->getName()] = $field;
-                                }
-                            } else {
-                                if (count($fieldarray) == count($mc)) {
-                                    echo rex_view::error(rex_i18n::msg('yform_manager_import_error_min_missingfields', implode(', ', $mc)));
-                                    $show_importform = true;
-                                    break;
-                                }
+                                    foreach ($mc as $mcc) {
+                                        rex_sql::factory()
+                                            ->setTable(rex_yform_manager_field::table())
+                                            ->setValue('table_name', $this->table->getTablename())
+                                            ->setValue('prio', 999)
+                                            ->setValue('type_id', 'value')
+                                            ->setValue('type_name', 'text')
+                                            ->setValue('name', $mcc)
+                                            ->setValue('label', 'TEXT `' . $mcc . '`')
+                                            ->setValue('list_hidden', 0)
+                                            ->setValue('db_type', 'text')
+                                            ->insert();
 
-                                foreach ($fieldarray as $k => $name) {
-                                    if (isset($mc[$name])) {
-                                        unset($fieldarray[$k]);
+                                        echo rex_view::info(rex_i18n::msg('yform_manager_import_field_added', $mcc));
+                                    }
+
+                                    rex_yform_manager_table_api::generateTablesAndFields();
+
+                                    $fields = [];
+                                    foreach (rex_yform_manager_table::get($this->table->getTableName())->getFields() as $field) {
+                                        $fields[strtolower($field->getName())] = $field;
+                                    }
+                                } else {
+                                    if (count($fieldarray) == count($mc)) {
+                                        echo rex_view::error(rex_i18n::msg('yform_manager_import_error_min_missingfields', implode(', ', $mc)));
+                                        $show_importform = true;
+                                        break;
+                                    }
+
+                                    foreach ($fieldarray as $k => $name) {
+                                        if (isset($mc[$name])) {
+                                            unset($fieldarray[$k]);
+                                        }
                                     }
                                 }
                             }
-                        }
-                    } else {
-                        if (!$line_array) {
-                            break;
-                        }
-
-                        if (null !== $idColumn && isset($line_array[$idColumn])) {
-                            $id = $line_array[$idColumn];
-                            $dataset = $this->table->getRawDataset($id);
                         } else {
-                            $id = null;
-                            $dataset = $this->table->createDataset();
-                        }
-
-                        $exists = $dataset->exists();
-
-                        foreach ($line_array as $k => $v) {
-                            if (empty($fieldarray[$k]) || 'id' === $fieldarray[$k]) {
-                                continue;
+                            if (!$line_array) {
+                                break;
                             }
 
-                            $dataset->setValue($fieldarray[$k], $v);
-                        }
+                            if (null !== $idColumn && isset($line_array[$idColumn]) && $line_array[$idColumn] > 0) {
+                                $id = $line_array[$idColumn];
+                                $dataset = $this->table->getRawDataset((int) $id);
+                            } else {
+                                $id = null;
+                                $dataset = $this->table->createDataset();
+                            }
 
-                        ++$counter;
+                            $exists = $dataset->exists();
 
-                        $dataset->save();
-
-                        if ($messages = $dataset->getMessages()) {
-                            $messages = array_unique($messages);
-                            foreach ($messages as $key => $msg) {
-                                if ($msg == '') {
-                                    $msg = rex_i18n::msg('yform_manager_import_error_messagemissing');
-                                } else {
-                                    $msg = rex_i18n::translate($msg);
+                            foreach ($line_array as $k => $v) {
+                                if (empty($fieldarray[$k]) || 'id' === $fieldarray[$k]) {
+                                    continue;
                                 }
+
+                                $dataset->setValue($fieldarray[$k], $v);
                             }
 
-                            ++$dcounter;
-                            $dataId = 'ID: '.$id;
-                            echo rex_view::error(rex_i18n::msg('yform_manager_import_error_dataimport', $dataId, '<br />* ' .implode('<br />* ', $messages)));
-                        } elseif ($exists) {
-                            ++$rcounter;
-                        } else {
-                            ++$icounter;
+                            ++$counter;
+
+                            $dataset->save();
+
+                            if ($messages = $dataset->getMessages()) {
+                                $messages = array_unique($messages);
+                                foreach ($messages as $key => $msg) {
+                                    if ('' == $msg) {
+                                        $msg = rex_i18n::msg('yform_values_message_is_missing', '', $key);
+                                    } else {
+                                        $msg = rex_i18n::translate($msg);
+                                    }
+                                    $messages[$key] = $msg;
+                                }
+                                ++$dcounter;
+                                $dataId = 'ID: ' . $id;
+                                echo rex_view::error(rex_i18n::msg('yform_manager_import_error_dataimport', $dataId, '<br />* ' . implode('<br />* ', $messages)));
+                            } elseif ($exists) {
+                                ++$rcounter;
+                            } else {
+                                ++$icounter;
+                            }
                         }
+
+                        $show_list = true;
                     }
 
-                    $show_list = true;
-                }
+                    rex_extension::registerPoint(new rex_extension_point(
+                        'YFORM_DATASET_IMPORTED',
+                        '',
+                        [
+                            'divider' => $div,
+                            'table' => $this->table,
+                            'filename' => $filename,
+                            'missing_columns' => $missing_columns,
+                            'debug' => $debug,
+                            'data_imported' => $counter,  // importierte
+                            'data_not_imported' => $dcounter, // nicht imporierte
+                            'data_empty_rows' => $ecounter, // leere reihen
+                            'data_replaced' => $rcounter, // replace counter
+                            'data_inserted' => $icounter, // insert counter
+                            'data_errors' => $errorcounter,
+                        ],
+                    ));
 
-                rex_extension::registerPoint(new rex_extension_point(
-                    'YFORM_DATASET_IMPORTED',
-                    '',
-                    [
-                        'divider' => $div,
-                        'table' => $this->table,
-                        'filename' => $filename,
-                        'missing_columns' => $missing_columns,
-                        'debug' => $debug,
-                        'data_imported' => $counter,  // importierte
-                        'data_not_imported' => $dcounter, // nicht imporierte
-                        'data_empty_rows' => $ecounter, // leere reihen
-                        'data_replaced' => $rcounter, // replace counter
-                        'data_inserted' => $icounter, // insert counter
-                        'data_errors' => $errorcounter,
-                    ]
-                ));
-                $sql_db->commit();
+                });
+
             } catch (\Throwable $e) {
-                $sql_db->rollBack();
                 $error_message = $e->getMessage();
             }
 
             if ($error_message) {
                 echo rex_view::error(rex_i18n::msg('yform_manager_import_error_import_abort', $error_message));
             } else {
-                echo rex_view::info(rex_i18n::msg('yform_manager_import_error_import', ($icounter + $rcounter), $icounter, $rcounter));
+                echo rex_view::info(rex_i18n::msg('yform_manager_import_error_import', $icounter + $rcounter, $icounter, $rcounter));
             }
         } else {
             echo rex_view::info(rex_i18n::msg('yform_manager_import_error_not_started'));
@@ -279,17 +274,17 @@ if ($show_importform) {
     $formElements = [];
     $n = [];
     $n['label'] = '<label>' . rex_i18n::msg('yform_manager_import_if_no_column_ignore') . '</label>';
-    $n['field'] = '<input type="radio" name="missing_columns" value="1"' . (($missing_columns == '1') ? 'checked' : '') . ' />';
+    $n['field'] = '<input type="radio" name="missing_columns" value="1"' . (('1' == $missing_columns) ? 'checked' : '') . ' />';
     $formElements[] = $n;
 
     $n = [];
     $n['label'] = '<label>' . rex_i18n::msg('yform_manager_import_if_no_column_addtext') . '</label>';
-    $n['field'] = '<input type="radio" name="missing_columns" value="2"' . (($missing_columns == '2') ? 'checked' : '') . ' />';
+    $n['field'] = '<input type="radio" name="missing_columns" value="2"' . (('2' == $missing_columns) ? 'checked' : '') . ' />';
     $formElements[] = $n;
 
     $n = [];
     $n['label'] = '<label>' . rex_i18n::msg('yform_manager_import_if_no_column_break') . '</label>';
-    $n['field'] = '<input type="radio" name="missing_columns" value="3"' . (($missing_columns == '3') ? 'checked' : '') . ' />';
+    $n['field'] = '<input type="radio" name="missing_columns" value="3"' . (('3' == $missing_columns) ? 'checked' : '') . ' />';
     $formElements[] = $n;
 
     $fragment = new rex_fragment();
@@ -317,7 +312,8 @@ if ($show_importform) {
 
     $n = [];
     $n['label'] = '<label>' . rex_i18n::msg('yform_manager_import_file') . '</label>';
-    $n['field'] = '<input class="form-control" type="file" name="file_new" />';
+    $n['field'] = '<input class="form-control" type="file" name="file_new" />'
+                . rex_csrf_token::factory($_csrf_key)->getHiddenField();
     $formElements[] = $n;
 
     $fragment = new rex_fragment();

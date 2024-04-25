@@ -16,6 +16,7 @@ yrewrite_setup = Setup
 yrewrite_docs = Dokumentation
 yrewrite_docs_navigation = Navigation
 
+yrewrite_error_article_in_use = Artikel kann nicht gelöscht werden, da er noch genutzt wird.
 yrewrite_error_domain_missing = Bitte zunächst eine Domain anlegen.
 
 yrewrite_startarticleisalways = Dies ist der Startartikel der Domain "{0}" und kann nicht verändert werden. Die URL ist hier immer "/"
@@ -32,7 +33,7 @@ yrewrite_domain = Domain
 yrewrite_domain_info = http/https ist optional. Wenn man es angibt, leiten alle Links immer auf das angegebene Protokoll. Lässt man es weg, wird das jeweils aktuelle verwendet. Slash am Ende oder nicht ist egal, das wird vom AddOn normalisiert. "www" muss angegeben werden, wenn denn die Domain mit "www" genutzt wird. Für YRewrite ist es eine normale Subdomain. Läuft REDAXO in einem Unterordner, muss dieser mit notiert werden. Beispiel: <code>http://domain.de/unterordner/</code>
 
 yrewrite_mount_id = Mountpoint der Domain
-yrewrite_mount_info = Startpunkt der Domain. Der Startpunkt kann in jeder Tiefe der Struktur vergeben werden. Die oben angegebene Domain gilt ab dort für alle weiteren Kategorien/Artikel. Zum Beispiel kann eine zweite Domain innerhalb der Struktur einer anderen Domain einen Startpunkt bekommen. Freilassen, wenn Root-Kategorien als URL benötigt werden.
+yrewrite_mount_info = Mountpoint festlegen (optional). Wenn nur ein Teil der Artikel-Struktur über die Domain aufrufbar sein soll, wählt man den Startartikel einer Kategorie, die diese Inhalte enthält. Wird kein Mountpoint festgelegt, sind alle Inhalte unter dieser Domain aufrufbar, die noch keiner anderen Domain zugeordnet wurden (Standard). Freilassen, wenn Root-Kategorien als URL benötigt werden.
 
 yrewrite_start_id = Startartikel der Domain
 yrewrite_start_info = Artikel angeben, der als Startartikel der Domain aufgerufen wird. Kann via rex_article::getSiteStartArticle() geholt werden.
@@ -60,6 +61,7 @@ yrewrite_domain_robots = robots.txt
 yrewrite_root = --- Root Ebene --- [0]
 
 yrewrite_alias_domain_refersto = Diese Domain wird weitergeleitet
+yrewrite_alias_domain_refersto_notice = Bitte ohne `http[s]://` eingeben
 yrewrite_domain_willbereferdto = auf diese Domain
 
 yrewrite_domain_already_defined = Domain wurde bereits definiert
@@ -73,6 +75,7 @@ yrewrite_warning_noslash = Bitte in der URL kein <code/</code> am Anfang und am 
 yrewrite_warning_nottolong = Die URL darf nicht länger als 250 Zeichen sein
 yrewrite_warning_chars = Die URL ist nicht korrekt. Schreibweise beachten. Nur "a-z/0-9 -", kein / am Anfang und am Ende
 yrewrite_warning_urlexists = Diese URL existiert bereits bei Artikel mit der id={0}
+yrewrite_warning_redirect_to_self = Der Artikel kann nicht auf sich selbst weiterleiten.
 yrewrite_warning_otherarticle = Zum anderen Artikel
 yrewrite_urlupdated = URL wurde aktualisiert
 yrewrite_domain_not_well_formed = Domain/URL-Format stimmt nicht.
@@ -80,6 +83,8 @@ yrewrite_domain_not_well_formed = Domain/URL-Format stimmt nicht.
 
 yrewrite_seotitle = Titel
 yrewrite_seodescription = Description
+yrewrite_seoimage = Bild
+yrewrite_seoimage_error_delete = SEO Bild des Artikels
 yrewrite_priority = Wichtigkeit:
 yrewrite_changefreq = Aktualisierungshäufigkeit:
 
@@ -171,14 +176,20 @@ yrewrite_forward_302 = 302 - Found / gefunden
 yrewrite_forward_303 = 303 - See Other / normale Weiterleitung
 yrewrite_forward_307 = 307 - Temporary Redirect / vorübergehende Weiterleitung
 
+yrewrite_forward_article_deleted = [Artikel gelöscht]
+yrewrite_forward_article_offline = [Artikel offline]
+yrewrite_forward_media_deleted = [Medium gelöscht]
+
 yrewrite_auto_redirect = Automatische 301-Weiterleitungen setzen, wenn ein Artikel umbenannt oder verschoben wird. (Sollte bei der Entwicklung ausgeschaltet sein und erst im Livebetrieb eingeschaltet werden.)
 yrewrite_auto_redirect_days = Anzahl Tage, bis automatische Weiterleitungen inaktiv werden.
 yrewrite_auto_redirect_days_info = <code>0</code> eintragen, um die automatische Deaktivierung auszuschalten.
 yrewrite_auto_redirects = Automatische Weiterleitungen
 yrewrite_expiry_date = Deaktivierungsdatum
 
+perm_general_yrewrite[forward] = YRewrite: Weiterleitungen
 yrewrite_perm_url_edit = YRewrite: URL editieren
 yrewrite_perm_seo_edit = YRewrite: SEO-Daten editieren
+
 yrewrite_settings = Einstellungen
 yrewrite_settings_saved = Einstellungen gespeichert
 yrewrite_unicode_urls = Unicode-Zeichen in URLs erlauben (Umlaute, chinesische/kyrillische Zeichen etc.)

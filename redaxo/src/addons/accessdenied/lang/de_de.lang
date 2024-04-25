@@ -1,5 +1,26 @@
-accessdenied_blocked = gesperrt
-
+accessdenied_title = Access denied
+accessdenied_locked = gesperrt
+accessdenied_info = Dieser Artikel ist gesperrt
+accessdenied_share = Sie können folgenden Link teilen:
 # Benennung für die Addonrechte, sichtbar innerhalb der REDAXO-Administration unter Benutzer > Rollen > Allgemein
 
 perm_general_accessdenied[] = Recht Für Accessdenied-AddOn
+
+# Einstellungsseite
+
+accessdenied_settings = Einstellungen
+
+accessdenied_settings_default_status_label = Standard-Status für neue Artikel / Kategorien
+accessdenied_settings_default_status_notice = Wenn ein neuer Artikel in der Struktur erstellt wird, wird dieser Status gesetzt. Im Live-Betrieb sollte der Artikel zunächst gesperrt bleiben, bei der Entwicklung kann standardmäßig alles direkt veröffentlicht werden.
+
+accessdenied_settings_default_status_online = online
+accessdenied_settings_default_status_offline = offline (REDAXO-Standard)
+accessdenied_settings_default_status_blocked = gesperrt (empfohlen)
+
+accessdenied_settings_inherit_label = Kategoriestatus vererben
+accessdenied_settings_inherit_off = nein
+accessdenied_settings_inherit_on = ja
+
+accessdenied_linkparameter = Linkparameter
+accessdenied_linkparameter_empty = Der Linkparameter darf nicht leer sein
+accessdenied_linkparameter_wrong = Bitte geben Sie nur Zeichen von a-z ein.

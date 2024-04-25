@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the ramsey/http-range library
  *
@@ -9,59 +10,53 @@
  * @license http://opensource.org/licenses/MIT MIT
  */
 
+declare(strict_types=1);
+
 namespace Ramsey\Http\Range\Unit;
 
 /**
- * A generic HTTP Range unit
+ * A generic HTTP Range unit.
  */
 class GenericUnit extends AbstractUnit implements UnitInterface
 {
-    /**
-     * @var string
-     */
-    private $rangeUnit;
+    private string $rangeUnit;
 
     /**
-     * Constructs a new generic unit
+     * Constructs a new generic unit.
      *
-     * @param string $rangeSet A set of ranges for this unit (i.e. 500-999,500-,-500)
-     * @param mixed $totalSize The total size of the entity the unit describes
+     * @param string $rangeUnit The range unit this generic unit represents.
+     * @param string $rangeSet A set of ranges for this unit (i.e. `500-999,500-,-500`).
+     * @param mixed $totalSize The total size of the entity the unit describes.
      */
-    public function __construct($rangeUnit, $rangeSet, $totalSize)
+    public function __construct(string $rangeUnit, string $rangeSet, $totalSize)
     {
         $this->rangeUnit = $rangeUnit;
         parent::__construct($rangeSet, $totalSize);
     }
 
-
     /**
-     * Returns the "bytes" unit token for this unit
-     *
-     * @return string
+     * Returns the range unit token for this unit.
      */
-    public function getRangeUnit()
+    public function getRangeUnit(): string
     {
         return $this->rangeUnit;
     }
 
     /**
-     * Returns a new collection for this range unit
-     *
-     * @return UnitRangesCollection
+     * Returns a new collection for this range unit.
      */
-    public function newCollection()
+    public function newCollection(): UnitRangesCollection
     {
         return new UnitRangesCollection();
     }
 
     /**
-     * Returns a new unit range for this range unit
+     * Returns a new unit range for this range unit.
      *
-     * @param string $range A single range (i.e. 500-999, 500-, -500)
-     * @param mixed $totalSize The total size of the entity the range describes
-     * @return UnitRangeInterface
+     * @param string $range A single range (i.e. `500-999`, `500-`, `-500`).
+     * @param mixed $totalSize The total size of the entity the range describes.
      */
-    public function newRange($range, $totalSize)
+    public function newRange(string $range, $totalSize): UnitRangeInterface
     {
         return new GenericRange($range, $totalSize);
     }

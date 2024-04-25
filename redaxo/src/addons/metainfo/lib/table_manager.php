@@ -27,95 +27,126 @@ class rex_metainfo_table_manager
     public const FIELD_TIME = 13;
     public const FIELD_COUNT = 13;
 
-    private $tableName;
-    private $DBID;
+    /** @param positive-int $DBID */
+    public function __construct(
+        private string $tableName,
+        private int $DBID = 1,
+    ) {}
 
-    public function __construct($tableName, $DBID = 1)
-    {
-        $this->tableName = $tableName;
-        $this->DBID = $DBID;
-    }
-
+    /**
+     * @return string
+     */
     public function getTableName()
     {
         return $this->tableName;
     }
 
     /**
+     * @param string $name
+     * @param string $type
+     * @param int|null $length
+     * @param string|null $default
+     * @param bool $nullable
      * @return bool
      */
     public function addColumn($name, $type, $length, $default = null, $nullable = true)
     {
-        $qry = 'ALTER TABLE `' . $this->getTableName() . '` ADD ';
-        $qry .= '`' . $name . '` ' . $type;
+        $sql = rex_sql::factory($this->DBID);
+
+        $qry = 'ALTER TABLE ' . $sql->escapeIdentifier($this->getTableName()) . ' ADD ';
+        $qry .= $sql->escapeIdentifier($name);
+
+        if (!ctype_alpha($type)) {
+            throw new InvalidArgumentException('Invalid column type "' . $type . '"');
+        }
+        /** @psalm-taint-escape sql */
+        $qry .= ' ' . $type;
 
         if (0 != $length) {
-            $qry .= '(' . $length . ')';
+            $qry .= '(' . (int) $length . ')';
         }
 
         // `text` columns in mysql can not have default values
         if ('text' !== $type && null !== $default) {
-            $qry .= ' DEFAULT \'' . str_replace("'", "\'", $default) . '\'';
+            $qry .= ' DEFAULT ' . $sql->escape($default);
         }
 
-        if (true !== $nullable) {
+        if (!$nullable) {
             $qry .= ' NOT NULL';
         }
 
         try {
-            $this->setQuery($qry);
+            $sql->setQuery($qry);
             return true;
-        } catch (rex_sql_exception $e) {
+        } catch (rex_sql_exception) {
             return false;
         }
     }
 
     /**
+     * @param string $oldname
+     * @param string $name
+     * @param string $type
+     * @param int|null $length
+     * @param string|null $default
+     * @param bool $nullable
      * @return bool
      */
     public function editColumn($oldname, $name, $type, $length, $default = null, $nullable = true)
     {
-        $qry = 'ALTER TABLE `' . $this->getTableName() . '` CHANGE ';
-        $qry .= '`' . $oldname . '` `' . $name . '` ' . $type;
+        $sql = rex_sql::factory($this->DBID);
+
+        $qry = 'ALTER TABLE ' . $sql->escapeIdentifier($this->getTableName()) . ' CHANGE ';
+        $qry .= $sql->escapeIdentifier($oldname) . ' ' . $sql->escapeIdentifier($name);
+
+        if (!ctype_alpha($type)) {
+            throw new InvalidArgumentException('Invalid column type "' . $type . '"');
+        }
+        /** @psalm-taint-escape sql */
+        $qry .= ' ' . $type;
 
         if (0 != $length) {
-            $qry .= '(' . $length . ')';
+            $qry .= '(' . (int) $length . ')';
         }
 
         // `text` columns in mysql can not have default values
         if ('text' !== $type && null !== $default) {
-            $qry .= ' DEFAULT \'' . str_replace("'", "\'", $default) . '\'';
+            $qry .= ' DEFAULT ' . $sql->escape($default);
         }
 
-        if (true !== $nullable) {
+        if (!$nullable) {
             $qry .= ' NOT NULL';
         }
 
         try {
-            $this->setQuery($qry);
+            $sql->setQuery($qry);
             return true;
-        } catch (rex_sql_exception $e) {
+        } catch (rex_sql_exception) {
             return false;
         }
     }
 
     /**
+     * @param string $name
      * @return bool
      */
     public function deleteColumn($name)
     {
-        $qry = 'ALTER TABLE `' . $this->getTableName() . '` DROP ';
-        $qry .= '`' . $name . '`';
+        $sql = rex_sql::factory($this->DBID);
+
+        $qry = 'ALTER TABLE ' . $sql->escapeIdentifier($this->getTableName()) . ' DROP ';
+        $qry .= $sql->escapeIdentifier($name);
 
         try {
-            $this->setQuery($qry);
+            $sql->setQuery($qry);
             return true;
-        } catch (rex_sql_exception $e) {
+        } catch (rex_sql_exception) {
             return false;
         }
     }
 
     /**
+     * @param string $name
      * @return bool
      */
     public function hasColumn($name)
@@ -128,19 +159,5 @@ class rex_metainfo_table_manager
             }
         }
         return false;
-    }
-
-    /**
-     * @return bool
-     */
-    protected function setQuery($qry)
-    {
-        try {
-            $sql = rex_sql::factory($this->DBID);
-            $sql->setQuery($qry);
-            return true;
-        } catch (rex_sql_exception $e) {
-            return false;
-        }
     }
 }

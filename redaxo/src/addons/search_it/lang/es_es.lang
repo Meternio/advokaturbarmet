@@ -28,6 +28,7 @@ search_it_settings_indexoffline = Artículo sin conexión de índice
 search_it_settings_automaticindex_label = Automáticamente indexar artículos (AGREGAR, EDITAR, ELIMINAR)
 search_it_settings_reindex_cols_onforms_label = Reindexar todas las columnas al editar tablas con YForm o formulario
 search_it_settings_index_url_addon_label = Index URL addon (version >=2) URLs
+search_it_settings_index_without_ssl_verification_label = SSL Zertifikat nicht überprüfen ( hilfreich bei lokaler Entwicklung und der Nutzung von selbst-zertifizierten Zertifikaten )
 
 search_it_settings_http_authbasic = HTTP Basic AUTH (protección de contraseñas .htaccess)
 search_it_settings_http_auth_desc = Si una protección de acceso protege el sitio web, se puede almacenar un inicio de sesión aquí para permitir la indexación
@@ -106,6 +107,7 @@ search_it_generate_article_http_error = no indexado, error de HTTP
 search_it_generate_article_404_error = no indexado, error HTTP 404
 search_it_generate_article_socket_error = no indexado, error de socket
 search_it_generate_article_id_not_found = no indexado, no hay artículo con esta ID en este idioma
+search_it_generate_col_datasets =
 search_it_generate_col_done = ({0} columna (s) indexadas)
 search_it_generate_col_error = no indexado, error
 search_it_generate_col_not_exists = La columna "{0}" no existe en la tabla "{1}"
@@ -144,7 +146,7 @@ search_it_test_legend = Verificar configuración y búsqueda de prueba
 search_it_test_submit = Búsqueda
 search_it_test_mode = Modo de búsqueda
 search_it_test_notice = Búsqueda realizada.
-search_it_test_hits = Hits:
+search_it_test_hits = Hits
 
 search_it_test_result = Resultado de la prueba
 search_it_test_result_object = Prueba objeto de resultado

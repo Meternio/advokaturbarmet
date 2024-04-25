@@ -31,17 +31,18 @@ Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod 
 Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.
 EOT;
 $sampleoutput = '<div id="search_it_sample_wrapper">
-        <h5 class="rex-form-text">'.$this->i18n('search_it_settings_highlight_sample').':<strong>"velit esse" accusam</strong></h5>
+        <h5 class="rex-form-text">' . $this->i18n('search_it_settings_highlight_sample') . ':<strong>"velit esse" accusam</strong></h5>
         <div id="search_it_sample">';
 $search_it = new search_it();
 $search_it->setSearchString('"velit esse" accusam');
 $search_it->parseSearchString('"velit esse" accusam');
-if ( $this->getConfig('highlight') == 'array' ) {
+$samplehighlighttext = $search_it->getHighlightedText($sample);
+if (is_array($samplehighlighttext)) {
     $sampleoutput .= '<pre>';
-    $sampleoutput .= print_r($search_it->getHighlightedText($sample), true);
+    $sampleoutput .= print_r($samplehighlighttext, true);
     $sampleoutput .= '</pre>';
 } else {
-    $sampleoutput .= $search_it->getHighlightedText($sample);
+    $sampleoutput .= $samplehighlighttext;
 }
 $sampleoutput .= '</div></div>';
 
@@ -74,7 +75,7 @@ $content2a = search_it_getSettingsFormSection(
             'id' => 'search_it_limit',
             'name' => 'search_config[limit][1]',
             'label' => $this->i18n('search_it_settings_limit'),
-            'value' => !empty($this->getConfig('limit')[1]) && is_numeric($this->getConfig('limit')[1]) ? $this->getConfig('limit')[1] : ''
+            'value' => !empty($this->getConfig('limit')[1]) && is_numeric($this->getConfig('limit')[1]) && $this->getConfig('limit')[1] > 0 ? $this->getConfig('limit')[1] : '10'
         ),
         array(
             'type' => 'string',
@@ -130,9 +131,9 @@ $content2a = search_it_getSettingsFormSection(
         ),
         array(
             'type' => 'directoutput',
-            'output' => '<div class="rex-form-row">'.$sampleoutput.'</div>'
+            'output' => '<div class="rex-form-row">' . $sampleoutput . '</div>'
         ),
-    ),'edit'
+    ), 'edit'
 );
 
 $content2[] = $content2a;
@@ -148,7 +149,7 @@ $content2[] = search_it_getSettingsFormSection(
             'label' => $this->i18n('search_it_settings_highlighterclass'),
             'value' => !empty($this->getConfig('highlighterclass')) ? $this->getConfig('highlighterclass') : ''
         ),
-    ),'edit'
+    ), 'edit'
 );
 
 $fragment = new rex_fragment();

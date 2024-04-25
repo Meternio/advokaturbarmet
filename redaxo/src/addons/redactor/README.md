@@ -1,5 +1,9 @@
 # Redactor Editor
 
+Bindet den WYSIWYG-Editor [Redactor](http://imperavi.com/redactor/) in Version 3 im Backend ein.
+
+![Screenshot](https://raw.githubusercontent.com/FriendsOfREDAXO/redactor/assets/redactor.png)
+
 ## Plugins 
 
 - alignment
@@ -64,6 +68,8 @@ Ein Profil wird entsprechend wie folgt angelegt:
 html,undo,|,redo,h1,h2,h3,h4,bold,italic,|,image,blockquote,lists[indent],ol,ul,linkExternal,linkInternal,hr,linkYForm[rex_yform_test=last_name|rex_yform_news=title],table,widget
 ```
 
+Weitere Einstellungen können hinterlegt werden, dazu die Parameter des Vendors beachten: <https://imperavi.com/redactor/docs/settings/overview/>
+
 ## Modulbeispiel
 
 ### Eingabe
@@ -119,3 +125,7 @@ Dazu müsste der Code für die Urls angepasst werden.
     );
 }, rex_extension::NORMAL);
 ```
+
+### Migration von `redactor2` zu `redactor` (3, diese Version)
+
+https://github.com/FriendsOfREDAXO/redactor/issues/11

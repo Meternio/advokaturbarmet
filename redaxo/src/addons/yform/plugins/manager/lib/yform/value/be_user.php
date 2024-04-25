@@ -11,7 +11,7 @@ class rex_yform_value_be_user extends rex_yform_value_abstract
 {
     public function enterObject()
     {
-        $value = $this->getValue();
+        $value = $this->getValue() ?? '';
         $showValue = $this->getValue();
 
         // translate:yform_always=0,translate:yform_onlyifempty=1,translate:yform_never=2
@@ -25,16 +25,16 @@ class rex_yform_value_be_user extends rex_yform_value_abstract
             case '0':
                 // always change. update
                 $value = $user_login;
-                if ($showValue != '') {
-                    $showValue = rex_i18n::msg('yform_is').': '.$showValue."\n";
+                if ('' != $showValue) {
+                    $showValue = rex_i18n::msg('yform_is') . ': ' . $showValue . "\n";
                 }
-                $showValue .= rex_i18n::msg('yform_will_set_to').': '.$value;
+                $showValue .= rex_i18n::msg('yform_will_set_to') . ': ' . $value;
                 break;
             case '1':
                 // if empty / bei create
-                if ($showValue == '') {
+                if ('' == $showValue) {
                     $value = $user_login;
-                    $showValue = 'will be set to: '.$value;
+                    $showValue = rex_i18n::msg('yform_will_set_to') . ': ' . $value;
                 }
                 break;
             default:
@@ -44,15 +44,21 @@ class rex_yform_value_be_user extends rex_yform_value_abstract
 
         $this->setValue($value);
 
-        if ($this->needsOutput() && $this->getElement('show_value') == 1 && $this->getValue() != '') {
-            $this->params['form_output'][$this->getId()] = $this->parse('value.showvalue.tpl.php', ['showValue' => $showValue]);
+        if ($this->needsOutput() && $this->isViewable()) {
+            if (!$this->isEditable()) {
+                $this->params['form_output'][$this->getId()] = $this->parse(['value.be_user-view.tpl.php', 'value.view.tpl.php'], ['showValue' => $showValue]);
+            } elseif (1 == $this->getElement('show_value') && '' != $this->getValue()) {
+                $this->params['form_output'][$this->getId()] = $this->parse('value.showvalue.tpl.php', ['showValue' => $showValue]);
+            }
         }
 
         $this->params['value_pool']['email'][$this->getName()] = $this->getValue();
-        $this->params['value_pool']['sql'][$this->getName()] = $this->getValue();
+        if ($this->saveInDB()) {
+            $this->params['value_pool']['sql'][$this->getName()] = $this->getValue();
+        }
     }
 
-    public function getDefinitions()
+    public function getDefinitions(): array
     {
         return [
             'type' => 'value',
@@ -71,7 +77,7 @@ class rex_yform_value_be_user extends rex_yform_value_abstract
 
     public static function getListValue($params)
     {
-        if ($params['value'] == '') {
+        if ('' == $params['value']) {
             return '-';
         }
 

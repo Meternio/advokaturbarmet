@@ -36,6 +36,23 @@ oder alternativ:
 echo mmp::generatePictureTag('bildTyp', 'image.jpg');
 ```
 
+### Verwendung von LazyLoad
+Für die Verwendung des LazyLoad (kleines bild anzeigen => großes Bild nachträglich laden) wird eine Javascript Library benötigt.
+Dies kann mit nachfolgendem Code eingebunden werden. Das Javascript wird mit dem Tag Attribut "defer" ausgegeben.
+
+```php
+echo mmp::getLazyLoad();
+```
+
+### Verwendung von Breakpoint abhängigen Bildern
+Um je nach Breakpoint ein anders Bild auszugeben, kann bei dem aufruf von "generatePictureTag" ein dritter Parameter vom Typ Array übergeben werden.
+
+Dieses Beispiel sorgt dafür, das bei dem Breakpoint XL das Bild anderes_image.jpg ausgegeben wird.
+
+```php
+echo mmp::generatePictureTag('bildTyp', 'image.jpg', ['XL' => 'anderes_image.jpg']);
+```
+
 ## Extension Points
 
 Für die eigene Anpassung von Ausgaben, existieren folgende Extension Points
@@ -88,6 +105,9 @@ class beispiel {
 
 beispiel::setClass(['class-1', 'class-2', 'class-3'])
 media_manager_plus_frontend::generatePictureTag('eigenerTyp', 'bild.jpg');
+
+// Für nachfolgende Aufrufe ohne eigener Class, einfach danach den Standard festlegen
+beispiel::setClass(['standard_klasse']);
 ```
 
 ### `MMP_IMGTAG`

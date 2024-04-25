@@ -1,14 +1,19 @@
 <?php
 
+/**
+ * @var rex_yform_value_textarea $this
+ * @psalm-scope-this rex_yform_value_textarea
+ */
+
 $notice = [];
-if ($this->getElement('notice') != '') {
+if ('' != $this->getElement('notice')) {
     $notice[] = rex_i18n::translate($this->getElement('notice'), false);
 }
 if (isset($this->params['warning_messages'][$this->getId()]) && !$this->params['hide_field_warning_messages']) {
     $notice[] = '<span class="text-warning">' . rex_i18n::translate($this->params['warning_messages'][$this->getId()], false) . '</span>'; //    var_dump();
 }
 if (count($notice) > 0) {
-    $notice = '<p class="help-block">' . implode('<br />', $notice) . '</p>';
+    $notice = '<p class="help-block small">' . implode('<br />', $notice) . '</p>';
 } else {
     $notice = '';
 }
@@ -31,7 +36,7 @@ $attributes = [
 
 $attributes = $this->getAttributeElements($attributes, ['placeholder', 'pattern', 'required', 'disabled', 'readonly']);
 
-echo '<div class="'.$class_group.'" id="'.$this->getHTMLId().'">
-<label class="'.implode(' ', $class_label).'" for="'.$this->getFieldId().'">'.$this->getLabel().'</label>
-<textarea '.implode(' ', $attributes).'>'.htmlspecialchars($this->getValue()).'</textarea>' . $notice .
+echo '<div class="' . $class_group . '" id="' . $this->getHTMLId() . '">
+<label class="' . implode(' ', $class_label) . '" for="' . $this->getFieldId() . '">' . $this->getLabel() . '</label>
+<textarea ' . implode(' ', $attributes) . '>' . rex_escape($this->getValue()) . '</textarea>' . $notice .
 '</div>';

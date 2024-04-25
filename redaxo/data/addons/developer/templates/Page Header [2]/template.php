@@ -88,8 +88,8 @@ $contentPadding = $hasIntro ? '' : ' padding';
     <meta property="og:locale" content="<?php echo $SEOLangCode ?>>">
     <meta property="og:site_name" content="<?php echo $metaValues->getValue('seo_basis_company_name'); ?>>">
     <meta property="og:email" content="<?php echo $metaValues->getValue('seo_basis_company_email');?>">
-    <meta property="og:latitude" content="<?php echo explode(str_replace(' ', '', $metaValues->getValue('seo_basis_company_coordinates')))[0];?>>">
-    <meta property="og:longitude" content="<?php echo explode(str_replace(' ', '', $metaValues->getValue('seo_basis_company_coordinates')))[1];?>">
+    <meta property="og:latitude" content="<?php echo explode(',',str_replace(' ', '', $metaValues->getValue('seo_basis_company_coordinates')))[0];?>">
+    <meta property="og:longitude" content="<?php echo explode(',',str_replace(' ', '', $metaValues->getValue('seo_basis_company_coordinates')))[1];?>">
     <meta property="og:street-address" content="<?php echo $metaValues->getValue('seo_basis_company_street');?>">
     <meta property="og:locality" content="<?php echo $metaValues->getValue('seo_basis_company_city');?>">
     <meta property="og:postal-code" content="<?php echo $metaValues->getValue('seo_basis_company_zip');?>">

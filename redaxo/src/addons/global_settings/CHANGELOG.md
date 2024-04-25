@@ -1,9 +1,23 @@
 # Globale Einstellungen - Changelog
 
+## Version 2.8.0
+- update: Textfelder werden jetzt als "mediumtext" angelegt
+- update: Kopiervorlage - Ausgaben werden direkt in der Feldübersicht anzeigen
+
+## Version 2.6.2
+- fixed: Notice-Spalte bei Update hinzufügen #36
+
+## Version 2.6.1
+- fixed: Datei im Medienpool kann nicht gelöscht werden #35
+
 ## Version 2.6.0
+- Rechte der Tabs werden an Felder vererbt
+- Felder und Tabs können Notizen hinzugefügt werden
+- Verwendete Medien werden vor dem löschen geschützt
+
+## Version 2.5.1
 - Replaced data-path by cache @alexplus.de
 - Spanish translation @nandes2062 
-
 
 ## Version 2.5.0
 

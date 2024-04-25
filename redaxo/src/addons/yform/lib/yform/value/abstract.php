@@ -12,17 +12,12 @@ abstract class rex_yform_value_abstract extends rex_yform_base_abstract
     public $element_values = [];
 
     public $value;
-    public $name;
-    public $label;
-    public $type;
+    public string $name;
+    public string $label;
+    public string $type;
     public $keys = [];
-
-    // ------------
-
-    public function setArticleId($aid)
-    {
-        $this->aid = $aid;
-    }
+    public bool $editable = true;
+    public bool $viewable = true;
 
     public function setValue($value)
     {
@@ -34,12 +29,10 @@ abstract class rex_yform_value_abstract extends rex_yform_base_abstract
         return $this->value;
     }
 
-    //  ------------ keys
-
     public function getFieldId($k = '')
     {
         $form_name_array = array_merge([$this->params['form_name']], $this->params['form_array']);
-        if ($k === '') {
+        if ('' === $k) {
             return 'yform-' . implode('_', $form_name_array) . '-field-' . $this->getId();
         }
         return 'yform-' . implode('_', $form_name_array) . '-field-' . $this->getId() . '_' . $k;
@@ -49,7 +42,7 @@ abstract class rex_yform_value_abstract extends rex_yform_base_abstract
     {
         $params = [];
         $params[] = $this->getId();
-        if ($k != '') {
+        if ('' != $k) {
             $params[] = $k;
         }
         return $this->params['this']->getFieldName($this->getName(), $params);
@@ -58,11 +51,11 @@ abstract class rex_yform_value_abstract extends rex_yform_base_abstract
     public function getHTMLId($suffix = '')
     {
         $form_name_array = array_merge([$this->params['form_name']], $this->params['form_array']);
-        if ($suffix != '') {
-            return 'yform-' . implode('_',$form_name_array) . '-' . $this->getName() . '-' . $suffix;
+        if ('' != $suffix) {
+            return 'yform-' . implode('_', $form_name_array) . '-' . $this->getName() . '-' . $suffix;
         }
-        if ($this->getName() != '') {
-            return 'yform-' . implode('_',$form_name_array) . '-' . $this->getName();
+        if ('' != $this->getName()) {
+            return 'yform-' . implode('_', $form_name_array) . '-' . $this->getName();
         }
         return '';
     }
@@ -71,8 +64,6 @@ abstract class rex_yform_value_abstract extends rex_yform_base_abstract
     {
         return 'form' . $this->type;
     }
-
-    // ------------ helpers
 
     public function setKey($k, $v)
     {
@@ -86,7 +77,7 @@ abstract class rex_yform_value_abstract extends rex_yform_base_abstract
 
     public function getValueFromKey($v = '')
     {
-        if ($v == '') {
+        if ('' == $v) {
             $v = $this->getValue();
         }
 
@@ -151,7 +142,7 @@ abstract class rex_yform_value_abstract extends rex_yform_base_abstract
         $attributes = self::getAttributeArray($attributes, $direct_attributes);
         $return = [];
         foreach ($attributes as $attribute => $value) {
-            $return[] = $attribute.'="'.htmlspecialchars($value).'"';
+            $return[] = $attribute . '="' . rex_escape($value) . '"';
         }
 
         return $return;
@@ -177,7 +168,7 @@ abstract class rex_yform_value_abstract extends rex_yform_base_abstract
         }
 
         foreach ($direct_attributes as $attribute) {
-            if (($element = $this->getElement($attribute))) {
+            if ($element = $this->getElement($attribute)) {
                 $attributes[$attribute] = $element;
             }
         }
@@ -197,8 +188,6 @@ abstract class rex_yform_value_abstract extends rex_yform_base_abstract
     {
         return $this->getElement('validation_disabled');
     }
-
-    // ------------
 
     public function loadParams(&$params, $elements = [])
     {
@@ -235,14 +224,13 @@ abstract class rex_yform_value_abstract extends rex_yform_base_abstract
 
     public function getLabelStyle($label)
     {
-        $label = rex_i18n::translate($label, null);
+        $label = rex_i18n::translate($label, false);
 
-        if ($this->params['form_label_type'] == 'html') {
+        if ('html' == $this->params['form_label_type']) {
         } else {
-            $label = nl2br(htmlspecialchars($label));
+            $label = nl2br(rex_escape($label));
         }
         return $label;
-        return '<span style="color:#f90">' . ($label) . '</span>';
     }
 
     protected function getValueForKey($key)
@@ -301,21 +289,56 @@ abstract class rex_yform_value_abstract extends rex_yform_base_abstract
 
     public function saveInDB($elementKey = 'no_db')
     {
+        // TODO: find es better naming instead of "saveInDb"
+        if (!$this->isEditable()) {
+            return false;
+        }
         // is no_db set
-        if (in_array($this->getElement($elementKey), [1,"1",true,"no_db"], true)) {
+        if (in_array($this->getElement($elementKey), [1, '1', true, 'no_db'], true)) {
             return false;
         }
         return true;
     }
 
-
-    // ------------ Trigger
-
-    public function enterObject()
+    public function canEdit(bool $editable = true)
     {
+        $this->editable = $editable;
     }
 
-    public function init()
+    public function canView(bool $viewable = true)
     {
+        $this->viewable = $viewable;
     }
+
+    public function isEditable()
+    {
+        /** @var rex_yform $yform */
+        $yform = $this->params['this'];
+        if (!$yform->isEditable()) {
+            return false;
+        }
+
+        // TODO:
+        // fieldabfrage
+
+        return true;
+    }
+
+    public function isViewable()
+    {
+        /** @var rex_yform $yform */
+        $yform = $this->params['this'];
+        if (!$yform->isViewable()) {
+            return false;
+        }
+
+        // TODO:
+        // fieldabfrage
+
+        return true;
+    }
+
+    public function enterObject() {}
+
+    public function init() {}
 }

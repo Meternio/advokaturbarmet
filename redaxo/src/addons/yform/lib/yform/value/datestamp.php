@@ -9,51 +9,86 @@
 
 class rex_yform_value_datestamp extends rex_yform_value_abstract
 {
-    public function preValidateAction()
-    {
-        $format = 'Y-m-d H:i:s';
-        $default_value = date($format);
-        $value = $this->getValue();
-        $this->showValue = self::datestamp_getValueByFormat($value, $this->getElement('format'));
+    private string $value_datestamp_currentValue = '';
 
-        if (2 == $this->getElement('only_empty')) {
-            // wird nicht gesetzt
-        } elseif (1 != $this->getElement('only_empty')) { // -> == 0
-            // wird immer neu gesetzt
-            $value = $default_value;
-        } elseif ('' != $this->getValue() && '0000-00-00 00:00:00' != $this->getValue()) {
-            // wenn Wert vorhanden ist direkt zurück
-        } elseif (isset($this->params['sql_object']) && '' != $this->params['sql_object']->getValue($this->getName()) && '0000-00-00 00:00:00' != $this->params['sql_object']->getValue($this->getName())) {
-            // sql object vorhanden und Wert gesetzt ?
-        } else {
-            $value = $default_value;
+    public function preValidateAction(): void
+    {
+        $default_value = date(rex_sql::FORMAT_DATETIME);
+        if ('' != $this->getElement('modify_default')) {
+            $dt = new DateTime();
+            if (false !== @$dt->modify($this->getElement('modify_default'))) {
+                $default_value = $dt->format(rex_sql::FORMAT_DATETIME);
+            }
         }
 
+        $value = $this->getValue() ?? '';
+        $this->value_datestamp_currentValue = $value;
+
+        switch ($this->getElement('only_empty')) {
+            case 2:
+                // wird nicht gesetzt
+                break;
+            case 1:
+                // nur wenn leer, oder neu
+                if ('0000-00-00 00:00:00' == $value || '' == $value || $this->params['main_id'] < 1) {
+                    $value = $default_value;
+                    $this->value_datestamp_currentValue = '';
+                }
+                break;
+            case 0:
+            default:
+                // wird immer neu gesetzt
+                $value = $default_value;
+        }
         $this->setValue($value);
     }
 
     public function enterObject()
     {
-        if ($this->needsOutput() && 1 == $this->getElement('show_value')) {
-            if ('' != $this->showValue) {
-                $this->params['form_output'][$this->getId()] = $this->parse('value.showvalue.tpl.php', ['showValue' => $this->showValue]);
-            } elseif ('' != $this->getValue()) {
-                $this->params['form_output'][$this->getId()] = $this->parse('value.hidden.tpl.php');
-            }
-        }
-
         $this->params['value_pool']['email'][$this->getName()] = $this->getValue();
         if ($this->getValue() && $this->saveInDb()) {
             $this->params['value_pool']['sql'][$this->getName()] = $this->getValue();
         }
+
+        if (!$this->needsOutput() && !$this->isViewable()) {
+            return;
+        }
+
+        $this->params['form_output'][$this->getId()] = '';
+        if ($this->needsOutput() && $this->isViewable() && !rex::isFrontend()) {
+            if ($this->isEditable()) {
+                $notice = '';
+                if ($this->value_datestamp_currentValue != $this->getValue()) {
+                    $notice = 'translate:yform_values_datestamp_update_notice';
+                }
+                $this->params['form_output'][$this->getId()] .= $this->parse(
+                    ['value.datestamp-view.tpl.php', 'value.datetime-view.tpl.php', 'value.date-view.tpl.php', 'value.view.tpl.php'],
+                    [
+                        'type' => 'text',
+                        'value' => ('' != $this->value_datestamp_currentValue) ? rex_yform_value_datetime::datetime_getFormattedDatetime($this->getElement('format'), $this->value_datestamp_currentValue) : '',
+                        'notice' => $notice,
+                    ],
+                );
+            } elseif ('' != $this->value_datestamp_currentValue) {
+                $this->params['form_output'][$this->getId()] .= $this->parse(
+                    ['value.datestamp-view.tpl.php', 'value.datetime-view.tpl.php', 'value.date-view.tpl.php', 'value.view.tpl.php'],
+                    [
+                        'type' => 'text',
+                        'value' => rex_yform_value_datetime::datetime_getFormattedDatetime($this->getElement('format'), $this->value_datestamp_currentValue),
+                    ],
+                );
+            }
+        }
+
+        $this->params['form_output'][$this->getId()] .= $this->parse('value.hidden.tpl.php');
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
-        return 'datestamp|name|label|[YmdHis/U/dmy/mysql]|[no_db]|[0-always,1-only if empty,2-never]';
+        return 'datestamp|name|label|[Y-m-d H:i:s/U/dmy]|[no_db]|[0-always,1-only if empty,2-never]';
     }
 
-    public function getDefinitions()
+    public function getDefinitions(): array
     {
         return [
             'type' => 'value',
@@ -61,10 +96,10 @@ class rex_yform_value_datestamp extends rex_yform_value_abstract
             'values' => [
                 'name' => ['type' => 'name',   'label' => rex_i18n::msg('yform_values_defaults_name')],
                 'label' => ['type' => 'text',    'label' => rex_i18n::msg('yform_values_defaults_label')],
-                'format' => ['type' => 'text',    'label' => rex_i18n::msg('yform_values_datestamp_format'), 'notice' => rex_i18n::msg('yform_values_datestamp_notice')],
+                'format' => ['type' => 'choice', 'label' => rex_i18n::msg('yform_values_datetime_format'), 'choices' => rex_yform_value_datetime::VALUE_DATETIME_FORMATS, 'default' => rex_yform_value_datetime::VALUE_DATETIME_DEFAULT_FORMAT, 'notice' => rex_i18n::msg('yform_values_format_show_notice')],
                 'no_db' => ['type' => 'no_db',   'label' => rex_i18n::msg('yform_values_defaults_table'),  'default' => 0],
                 'only_empty' => ['type' => 'choice',  'label' => rex_i18n::msg('yform_values_datestamp_only_empty'), 'default' => '0', 'choices' => 'translate:yform_always=0,translate:yform_onlyifempty=1,translate:yform_never=2'],
-                'show_value' => ['type' => 'checkbox',  'label' => rex_i18n::msg('yform_values_defaults_showvalue'), 'default' => '0', 'options' => '0,1'],
+                'modify_default' => ['type' => 'text',    'label' => rex_i18n::msg('yform_values_date_modify_default'), 'notice' => rex_i18n::msg('yform_values_date_modify_default_notics')],
             ],
             'description' => rex_i18n::msg('yform_values_datestamp_description'),
             'db_type' => ['datetime'],
@@ -74,37 +109,16 @@ class rex_yform_value_datestamp extends rex_yform_value_abstract
 
     public static function getListValue($params)
     {
-        $return = self::datestamp_getValueByFormat($params['subject'], $params['params']['field']['format']);
-        return ('' == $return) ? '-' : $return;
+        return rex_yform_value_datetime::getListValue($params);
     }
 
-    public static function datestamp_getValueByFormat($value, $format)
+    public static function getSearchField($params)
     {
-        if ('0000-00-00 00:00:00' == $value) {
-            $return = '';
-        } elseif ('' == $format) {
-            $return = $value;
-        } else {
-            $date = DateTime::createFromFormat('Y-m-d H:i:s', $value);
-            if ($date) {
-                $return = $date->format($format);
-            } else {
-                $return = '';
-            }
-        }
-        return $return;
+        rex_yform_value_datetime::getSearchField($params);
     }
 
     public static function getSearchFilter($params)
     {
-        $sql = rex_sql::factory();
-
-        $value = $params['value'];
-        $field = $sql->escapeIdentifier($params['field']->getName());
-
-        preg_match('/^\s*(<|<=|>|>=|<>|!=)?\s*(.*)$/', $value, $match);
-        $comparator = $match[1] ?: '=';
-        $value = $match[2];
-        return ' ' . $field . ' ' . $comparator . ' ' . $sql->escape($value);
+        return rex_yform_value_datetime::getSearchFilter($params);
     }
 }

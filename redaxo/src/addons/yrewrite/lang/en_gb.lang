@@ -16,6 +16,7 @@ yrewrite_setup = Setup
 yrewrite_docs = Documentation
 yrewrite_docs_navigation = Navigation
 
+yrewrite_error_article_in_use = Cannot delete article because it is in use.
 yrewrite_error_domain_missing = Please add a domain first.
 
 yrewrite_startarticleisalways = This is the start article of domain "{0}" and cannot be changed. This URL is always "/"
@@ -32,7 +33,7 @@ yrewrite_domain = Domain
 yrewrite_domain_info = http/https is optional. If entered, all links will be redirected to the specified protocol. If left blank, the current protocol will continue to be used. Slash at the end will be caught by the AddOn. www has to be specified if the domain should be used with "www". YRewrite treats www as a normal subdomain. If REDAXO runs in a subfolder, it needs to be specified here. Example: http://domain.com/subfolder/
 
 yrewrite_mount_id = Mount article of Domain
-yrewrite_mount_info = Starting point of the domain. The starting point can be set to any article inside the REDAXO structure. The specified domain is the starting point for all furher child articles and child categories. For example, a second domain can be set as the starting point for a different article, so multiple domains use the same structure basically. Leave blank, if root categories are required as URLs.
+yrewrite_mount_info = Set mountpoint (optional). If only part of the article structure is to be accessible via the domain, select the start article of a category that contains this content. If no mountpoint is specified, all articles are reachable through this domain, which are not assigned to any other domain yet (default). Leave blank if root categories are required as URL.
 
 yrewrite_start_id = Start article of domain
 yrewrite_start_info = Specify article which will be used as the domain start article. Can be retrieved by using rex_article::getSiteStartArticle()
@@ -73,6 +74,7 @@ yrewrite_warning_noslash = Do not use / on beginning or end
 yrewrite_warning_nottolong = The URL is not allowed to be longer then 250 characters
 yrewrite_warning_chars = The URL is invalid. Consider your characters. Only a-z 0-9 -
 yrewrite_warning_urlexists = URL exists already {0}
+yrewrite_warning_redirect_to_self = The article can not redirect to itself.
 yrewrite_warning_otherarticle = To different article
 yrewrite_urlupdated = URL has been updated
 yrewrite_domain_not_well_formed = Domain/URL syntax ill formed
@@ -80,6 +82,8 @@ yrewrite_domain_not_well_formed = Domain/URL syntax ill formed
 
 yrewrite_seotitle = Title
 yrewrite_seodescription = Description
+yrewrite_seoimage = Image
+yrewrite_seoimage_error_delete = SEO picture of article
 yrewrite_priority = Priority:
 yrewrite_changefreq = Update interval:
 
@@ -171,14 +175,20 @@ yrewrite_forward_302 = 302 - Found / Gefunden
 yrewrite_forward_303 = 303 - See Other / default redirect
 yrewrite_forward_307 = 307 - Temporary Redirect
 
+yrewrite_forward_article_deleted = [Article deleted]
+yrewrite_forward_article_offline = [Article offline]
+yrewrite_forward_media_deleted = [Media deleted]
+
 yrewrite_auto_redirect = Send automatic 301 redirects when articles are renamed or moved. (Should be disabled during development and only enabled in live environments)
 yrewrite_auto_redirect_days = Number of days until automatic redirects are deactivated.
 yrewrite_auto_redirect_days_info = Enter 0 to disable automatic deactivation
 yrewrite_auto_redirects = Automatic redirects
 yrewrite_expiry_date = Date of deactivation
 
+perm_general_yrewrite[forward] = YRewrite: Redirects
 yrewrite_perm_url_edit = Yrewrite: URL editing
 yrewrite_perm_seo_edit = Yrewrite: SEO-Data editing
+
 yrewrite_settings = Settings
 yrewrite_settings_saved = Settings updated
 yrewrite_unicode_urls = Allow unicode chars in URLs (umlauts, chinese/cyrillic characters etc.)

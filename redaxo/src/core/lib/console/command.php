@@ -10,13 +10,13 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 abstract class rex_console_command extends Command
 {
-    /** @var null|rex_package */
+    /** @var rex_package|null */
     protected $package;
 
     /**
      * @return $this
      */
-    public function setPackage(rex_package $package = null)
+    public function setPackage(?rex_package $package = null)
     {
         $this->package = $package;
 
@@ -24,11 +24,28 @@ abstract class rex_console_command extends Command
     }
 
     /**
-     * @return null|rex_package In core commands it returns `null`, otherwise the corresponding package object
+     * @return rex_package|null In core commands it returns `null`, otherwise the corresponding package object
      */
     public function getPackage()
     {
         return $this->package;
+    }
+
+    public function run(InputInterface $input, OutputInterface $output): int
+    {
+        try {
+            return parent::run($input, $output);
+        } catch (TypeError $error) {
+            $msg = $error->getMessage();
+
+            // compat to symfony 4.x, where it wasn't required to return a status code from command::execute()
+            // (redaxo < 5.12 uses symfony 4.x)
+            if (str_starts_with($msg, 'Return value of "') && strpos($msg, '::execute()" must be of the type int,')) {
+                return 0;
+            }
+
+            throw $error;
+        }
     }
 
     /**

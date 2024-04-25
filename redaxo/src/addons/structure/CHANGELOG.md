@@ -1,6 +1,170 @@
 Changelog
 =========
 
+Version 2.17.1 – 07.04.2024
+---------------------------
+
+### Bugfixes
+
+* Modulverwaltung: "Eingabe"-Feld wurde ohne Codemirror angezeigt (@skerbis)
+
+
+Version 2.17.0 – 12.03.2024
+---------------------------
+
+### Bugfixes
+
+* Der Templatename wurde in der Struktur ohne Escaping ausgegeben (@gharlan)
+* Create/Update-Felder (Datum/Benutzer) wurden teils nicht korrekt gesetzt (@gharlan)
+* `rex_module::forKey`: Im Objekt war der Key anschließend nicht gesetzt (@gharlan)
+
+
+Version 2.16.0 – 09.02.2024
+---------------------------
+
+### Neu
+
+* Neuer EP `PAGE_STRUCTURE_ARTICLE_ORDER_BY` um die Artikelsortierung zu ändern (@ynamite)
+* Neuer EP `SLICE_BE_PREVIEW` um die Slice-Vorschau im Backend ändern zu können (@michael-kreatif)
+
+### Bugfixes
+
+* Bei Kategorie-Statuswechsel wurde Createdate statt Updatedate gesetzt (@tbaddade)
+* Kategorie-Löschen funktionierte nicht, wenn es keine Clang mit ID 1 gibt (@alxndr-w)
+* Slice löschen: Bei anschließendem Reload Whoops vermeiden (@gharlan)
+* `rex_template::forKey()` korrigiert (@dgrothaus-mc)
+
+
+Version 2.15.0 – 28.02.2023
+---------------------------
+
+### Neu
+
+* Struktur: Template-Spalte optimiert (@pwechs)
+* Artikel-Editieransicht: Artikel-Status kann in der Metadaten-Box rechts geändert werden (@pwechs)
+* Templates: Bei Inaktiv-Setzung Prüfung, ob Template noch aktiv genutzt wird (@pwechs, @gharlan)
+* `rex_template`: Neue Methode `exists` (@staabm)
+* Datenbank: Überflüssige Indexe entfernt (@gharlan)
+
+
+Version 2.14.3 – 20.02.2023
+---------------------------
+
+### Bugfixes
+
+* Template-Liste: Templatename wurde nicht übersetzt bei Nutzung des `translate:`-Präfixes (@gharlan)
+* Linklist-Vars: Deprecated-Meldung entfernt (@gharlan)
+
+
+Version 2.14.2 – 13.12.2022
+---------------------------
+
+### Bugfixes
+
+* version-Plugin: Über EP `ART_CONTENT_UPDATED` kann nun bei `work_to_live`-Action gesteuert werden, in welcher Version man nach der Aktion im Backend landet (@gharlan)
+
+
+Version 2.14.1 – 02.08.2022
+---------------------------
+
+### Bugfixes
+
+* version-Plugin: Fehler beim Speichern der jeweiligen aktuellen Artikelversionsansicht (Live/Arbeitsversion) in der Session (@gharlan) 
+
+
+Version 2.14.0 – 25.07.2022
+---------------------------
+
+### Neu
+
+* `rex_template`: Neue Methode `getCtypes` die ein Array von neuen `rex_ctype`-Objekten liefert (@staabm)
+* Beim Löschen von Kategorien/Artikeln wird im confirm-Dialog darauf hingewiesen, dass in allen Sprachen gelöscht wird (@gharlan)
+* version-Plugin: 
+    - Voransicht Arbeitsversion: Bei fehlender Backend-Session kommt die Oops-Page mit Erläuterung (statt hartem Fehler mit Logmeldung) (@gharlan)
+    - Nach Kopieren zwischen Live/Arbeitsversion wird in die Zielversion gesprungen (@gharlan)
+
+### Bugfixes
+
+* history-Plugin: Session-Übernahme bei Multidomain korrigiert (@gharlan)
+* Templates-Cache war fälschlich in `cache/addons/templates` statt im `structure`-Cacheordner (@gharlan)
+
+
+Version 2.13.3 – 03.05.2022
+---------------------------
+
+### Bugfixes
+
+* Artikel in Kategorie umwandeln: Der neue Startartikel hatte eine falsche Priorität (@gharlan)
+* `rex_article_slice`: Methode `getMediaListArray` lieferte fälschlich Linklist-Werte (@rhetzer)
+* `REX_VALUE[]`: Mit PHP 8.1 kam es teils zu Deprecation-Notices (@nfission)
+
+
+Version 2.13.2 – 10.01.2022
+---------------------------
+
+### Bugfixes
+
+* Kategorie in Artikel umwandeln: Felder `catname` und `catpriority` wurden nicht korrekt aktualisiert (@gharlan)
+* Inhalt von/zu Sprache kopieren: Es werden auch die Inhalte der Arbeitsversion kopiert (@gharlan)
+* Die Version-Toolbar wird nicht in der Artikel-Funktionen-Page angezeigt, da dort nicht relevant (@gharlan)
+* Modul-Aktionen: Speicherung korrigiert bei Auswahl der "Alle"-Checkboxen (@gharlan)
+* Fehlermeldung im Fronted optimiert, wenn noch kein Artikel existiert (@gharlan)
+* Bei Installation wird die Default-Config für Start-/Fehler-Artikel in `rex_config` gespeichert (@gharlan)
+
+
+Version 2.13.1 – 29.11.2021
+---------------------------
+
+### Bugfixes
+
+* Templates: bei Modulzuweisung zu CTypes wurde teils fälschlich nach Speichern wieder "Alle" aktiviert (@gharlan)
+
+
+Version 2.13.0 – 17.11.2021
+---------------------------
+
+### Neu
+
+* Im Modul wird der aktuelle Slice gecacht als `rex_article_slice`-Objekt zur Verfügung gestellt über `$this->getCurrentSlice()`, so kann über PHP ohne REX_VARs auf die Values zugegriffen werden (@gharlan)
+* `rex_article_slice`:
+    - Neue Methoden `getValueArray`, `getLinkListArray`, `getMediaListArray`, die den Feldinhalt direkt als Array liefern (@gharlan)
+* Strukur-Page: Tabellenzeilen erhalten `data-status="x"`-Attribut, so können die Zeilen je nach Status gestylet werden (@danspringer, @schuer)
+* Kategorie-Selectfelder mit Suchfeld (@skerbis)
+* Bezeichner optimiert (@alxndr-w)
+
+### Bugfixes
+
+* Sliceänderungen wirkten sich teils erst verzögert aus (wegen Opcache) (@gharlan)
+* `rex_article_slice`: bei `getLinkUrl` bekam man die aktuelle URL statt `null`, wenn das Feld nicht gesetzt ist (`getMediaUrl` entsprechend) (@gharlan)
+* `REX_LINK[id=X output=url]` hat teilweise die URL in falscher Sprache geliefert (@gharlan)
+* Bei der Modulzuweisung zu den CTypes wurde bei Abwahl aller Module wieder die Checkbox "Alle" gesetzt (@gharlan)
+
+
+Version 2.12.1 – 21.06.2021
+---------------------------
+
+### Bugfixes
+
+* `rex_var_link(list)::getWidget`: ID-Parameter mit zusätzlichem Namespace-Anteil (nicht nur integer) wurden nur teilweise unterstützt (@gharlan)
+
+
+Version 2.12.0 – 03.03.2021
+---------------------------
+
+### Neu
+
+* In der Strukturübersicht werden leere Kategorien von solchen mit Kindelementen durch Iconvarianten unterschieden (@schuer)
+* Die Paginierung der Kategorien/Artikel kann über die AddOn-Property `rows_per_page` angepasst werden; der Default-Wert wurde auf 50 erhöht (@tyrant88)
+* Überschrift auf content-Page enthält Artikelnamen (@schuer)
+* Neuer EP `SLICE_MENU` (mit eigener Klasse `rex_extension_point_slice_menu`), als Weiterentwicklung von `STRUCTURE_CONTENT_SLICE_MENU` mit mehr Möglickeiten, die vorhandenen Buttons zu ändern/entfernen (@staabm)
+* Aus Templates/Modulen heraus kann neue Exception `rex_article_not_found_exception` geworfen werden, wodurch auf den Fehlerartikel gewechselt wird (@gharlan)
+* Wenn eine Sprache mit ID=0 (R4-Import) existiert, wird im Backend eine gesonderte Meldung ausgegeben (@staabm)
+
+### Bugfixes
+
+* Bei Exceptions in Modulen war anschließend ein zusätzlicher Output-Buffer aktiv (@staabm)
+
+
 Version 2.11.2 – 25.01.2021
 ---------------------------
 

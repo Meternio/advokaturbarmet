@@ -21,20 +21,20 @@ class rex_console_application extends Application
         try {
             $this->checkConsoleUser($input, $output);
             return parent::doRun($input, $output);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // catch and rethrow \Exceptions first to only catch fatal errors below (\Exception implements \Throwable)
             throw $e;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $message = $e->getMessage();
 
-            if ($e instanceof \ParseError) {
-                $message = 'Parse error: '.$message;
+            if ($e instanceof ParseError) {
+                $message = 'Parse error: ' . $message;
                 $severity = E_PARSE;
-            } elseif ($e instanceof \TypeError) {
-                $message = 'Type error: '.$message;
+            } elseif ($e instanceof TypeError) {
+                $message = 'Type error: ' . $message;
                 $severity = E_RECOVERABLE_ERROR;
             } else {
-                $message = 'Fatal error: '.$message;
+                $message = 'Fatal error: ' . $message;
                 $severity = E_ERROR;
             }
 
@@ -55,6 +55,9 @@ class rex_console_application extends Application
         return $exitCode;
     }
 
+    /**
+     * @return void
+     */
     private function loadPackages(rex_console_command $command)
     {
         // Some packages requires a working db connection in their boot.php
@@ -106,7 +109,7 @@ class rex_console_application extends Application
             $webuser = posix_getpwuid(fileowner(rex_path::backend()));
             if ($currentuser['name'] !== $webuser['name']) {
                 $io->warning([
-                    'Current user: ' . $currentuser['name']."\nOwner of redaxo: " . $webuser['name'],
+                    'Current user: ' . $currentuser['name'] . "\nOwner of redaxo: " . $webuser['name'],
                     'Running the console with a different user might cause unexpected side-effects.',
                 ]);
                 return false;

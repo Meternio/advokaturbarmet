@@ -7,10 +7,7 @@
  */
 class rex_structure_context
 {
-    /**
-     * @var array
-     */
-    private $params;
+    private array $params;
 
     public function __construct(array $params)
     {
@@ -30,10 +27,10 @@ class rex_structure_context
         if (!isset($params['clang_id'])) {
             $params['clang_id'] = 0;
         }
-        if (rex_clang::count() > 1 && !rex::getUser()->getComplexPerm('clang')->hasPerm($params['clang_id'])) {
+        if (rex_clang::count() > 1 && !rex::requireUser()->getComplexPerm('clang')->hasPerm($params['clang_id'])) {
             $params['clang_id'] = 0;
             foreach (rex_clang::getAllIds() as $key) {
-                if (rex::getUser()->getComplexPerm('clang')->hasPerm($key)) {
+                if (rex::requireUser()->getComplexPerm('clang')->hasPerm($key)) {
                     $params['clang_id'] = $key;
                     break;
                 }
@@ -47,57 +44,57 @@ class rex_structure_context
 
     public function getCategoryId(): int
     {
-        return $this->getValue('category_id', 0);
+        return (int) $this->getValue('category_id', 0);
     }
 
     public function getArticleId(): int
     {
-        return $this->getValue('article_id', 0);
+        return (int) $this->getValue('article_id', 0);
     }
 
     public function getClangId(): int
     {
-        return $this->getValue('clang_id', 0);
+        return (int) $this->getValue('clang_id', 0);
     }
 
     public function getCtypeId(): int
     {
-        return $this->getValue('ctype_id', 0);
+        return (int) $this->getValue('ctype_id', 0);
     }
 
     public function getArtStart(): int
     {
-        return $this->getValue('artstart', 0);
+        return (int) $this->getValue('artstart', 0);
     }
 
     public function getCatStart(): int
     {
-        return $this->getValue('catstart', 0);
+        return (int) $this->getValue('catstart', 0);
     }
 
     public function getEditId(): int
     {
-        return $this->getValue('edit_id', 0);
+        return (int) $this->getValue('edit_id', 0);
     }
 
     public function getFunction(): string
     {
-        return $this->getValue('function', '');
+        return (string) $this->getValue('function', '');
     }
 
     public function getMountpoints(): array
     {
-        return rex::getUser()->getComplexPerm('structure')->getMountpoints();
+        return rex::requireUser()->getComplexPerm('structure')->getMountpoints();
     }
 
     public function hasCategoryPermission(): bool
     {
-        return rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($this->getCategoryId());
+        return rex::requireUser()->getComplexPerm('structure')->hasCategoryPerm($this->getCategoryId());
     }
 
     public function getRowsPerPage(): int
     {
-        return $this->getValue('rows_per_page', 30);
+        return (int) $this->getValue('rows_per_page', 30);
     }
 
     public function getContext(): rex_context
@@ -112,12 +109,12 @@ class rex_structure_context
 
     /**
      * @param string $key
-     * @param mixed  $default
+     * @param mixed $default
      *
      * @return mixed
      */
     protected function getValue($key, $default)
     {
-        return isset($this->params[$key]) ? $this->params[$key] : $default;
+        return $this->params[$key] ?? $default;
     }
 }

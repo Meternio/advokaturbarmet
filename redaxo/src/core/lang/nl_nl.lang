@@ -6,9 +6,6 @@ general = Algemeen
 setlocale = nl_NL,nl_NL.UTF8,dutch,nld_nld,nld,Nederlands
 phpini_settings = PHP.ini Instellingen
 
-dateformat = %d %b. %Y
-datetimeformat = %d %b. %Y, %H:%M
-timeformat = %H:%M
 ctrl = Selecteer meerdere met <kbd>CTRL</kbd> of <kbd>CMD</kbd>
 
 # Allgemein
@@ -67,7 +64,7 @@ safemode_deactivate = Deactiveer safe mode
 form_field_first_priority = Op het begin
 form_field_after_priority = Na veld "{0}"
 
-# redaxo\include\pages\system.php
+# src\core\pages\system.php
 info_updated = Informatie bijgewerkt!
 delete_cache = Leeg cache
 delete_cache_description = Sjabloonbestanden en taalbestanden worden opnieuw aangemaakt, de artikelcache wordt gereset. De cache van elk artikel of categorie kan op aanvraag worden geleegd
@@ -140,7 +137,7 @@ debug_mode_info_off = Debug-mode is uitgeschakeld
 system_report = Systeemverslag
 system_report_markdown = In markdown
 
-# redaxo\include\pages\medienpool.php\setup.php
+# src\core\pages\setup.php
 setup = Installatie
 setup_restart = Herstart installatie
 setup_text = Hier kan u het installatieproces herstarten. Dit is normaalgesproken niet nodig en alleen bedoeld voor noodgevallen.
@@ -148,94 +145,86 @@ setup_error2 = Er kon helaas niet geschreven worden naar het configuratiebestand
 
 
 
-setup_100 = Installatie: stap 1 van 7 / Taal
+setup_100 = Installatie: stap 1 van 6 / Taal
 setup_101 = Selecteer een taal
-
-
 setup_199 = 1 / Taal
 
-setup_200 = Installatie: stap 2 van 7 / Licentie
-setup_201 = Welkom bij de REDAXO-installatie.
-setup_202 = <h3>Wat gebeurt er nu:</h3><ol><li>Controle van bestands- en maptoegang</li><li>Controleren van databasegegevens en deze wegschrijven in config.yml</li><li>Instellen of resetten van de database</li><li>Aanmaken van een administratoraccount</li></ol>
-setup_203 = Accepteer de gebruikersvoorwaarden en de licentie en ga door naar stap 3
-setup_299 = 2 / Licentie
+setup_200 = Installatie: stap 2 van 6 / Systeemcontrole
+setup_201 = De PHP-versie op deze server is verouderd ({0}), werk hem bij (minimaal naar versie {1}, de laatste versie is aanbevolen)
+setup_202 = De vereiste PHP-extensie <b>{0}</b> ontbreekt!
+setup_203 = Vereiste systeemextensies ontbreken
+setup_204 = De volgende mappen zijn niet schrijfbaar:
+setup_205 = De volgende bestanden zijn niet schrijfbaar:
+setup_206 = De volgende mappen bestaan niet of hebben niet de juiste toegangsrechten:
+setup_207 = PHP-versiecontrole | Toegangscontrole
+setup_208 = PHP-versie <b>{0}</b> OK
+setup_209 = Maptoegang OK
+setup_210 = Doorgaan met stap 3
+setup_212 = Stap 2 herhalen
+setup_299 = 2 / Systeemcontrole
 
-setup_300 = Installatie: stap 3 van 7 / Systeemcontrole
-setup_301 = De PHP-versie op deze server is verouderd ({0}), werk hem bij (minimaal naar versie {1}, de laatste versie is aanbevolen)
-setup_302 = De vereiste PHP-extensie <b>{0}</b> ontbreekt!
-setup_303 = Vereiste systeemextensies ontbreken
-setup_304 = De volgende mappen zijn niet schrijfbaar:
-setup_305 = De volgende bestanden zijn niet schrijfbaar:
-setup_306 = De volgende mappen bestaan niet of hebben niet de juiste toegangsrechten:
-setup_307 = PHP-versiecontrole | Toegangscontrole
-setup_308 = PHP-versie OK
-setup_309 = Maptoegang OK
+setup_300 = Installatie: stap 3 van 6 / '{0}' aanmaken
+setup_301 = '{0}' kon niet worden beschreven.
+setup_302 = Algemeen
+setup_303 = Database-informatie
+setup_304 = De opgegeven database bestaat al
+setup_308 = Databasenaam
+setup_309 = Wachtwoord
 setup_310 = Doorgaan met stap 4
-setup_312 = Stap 3 herhalen
-setup_399 = 3 / Systeemcontrole
+setup_311 = Database aanmaken?
+setup_312 = Tijdzone
+setup_313 = Tijdzone is ongeldig!
+setup_314 = Herhaal stap 3
+setup_315 = De volgende fout is opgetreden: {0}
+setup_316 = REDAXO-instellingen
+setup_399 = 3 / config.yml
 
-setup_400 = Installatie: stap 4 van 7 / '{0}' aanmaken
-setup_401 = '{0}' kon niet worden beschreven.
-setup_402 = Algemeen
-setup_403 = Database-informatie
-setup_404 = De opgegeven database bestaat al
-setup_408 = Databasenaam
-setup_409 = Wachtwoord
-setup_410 = Doorgaan met stap 5
-setup_411 = Database aanmaken?
-setup_412 = Tijdzone
-setup_413 = Tijdzone is ongeldig!
-setup_414 = Herhaal stap 4
-setup_415 = De volgende fout is opgetreden: {0}
-setup_416 = REDAXO-instellingen
-setup_499 = 4 / config.yml
+setup_400 = Installatie: stap 4 van 6 / Database
+setup_401 = Database-installatie
+setup_402 = Tabel {0} kon niet gevonden worden!
+setup_403 = Stel de database opnieuw in.
+setup_404 = Stel database in
+setup_405 = Stel database in en overschrijf hem indien hij al bestaat
+setup_405_note = Waarschuwing - Alle bestaande gegevens zullen worden verwijderd!
+setup_406 = Database bestaat al
+setup_406_note = Ga door zonder een database te importeren
+setup_407 = Importeer een bestaande database-export:
+setup_407_note = Importeer demo
+setup_408 = Kies een database-export!
+setup_409 = Geen database-exports gevonden!
+setup_410 = Backup AddOn kon niet worden gevonden!
+setup_411 = Doorgaan met stap 5
+setup_412 = Herhaal stap 4
+setup_413 = Systeem AddOn(s) konden niet worden geïnstalleerd
+setup_414 = Update database
+setup_414_note = Werk bij vanuit vorige versie
+setup_499 = 4 / Database
 
-setup_500 = Installatie: stap 5 van 7 / Database
-setup_501 = Database-installatie
-setup_502 = Tabel {0} kon niet gevonden worden!
-setup_503 = Stel de database opnieuw in.
-setup_504 = Stel database in
-setup_505 = Stel database in en overschrijf hem indien hij al bestaat
-setup_505_note = Waarschuwing - Alle bestaande gegevens zullen worden verwijderd!
-setup_506 = Database bestaat al
-setup_506_note = Ga door zonder een database te importeren
-setup_507 = Importeer een bestaande database-export:
-setup_507_note = Importeer demo
-setup_508 = Kies een database-export!
-setup_509 = Geen database-exports gevonden!
-setup_510 = Backup AddOn kon niet worden gevonden!
-setup_511 = Doorgaan met stap 6
-setup_512 = Herhaal stap 5
-setup_513 = Systeem AddOn(s) konden niet worden geïnstalleerd
-setup_514 = Update database
-setup_514_note = Werk bij vanuit vorige versie
-setup_599 = 5 / Database
+setup_500 = Installatie: stap 5 van 6 / Beheerder
+setup_501 = Voor een beheerdersgebruikersnaam in!
+setup_502 = Voor een beheerderswachtwoord in!
+setup_503 = Gebruikersaccount bestaat al!
+setup_504 = Kon beheerdersaccount niet aanmaken.
+setup_505 = Geen gebruikers gevonden. Maak een gebruiker aan.
+setup_506 = Maak beheerdersaccount aan
+setup_507 = Gebruikersnaam
+setup_508 = Wachtwoord
+setup_509 = Maak geen gebruiker aan
+setup_510 = Doorgaan met stap 6
+setup_511 = Herhaal stap 5
+setup_599 = 5 / Beheerder
 
-setup_600 = Installatie: stap 6 van 7 / Beheerder
-setup_601 = Voor een beheerdersgebruikersnaam in!
-setup_602 = Voor een beheerderswachtwoord in!
-setup_603 = Gebruikersaccount bestaat al!
-setup_604 = Kon beheerdersaccount niet aanmaken.
-setup_605 = Geen gebruikers gevonden. Maak een gebruiker aan.
-setup_606 = Maak beheerdersaccount aan
-setup_607 = Gebruikersnaam
-setup_608 = Wachtwoord
-setup_609 = Maak geen gebruiker aan
-setup_610 = Doorgaan met stap 7
-setup_611 = Herhaal stap 6
-setup_699 = 6 / Beheerder
+setup_600 = Installatie: stap 6 van 6 / Hoera
+setup_601 = Schrijven naar config.yml mislukt. Pas het bestand handmatig aan via FTP.
+setup_602 = Gefeliciteerd! REDAXO is succesvol geïnstalleerd.
+setup_603 = Let op:
+setup_604 =
+setup_605 = Veel plezier en succes<br />Het REDAXO-team
+setup_606 = Log in
+setup_699 = 6 / Hoera
 
-setup_700 = Installatie: stap 7 van 7 / Hoera
-setup_701 = Schrijven naar config.yml mislukt. Pas het bestand handmatig aan via FTP.
-setup_702 = Gefeliciteerd! REDAXO is succesvol geïnstalleerd.
-setup_703 = Let op:
-setup_704 = <ol><li>{0}Log in{1} met het aangemaakte account</li><li>Importeer een demo [na het inloggen]: ga naar Importeren/Exporteren en stel de database en bronbestanden in</li></ol>
-setup_705 = Veel plezier en succes<br />Het REDAXO-team
-setup_706 = Log in
-setup_799 = 7 / Hoera
-
-setup_security_msg = De map redaxo/include is niet beveiligd. Beveilig deze map en herstart de installatie.
-setup_no_js_security_msg = Zorg ervoor dat de bestanden in redaxo/include niet direct toegankelijk zijn! Door veiligheidsoverwegingen zouden deze bestanden niet toegankelijk mogen zijn!
+setup_security_msg =
+setup_no_js_security_msg =
 setup_security_no_https = De installatie gaat door zonder SSL-versleuteling. Het is aanbevolen om SSL-versleuteling te gebruiken om de privacy en beveiliging in elke aanvraag te waarborgen.
 setup_security_warn_mod_security = De Apache-module "mod_security" is geladen. Dit kan problemen veroorzaken indien niet juist geconfigureerd.
 setup_security_deprecated_php = De gebruikte PHP-versie {0} krijg niet langer updates. Overweeg om te upgraden naar een nieuwere versie.
@@ -256,7 +245,7 @@ https_only_frontend = Alleen inschakelen voor frontend
 https_only_backend = Alleen inschakelen voor backend
 https_activate = Inschakelen voor front- en backend
 
-# redaxo\include\pages\addon.php
+# src\core\pages\addon.php
 addon = AddOn
 addons = AddOns
 package_help = Help voor
@@ -346,7 +335,7 @@ plugin_systempackage_delete_not_allowed = Systeem PlugIns mogen niet verwijderd 
 plugin_dir_not_writable = De PlugIn map is niet schrijfbaar!
 plugin_cache_not_writable = De PlugIn cachemap is niet schrijfbaar!
 
-# redaxo\include\pages\credits.php
+# src\core\pages\credits.php
 credits = Credits
 credits_name = Naam
 credits_help = Help
@@ -362,15 +351,13 @@ credits_developer = Ontwikkelaar
 credits_designer = Ontwerper
 credits_license = Licentie
 
-# redaxo\include\pages\profile.php
+# src\core\pages\profile.php
 profile_myprofile = Bewerk mijn profiel
 profile_title = Mijn profiel
 profile_save = Sla profiel op
 invalid_email = Het opgegeven e-mail-adres is ongeldig.
 user_psw_updated = Wachtwoord is bijgewerkt
-user_psw_error = Voer het oude wachtwoord in en vul het nieuwe wachtwoord twee keer in
 profile_changepsw = Verander wachtwoord
-old_password = Oud wachtwoord
 new_password = Nieuw wachtwoord
 new_password_repeat = Herhaal nieuw wachtwoord
 profile_save_psw = Sla wachtwoord op
@@ -423,8 +410,8 @@ footer_datetime = {0}
 footer_scripttime = {0} sec.
 footer_credits = Credits
 
-created_by = gemaakt door
-created_on = gemaakt op
-updated_by = bijgewerkt door
-updated_on = bijgewerkt op
+created_by = Gemaakt door
+created_on = Gemaakt op
+updated_by = Bijgewerkt door
+updated_on = Bijgewerkt op
 status = Status

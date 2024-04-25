@@ -12,9 +12,9 @@ trait rex_singleton_trait
     /**
      * Singleton instances.
      *
-     * @var static[]
+     * @var array<class-string<static>, static>
      */
-    private static $instances = [];
+    private static array $instances = [];
 
     /**
      * Returns the singleton instance.
@@ -37,6 +37,6 @@ trait rex_singleton_trait
      */
     final public function __clone()
     {
-        throw new BadMethodCallException('Cloning "' . get_class($this) . '" is not allowed!');
+        throw new BadMethodCallException('Cloning "' . static::class . '" is not allowed!');
     }
 }

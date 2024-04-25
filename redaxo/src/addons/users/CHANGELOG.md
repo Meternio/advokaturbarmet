@@ -1,6 +1,57 @@
 Changelog
 =========
 
+Version 2.10.0 – 28.02.2023
+---------------------------
+
+### Neu
+
+* Sessions/Passkeys der Benutzer können eingesehen und einzeln gelöscht werden (@dergel, @gharlan)
+
+
+Version 2.9.2 – 20.02.2023
+--------------------------
+
+### Bugfixes
+
+* Nach Identitätswechsel konnte u.U. der Original-Benutzer gelöscht werden (@gharlan)
+
+
+Version 2.9.1 – 13.12.2022
+--------------------------
+
+### Bugfixes
+
+* Nicht-Admins mit Zugriff auf die Benutzerverwaltung konnten Admins bearbeiten (@bloep)
+
+
+Version 2.9.0 – 25.07.2022
+--------------------------
+
+### Neu
+
+* Benutzerliste: Zugewiesene Rollen werden als Liste ausgegeben für bessere Lesbarkeit (@tbaddade)
+* Rollen können dupliziert werden (@gharlan)
+
+
+Version 2.8.2 – 29.11.2021
+--------------------------
+
+### Security
+
+* Siehe Core-Changelog zu 5.13.1
+
+
+Version 2.8.0 – 03.03.2021
+--------------------------
+
+### Neu
+
+* Aktive/inaktive Benutzer werden in Liste über Iconvarianten unterschieden (@schuer)
+* Passwortregeln werden unterhalb des Passwortfelds angezeigt (@gharlan)
+* Passende `autocomplete`-Attribute werden gesetzt (@alxndr-w)
+
+
 Version 2.7.1 – 11.11.2020
 --------------------------
 

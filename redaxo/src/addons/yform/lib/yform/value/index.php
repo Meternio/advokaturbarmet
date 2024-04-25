@@ -9,16 +9,13 @@
 
 class rex_yform_value_index extends rex_yform_value_abstract
 {
-    public function postFormAction()
+    public function postFormAction(): void
     {
         if (1 != $this->params['send']) {
             return;
         }
 
-        $value = $this->getValue();
-        if (!$value) {
-            $value = '';
-        }
+        $value = $this->getValue() ?? '';
 
         if ('' != $this->getElement('names')) {
             $index_labels = explode(',', $this->getElement('names'));
@@ -34,7 +31,7 @@ class rex_yform_value_index extends rex_yform_value_abstract
                 }
 
                 if (isset($this->params['value_pool']['sql'][$name])) {
-                    $value .= ' '.$this->params['value_pool']['sql'][$name];
+                    $value .= ' ' . $this->params['value_pool']['sql'][$name];
                     continue;
                 }
 
@@ -46,21 +43,23 @@ class rex_yform_value_index extends rex_yform_value_abstract
 
             if ($relations) {
                 foreach ($this->getRelationValues($relations) as $v) {
-                    $value .= ' '.$v;
+                    $value .= ' ' . $v;
                 }
             }
+
+            $value .= $this->getElement('salt');
 
             $fnc = trim($this->getElement('function'));
             if ('' != $fnc) {
                 if (1 == $this->getElement('add_this_param')) {
-                    $value = call_user_func($fnc, $value, $this);
+                    $value = call_user_func($fnc, $value, $this) ?? '';
                 } else {
-                    $value = call_user_func($fnc, $value);
+                    $value = call_user_func($fnc, $value) ?? '';
                 }
             }
         }
 
-        $this->setValue($value);
+        $this->setValue(trim($value));
 
         $this->params['value_pool']['email'][$this->getName()] = $this->getValue();
         if ($this->saveInDb()) {
@@ -68,12 +67,12 @@ class rex_yform_value_index extends rex_yform_value_abstract
         }
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'index|name|label|name1,name2,name3|[no_db]|[func/md5/sha]';
     }
 
-    public function getDefinitions()
+    public function getDefinitions(): array
     {
         return [
             'type' => 'value',
@@ -85,6 +84,7 @@ class rex_yform_value_index extends rex_yform_value_abstract
                 'no_db' => ['type' => 'no_db',   'label' => rex_i18n::msg('yform_values_defaults_table'),  'default' => 0],
                 'function' => ['type' => 'text',  'label' => rex_i18n::msg('yform_values_index_function'), 'notice' => rex_i18n::msg('yform_values_index_function_notice')],
                 'add_this_param' => ['type' => 'checkbox',   'label' => rex_i18n::msg('yform_values_index_add_this_param'),  'default' => 0],
+                'salt' => ['type' => 'text',    'label' => rex_i18n::msg('yform_values_hashvalue_salt')],
             ],
             'description' => rex_i18n::msg('yform_values_index_description'),
             'db_type' => ['mediumtext', 'text', 'varchar(191)'], // text (65kb) mediumtext (16Mb)
@@ -148,18 +148,18 @@ class rex_yform_value_index extends rex_yform_value_abstract
                     $sql->escapeIdentifier($table),
                     $nextIndex,
                     $index,
-                    $sql->escapeIdentifier($name)
+                    $sql->escapeIdentifier($name),
                 );
 
                 return $nextIndex;
             };
 
-            $addFieldsAndJoins = static function (array $columns, rex_yform_manager_field $relation, $index) use (&$addFieldsAndJoins, $addJoin, &$fields, &$joins, &$maxIndex, $sql) {
+            $addFieldsAndJoins = static function (array $columns, rex_yform_manager_field $relation, $index) use (&$addFieldsAndJoins, $addJoin, &$fields, $sql) {
                 $table = rex_yform_manager_table::get($relation->getElement('table'));
 
                 $fieldFormat = 't%d.%s';
                 if ($relation->getElement('relation_table') || in_array($relation->getElement('type'), [1, 3, 4, 5])) {
-                    $fieldFormat = 'GROUP_CONCAT('.$fieldFormat.' SEPARATOR " ")';
+                    $fieldFormat = 'GROUP_CONCAT(' . $fieldFormat . ' SEPARATOR " ")';
                 }
 
                 foreach ($columns as $name => $sub) {
@@ -204,6 +204,7 @@ class rex_yform_value_index extends rex_yform_value_abstract
             $fromTable = $relation->getElement('table');
             $type = $relation->getElement('type');
 
+            $columns = [];
             if ($relation->getElement('relation_table')) {
                 try {
                     $columns = $table->getRelationTableColumns($name);
@@ -230,7 +231,7 @@ class rex_yform_value_index extends rex_yform_value_abstract
                 'SELECT %s FROM %s t0 %s WHERE ',
                 implode(', ', $fields),
                 $sql->escapeIdentifier($fromTable),
-                implode(' ', $joins)
+                implode(' ', $joins),
             );
 
             switch ($type) {
@@ -253,7 +254,7 @@ class rex_yform_value_index extends rex_yform_value_abstract
                     throw new LogicException(sprintf('Unknown relation type "%s"', $type));
             }
 
-            $data = $sql->getArray($query.' LIMIT 1');
+            $data = $sql->getArray($query . ' LIMIT 1');
 
             if (!isset($data[0])) {
                 continue;

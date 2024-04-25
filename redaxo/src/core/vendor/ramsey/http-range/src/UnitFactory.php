@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the ramsey/http-range library
  *
@@ -9,6 +10,8 @@
  * @license http://opensource.org/licenses/MIT MIT
  */
 
+declare(strict_types=1);
+
 namespace Ramsey\Http\Range;
 
 use Ramsey\Http\Range\Exception\InvalidRangeSetException;
@@ -17,35 +20,36 @@ use Ramsey\Http\Range\Unit\BytesUnit;
 use Ramsey\Http\Range\Unit\GenericUnit;
 use Ramsey\Http\Range\Unit\UnitInterface;
 
+use function explode;
+use function strtolower;
+
 /**
- * A default factory for creating bytes range units
+ * A default factory for creating range units.
  */
 class UnitFactory implements UnitFactoryInterface
 {
     /**
-     * Returns a parsed unit for the HTTP Range header
+     * Returns a parsed unit for the HTTP Range header.
      *
-     * @param string $rangesSpecifier The original value of the HTTP Range header
-     * @param mixed $totalSize The total size of the entity described by this unit
+     * @param string $rangesSpecifier The original value of the HTTP Range header.
+     * @param mixed $totalSize The total size of the entity described by this unit.
      *
-     * @throws InvalidRangeUnitException
-     * @throws InvalidRangeSetException
-     *
-     * @return UnitInterface
+     * @throws InvalidRangeUnitException if no range unit could be found.
+     * @throws InvalidRangeSetException if no range set could be found.
      */
-    public function getUnit($rangesSpecifier, $totalSize)
+    public function getUnit(string $rangesSpecifier, $totalSize): UnitInterface
     {
         $unitSet = explode('=', $rangesSpecifier);
 
-        if (empty($unitSet[0])) {
+        if (!isset($unitSet[0]) || $unitSet[0] === '') {
             throw new InvalidRangeUnitException(
-                'No range-unit provided in $rangesSpecifier'
+                'No range-unit provided in $rangesSpecifier',
             );
         }
 
-        if (empty($unitSet[1])) {
+        if (!isset($unitSet[1]) || $unitSet[1] === '') {
             throw new InvalidRangeSetException(
-                'No range-set provided in $rangesSpecifier'
+                'No range-set provided in $rangesSpecifier',
             );
         }
 

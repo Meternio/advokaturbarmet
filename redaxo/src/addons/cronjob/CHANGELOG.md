@@ -1,6 +1,54 @@
 Changelog
 =========
 
+Version 2.10.2 – 24.02.2024
+---------------------------
+
+### Bugfixes
+
+* Cronjob-Typen wurden nicht alphabetisch sortiert in der Auswahl (@dergel)
+* Cronjob-Klassen konnten keine Namespaces enthalten (@dergel)
+
+
+Version 2.10.1 – 09.02.2024
+---------------------------
+
+### Bugfixes
+
+* Bei Aufruf über Console wird `nexttime` nicht mehr beachtet (da überflüssig und problematisch) (@gharlan)
+
+
+Version 2.9.0 – 25.07.2022
+--------------------------
+
+### Neu
+
+* Skript-Umgebung: Auflistung der ausgeführten Jobs mit Status und Meldung (@gharlan)
+* Im Cronjob-Formular werden teils Checkboxen/Radios statt Selects verwendet (@gharlan)
+* Anzeige Logeinträge auf 100 erhöht (@staabm)
+
+
+Version 2.8.2 – 10.01.2022
+--------------------------
+
+### Bugfixes
+
+* Validierung für die Intervall-Felder korrigiert (@gharlan)
+
+
+Version 2.8.0 – 03.03.2021
+--------------------------
+
+### Neu
+
+* Der Hinweis für die Skript-Umgebung enthält den absoluten Pfad zur REDAXO-Console (@skerbis)
+* PlugIn `article_status`: Neu können die Artikel-Datumsfelder nach Statusänderung automatisch geleert werden (optional) (@tyrant88)
+
+### Bugfixes
+
+* Fehlendes Escaping ergänzt (@gharlan)
+
+
 Version 2.7.0 – 10.03.2020
 --------------------------
 

@@ -3,13 +3,14 @@
 use Clockwork\Request\Request;
 use Clockwork\Storage\Storage;
 
-/**
- * Simple file based storage for requests
- */
+// File based storage for requests
 class FileStorage extends Storage
 {
 	// Path where files are stored
 	protected $path;
+
+	// Path permissions
+	protected $pathPermissions;
 
 	// Metadata expiration time in minutes
 	protected $expiration;
@@ -23,28 +24,11 @@ class FileStorage extends Storage
 	// Index file handle
 	protected $indexHandle;
 
-	// Return new storage, takes path where to store files as argument, throws exception if path is not writable
-	public function __construct($path, $dirPermissions = 0700, $expiration = null, $compress = false)
+	// Return new storage, takes path where to store files as argument
+	public function __construct($path, $pathPermissions = 0700, $expiration = null, $compress = false)
 	{
-		if (! file_exists($path)) {
-			// directory doesn't exist, try to create one
-			if (! @mkdir($path, $dirPermissions, true)) {
-				throw new \Exception("Directory \"{$path}\" does not exist.");
-			}
-
-			// create default .gitignore, to ignore stored json files
-			file_put_contents("{$path}/.gitignore", "*.json\n*.json.gz\nindex\n");
-		} elseif (! is_writable($path)) {
-			throw new \Exception("Path \"{$path}\" is not writable.");
-		}
-
-		if (! file_exists($indexFile = "{$path}/index")) {
-			file_put_contents($indexFile, '');
-		} elseif (! is_writable($indexFile)) {
-			throw new \Exception("Path \"{$indexFile}\" is not writable.");
-		}
-
 		$this->path = $path;
+		$this->pathPermissions = $pathPermissions;
 		$this->expiration = $expiration === null ? 60 * 24 * 7 : $expiration;
 		$this->compress = $compress;
 	}
@@ -64,7 +48,8 @@ class FileStorage extends Storage
 	// Return the latest request
 	public function latest(Search $search = null)
 	{
-		return $this->loadRequests($this->searchIndexBackward($search, null, 1));
+		$requests = $this->loadRequests($this->searchIndexBackward($search, null, 1));
+		return reset($requests);
 	}
 
 	// Return requests received before specified id, optionally limited to specified count
@@ -79,18 +64,28 @@ class FileStorage extends Storage
 		return $this->loadRequests($this->searchIndexForward($search, $id, $count));
 	}
 
-	// Store request, requests are stored in JSON representation in files named <request id>.json in storage path
-	public function store(Request $request)
+	// Store request, requests are stored in JSON representation in files named <request id>.json in storage path,
+	// throws exception if path is not writable
+	public function store(Request $request, $skipIndex = false)
 	{
+		$this->ensurePathIsWritable();
+
 		$path = "{$this->path}/{$request->id}.json";
 		$data = @json_encode($request->toArray(), \JSON_PARTIAL_OUTPUT_ON_ERROR);
 
 		$this->compress
 			? file_put_contents("{$path}.gz", gzcompress($data))
-			: file_put_contents($path, $data);
+			: file_put_contents($path, $data . PHP_EOL);
 
-		$this->updateIndex($request);
+		if (! $skipIndex) $this->updateIndex($request);
+
 		$this->cleanup();
+	}
+
+	// Update existing request
+	public function update(Request $request)
+	{
+		return $this->store($request, true);
 	}
 
 	// Cleanup old requests
@@ -118,6 +113,7 @@ class FileStorage extends Storage
 		}
 	}
 
+	// Load a single request by id from filesystem
 	protected function loadRequest($id)
 	{
 		$path = "{$this->path}/{$id}.json";
@@ -129,6 +125,7 @@ class FileStorage extends Storage
 		return new Request(json_decode($this->compress ? gzuncompress($data) : $data, true));
 	}
 
+	// Load multiple requests by ids from filesystem
 	protected function loadRequests($ids)
 	{
 		return array_filter(array_map(function ($id) { return $this->loadRequest($id); }, $ids));
@@ -149,7 +146,7 @@ class FileStorage extends Storage
 	// Search index in specified direction from specified ID or last record, with optional results count limit
 	protected function searchIndex($direction, Search $search = null, $id = null, $count = null)
 	{
-		$this->openIndex($direction == 'previous' ? 'end' : 'start');
+		$this->openIndex($direction == 'previous' ? 'end' : 'start', false, true);
 
 		if ($id) {
 			while ($request = $this->readIndex($direction)) { if ($request->id == $id) break; }
@@ -161,13 +158,11 @@ class FileStorage extends Storage
 			if (! $search || $search->matches($request)) {
 				$found[] = $request->id;
 			} elseif ($search->stopOnFirstMismatch) {
-				return $found;
+				break;
 			}
 
-			if ($count && count($found) == $count) return $found;
+			if ($count && count($found) == $count) break;
 		}
-
-		if ($count == 1) return reset($found);
 
 		return $direction == 'next' ? $found : array_reverse($found);
 	}
@@ -191,6 +186,8 @@ class FileStorage extends Storage
 	{
 		if ($lock) flock($this->indexHandle, LOCK_UN);
 		fclose($this->indexHandle);
+
+		$this->indexHandle = null;
 	}
 
 	// Read a line from index in the specified direction (next or previous)
@@ -266,6 +263,7 @@ class FileStorage extends Storage
 		file_put_contents("{$this->path}/index", $trimmed);
 	}
 
+	// Create an incomplete request from index data
 	protected function makeRequestFromIndex($record)
 	{
 		$type = isset($record[7]) ? $record[7] : 'response';
@@ -282,7 +280,7 @@ class FileStorage extends Storage
 
 		return new Request(array_combine(
 			[ 'id', 'time', 'method', $nameField, 'controller', 'responseStatus', 'responseDuration', 'type' ],
-			$record + [ null, null, null, null, null, null, null, 'response' ]
+			array_slice($record, 0, 8) + [ null, null, null, null, null, null, null, 'response' ]
 		));
 	}
 
@@ -318,5 +316,27 @@ class FileStorage extends Storage
 
 		flock($handle, LOCK_UN);
 		fclose($handle);
+	}
+
+	// Ensure the metadata path is writable and initialize it if it doesn't exist, throws exception if it is not writable 
+	protected function ensurePathIsWritable()
+	{
+		if (! file_exists($this->path)) {
+			// directory doesn't exist, try to create one
+			if (! @mkdir($this->path, $this->pathPermissions, true)) {
+				throw new \Exception("Directory \"{$this->path}\" does not exist.");
+			}
+
+			// create default .gitignore, to ignore stored json files
+			file_put_contents("{$this->path}/.gitignore", "*.json\n*.json.gz\nindex\n");
+		} elseif (! is_writable($this->path)) {
+			throw new \Exception("Path \"{$this->path}\" is not writable.");
+		}
+
+		if (! file_exists($indexFile = "{$this->path}/index")) {
+			file_put_contents($indexFile, '');
+		} elseif (! is_writable($indexFile)) {
+			throw new \Exception("Path \"{$indexFile}\" is not writable.");
+		}
 	}
 }

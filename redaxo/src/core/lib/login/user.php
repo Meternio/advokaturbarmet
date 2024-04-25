@@ -9,7 +9,9 @@
  */
 class rex_user
 {
-    use rex_instance_pool_trait;
+    use rex_instance_pool_trait {
+        clearInstance as baseClearInstance;
+    }
 
     /**
      * SQL instance.
@@ -18,9 +20,7 @@ class rex_user
      */
     protected $sql;
 
-    /**
-     * @var null|bool
-     */
+    /** @var bool|null */
     private $admin;
 
     /**
@@ -33,13 +33,10 @@ class rex_user
     /**
      * Class name for user roles.
      *
-     * @psalm-var class-string<rex_user_role_interface>
+     * @var class-string<rex_user_role_interface>
      */
     protected static $roleClass;
 
-    /**
-     * Constructor.
-     */
     public function __construct(rex_sql $sql)
     {
         $this->sql = $sql;
@@ -47,10 +44,31 @@ class rex_user
 
     public static function get(int $id): ?self
     {
-        return self::getInstance($id, static function (int $id) {
-            $sql = rex_sql::factory()->setQuery('SELECT * FROM '.rex::getTable('user').' WHERE id = ?', [$id]);
+        return static::getInstance($id, static function (int $id) {
+            $sql = rex_sql::factory()->setQuery('SELECT * FROM ' . rex::getTable('user') . ' WHERE id = ?', [$id]);
 
-            return $sql->getRows() ? new self($sql) : null;
+            if ($sql->getRows()) {
+                $user = new static($sql);
+                static::addInstance('login_' . $user->getLogin(), $user);
+                return $user;
+            }
+
+            return null;
+        });
+    }
+
+    public static function forLogin(#[SensitiveParameter] string $login): ?self
+    {
+        return static::getInstance('login_' . $login, static function () use ($login) {
+            $sql = rex_sql::factory()->setQuery('SELECT * FROM ' . rex::getTable('user') . ' WHERE login = ?', [$login]);
+
+            if ($sql->getRows()) {
+                $user = new static($sql);
+                static::addInstance($user->getId(), $user);
+                return $user;
+            }
+
+            return null;
         });
     }
 
@@ -69,6 +87,7 @@ class rex_user
     {
         $user = new self($sql);
         self::addInstance($user->getId(), $user);
+        self::addInstance('login_' . $user->getLogin(), $user);
 
         return $user;
     }
@@ -186,7 +205,7 @@ class rex_user
             return true;
         }
         $result = false;
-        if (false !== strpos($perm, '/')) {
+        if (str_contains($perm, '/')) {
             [$complexPerm, $method] = explode('/', $perm, 2);
             $complexPerm = $this->getComplexPerm($complexPerm);
             return $complexPerm ? $complexPerm->$method() : false;
@@ -221,9 +240,28 @@ class rex_user
      * Sets the role class.
      *
      * @param class-string<rex_user_role_interface> $class Class name
+     * @return void
      */
     public static function setRoleClass($class)
     {
         self::$roleClass = $class;
+    }
+
+    /**
+     * Removes the instance of the given key.
+     *
+     * @param mixed $key Key
+     * @return void
+     */
+    public static function clearInstance($key)
+    {
+        $user = static::getInstance($key);
+
+        if (!$user) {
+            return;
+        }
+
+        static::baseClearInstance($user->getId());
+        static::baseClearInstance('login_' . $user->getLogin());
     }
 }

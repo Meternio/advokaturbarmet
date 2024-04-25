@@ -17,22 +17,22 @@ class rex_yform_validate_size extends rex_yform_validate_abstract
             return;
         }
 
-        if ($Object->getValue() == '') {
+        if ('' == $Object->getValue()) {
             return;
         }
 
-        if (strlen($Object->getValue()) != $this->getElement('size')) {
+        if (mb_strlen($Object->getValue()) != $this->getElement('size')) {
             $this->params['warning'][$Object->getId()] = $this->params['error_class'];
             $this->params['warning_messages'][$Object->getId()] = $this->getElement('message');
         }
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'validate|size|name|size|warning_message';
     }
 
-    public function getDefinitions()
+    public function getDefinitions(): array
     {
         return [
             'type' => 'validate',

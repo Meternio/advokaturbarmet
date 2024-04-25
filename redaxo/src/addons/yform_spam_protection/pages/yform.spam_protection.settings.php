@@ -62,6 +62,12 @@ if (rex::getUser()->isAdmin()) {
     $field = $form->addTextField('ip_block_timer');
     $field->setLabel($this->i18n('timer_block_limit_window'));
     $field->setNotice($this->i18n('timer_block_limit_window_notice'));
+	
+    $field = $form->addCheckboxField('use_stopforumspam');
+    $field->addOption($this->i18n('use_stop_forum_spam_cbx'), "1");
+    $field->setLabel($this->i18n('use_stop_forum_spam_label'));
+    $field->setNotice($this->i18n('use_stop_forum_spam_notice'));	
+	
 
     // $field = $form->addSelectField('geo_block');
     // $field->setLabel($this->i18n('geoip'));
@@ -83,6 +89,18 @@ if (rex::getUser()->isAdmin()) {
     // $field->setLabel($this->i18n('tld_list'));
     // $field->setNotice($this->i18n('tld_list_notice'));
     // $field->setAttribute('disabled', true);
+
+    $field = $form->addTextField('ip_whitelist');
+    $field->setLabel($this->i18n('ip_whitelist'));
+    $field->setNotice($this->i18n('ip_whitelist_notice'));
+
+    $field = $form->addSelectField('ignore_user');
+    $field->setLabel($this->i18n('ignore_user'));
+    $field->setNotice($this->i18n('ignore_user_notice'));
+    $select = $field->getSelect();
+    $select->setSize(1);
+    $select->addOption($this->i18n('activate'), 1);
+    $select->addOption($this->i18n('deactivate'), 0);
 
     $fragment = new rex_fragment();
     $fragment->setVar('class', 'edit', false);

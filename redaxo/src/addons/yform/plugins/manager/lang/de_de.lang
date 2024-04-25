@@ -1,3 +1,5 @@
+yform_function_button = Aktion
+
 yform_manager = Table Manager
 
 navigation_manager = Tabellen
@@ -8,7 +10,7 @@ yform_alltables = Alle Tabellen
 yform_back_to_overview = Zurück zur Übersicht
 yform_updatetable = aktualisieren
 yform_tablesupdated = Tabelle/n wurde/n aktualisiert
-
+yform_errors_occurred = Es sind Fehler aufgetreten
 yform_help_empty = Leereinträge können mit <br />"(empty)" gesucht werden
 yform_help_multipleselect = Mehrfachauswahl mit gedrückter CTRL/CMD Taste
 yform_updatetable_with_delete = mit Feldlöschung
@@ -28,9 +30,9 @@ yform_prio_after = Nach "{0}"
 yform_prio_bottom = Am Ende
 
 yform_truncate_table = leeren
-yform_table_truncated = Tabelle wurde geleert
+yform_table_truncated = Die Datensätze dieser Tabelle wurden gelöscht.
 yform_table_not_found = Die Tabelle wurde nicht gefunden
-yform_truncate_table_confirm = Wirklich die komplette Tabelle leeren?
+yform_truncate_table_confirm = Alle Datensätze dieser Tabelle werden gelöscht. Fortfahren?
 yform_table_overview = Tabellenübersicht
 
 yform_manager_edit_table = Tabelle editieren
@@ -53,7 +55,7 @@ yform_tbl_inactive = inaktiv
 yform_manager_table_updated = Tabelle und Felder wurden erstellt und/oder aktualisiert
 yform_manager_table_entry_saved = Vielen Dank fuer die Eintragung
 yform_manager_table_enter_name = Bitte tragen Sie die Tabellenbezeichnung ein
-yform_manager_table_enter_specialchars = Bitte tragen Sie beim Tabellenname nur Buchstaben und Zahlen ein. Das erste Zeichen muss ein Buchstabe sein
+yform_manager_table_enter_specialchars = Bitte tragen Sie beim Tabellenname nur Kleinbuchstaben und Zahlen ein. Das erste Zeichen muss ein Buchstabe sein
 yform_manager_table_exists = Dieser Tabellenname ist bereits vorhanden
 
 yform_manager_table_prio = Priorität
@@ -76,7 +78,7 @@ yform_manager_table_allow_mass_deletion = Massenlöschung erlauben
 yform_manager_table_allow_mass_edit = Massenbearbeitung erlauben
 yform_manager_table_history = Historie anlegen
 yform_manager_tablefield_overview = Feldübersicht
-yform_manager_table_schema_overwrite = Datenbankfelder IMMER mit Schemadefinition überschreiben
+yform_manager_table_schema_overwrite = Datenbankfelder werden entsprechend des erkannten Schemas angeglichen
 yform_manager_table_basic_info = Basisinfo
 yform_manager_table_func = Tabellenfunktionen
 yform_manager_table_user_func = Benutzer-Komfortfunktionen
@@ -125,21 +127,29 @@ yform_manager_table_hidden = Sichtbarkeit
 yform_hidden = versteckt
 yform_visible = sichtbar
 
+yform_manager_actions_all = Alle Aktionen
+yform_manager_users_all = Alle Benutzer
+yform_manager_history_date_notice = Alle Einträge vor und gleich diesen Datums werden angezeigt
 
 # edit.inc.php
 yform_thankyouforupdate = Datensatz wurde aktualisiert.
+yform_thankyouforupdates = Datensätze wurde aktualisiert.
 yform_thankyouforentry = Datensatz wurde eingetragen.
-yform_editdata = Datensatz editieren [id: {0}]
+yform_editdata = Datensatz editieren [ID: {0}]
 yform_editdata_collection = {0} Datensätze editieren
 yform_editdata_collection_error_abort = Transaktion wurde wegen folgendem Fehler nicht ausgeführt: {0}
+yform_clonedata = Datensatz klonen [Original ID: {0}]
 yform_adddata = Datensatz anlegen
 yform_searchtext = Suchbegriff
 yform_searchfields = Tabellenfelder über die gesucht wird
 yform_id = Id
 yform_function = Funktion
+yform_function_button = Aktion
 yform_add = hinzufügen
 yform_add_apply = übernehmen
 yform_edit = editieren
+yform_clone = klonen
+yform_view = anzeigen
 yform_save = speichern
 yform_save_apply = übernehmen
 yform_delete = löschen
@@ -157,6 +167,8 @@ yform_dataset = Datenergebnis
 yform_dataset_delete = Datenergebnis löschen
 yform_dataset_deleted = Datenergebnis wurde geleert
 yform_dataset_delete_confirm = Wirklich das Datenergebnis leeren?
+
+yform_dataset_edit_confirm = Sollen wirklich alle gewählten Datensätze bearbeitet werden?
 
 yform_data = Datensatz
 yform_datas = Datensätze
@@ -251,7 +263,6 @@ yform_manager_multi_edit_field = Feld „{0}“ bearbeiten
 yform_values_be_link_description = 				Ein Redaxo-Feld, um einen <b>Redaxo-Artikel</b> auszuwählen.
 yform_values_be_manager_relation_description = 	Ein Auswahlfeld / Popup, um ein oder mehrere <b>Datensätze</b> mit denen einer fremden Tabelle zu <b>verknüpfen</b>.
 yform_values_be_media_description = 			Ein Redaxo-Feld, um eine einzelne oder mehrere <b>Medienpool-Datei/en</b> auszuwählen.
-yform_values_be_select_category_description =	Ein Redaxo-Feld, um ein oder mehrere <b>Kategorien</b> aus der Struktur auszuwählen.
 yform_values_be_table_description = 			Eine Reihe von Eingabefeldern, um <b>tabellarische Daten</b> einzugeben.
 yform_values_prio_description =					Ein <b>Auswahlfeld</b>, um Datensätze in eine <b>bestimmte Reihenfolge</b> zu sortieren.
 
@@ -266,25 +277,9 @@ yform_values_be_manager_relation_filter = Filter
 yform_values_be_manager_relation_relation_table = Relationstabelle
 yform_values_be_media_preview = Preview
 yform_values_be_media_category = Medienpool Kategorie
-yform_values_be_media_types = Types
-yform_values_be_media_types_notice = Format: jpg,gif
+yform_values_be_media_types = Erlaubte Dateien
+yform_values_be_media_types_notice = Format: jpg,gif,png ... (kommaseparierte Liste) oder * (für alle Dateien)
 yform_values_be_media_multiple = Mehrfachauswahl
-yform_values_be_select_category_ignore_offlines = Ignoriere Offline-Kategorien
-yform_values_be_select_category_check_perms = Prüfe Rechte
-yform_values_be_select_category_homepage = Füge "Homepage"-Eintrag (Root) hinzu
-yform_values_be_select_category_homepage_title = Homepage
-yform_values_be_select_category_category = Root-ID
-yform_values_be_select_category_clang = Sprache
-yform_values_be_select_category_multiple = Mehrere Felder möglich
-yform_values_be_select_category_size = Höhe der Auswahlbox
-yform_values_be_select_media_category_ignore_offlines = Ignoriere Offline-Kategorien
-yform_values_be_select_media_category_check_perms = Prüfe Rechte
-yform_values_be_select_media_category_homepage = Füge "Top-Level"-Eintrag (Root) hinzu
-yform_values_be_select_media_category_homepage_title = Top-Level (Root)
-yform_values_be_select_media_category_category = Root-ID
-yform_values_be_select_media_category_clang = Sprache
-yform_values_be_select_media_category_multiple = Mehrere Felder möglich
-yform_values_be_select_media_category_size = Höhe der Auswahlbox
 yform_values_be_table_columns = Bezeichnung der Spalten (Menge,Preis,Irgendwas)
 yform_values_be_link_multiple = Mehrfachauswahl
 yform_values_prio_fields = Anzeige
@@ -297,3 +292,13 @@ yform_will_set_to = wird
 yform_field_add = Feld hinzufügen
 yform_field_update = Feld aktualisieren
 yform_field_db_type = Datenbank-Feldtyp
+
+yform_manager_table_data_view_roles = Datenansicht beschränkt auf
+yform_manager_table_data_edit_roles = Datenbearbeitung beschränkt auf
+
+yform_manager_table_nopermission = Keine Berechtigung auf diese Tabelle
+
+yform_manager_tables_edit = Tabellen mit Bearbeitungsrechten
+yform_manager_tables_view = Tabellen mit Recht zur Ansicht
+
+yform_structure_article_could_not_be_deleted = Der Artikel konnte nicht gelöscht werden, da er von folgenden Datensätzen verwendet wird:

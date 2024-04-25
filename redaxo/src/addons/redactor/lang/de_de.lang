@@ -2,21 +2,22 @@ redactor_title = Redactor
 
 redactor_error_save_profile = Profile konnten nicht erstellt werden.
 
-redactor_help = Hilfe
+redactor_help = Dokumentation
 
 redactor_clear_cache = Cache löschen
 redactor_cache_deleted = Cache wurde gelöscht
 
 redactor_profile = Profil
 redactor_profile_add = hinzufügen
-redactor_profile_copy = kopieren
+redactor_profile_copy = duplizieren
 redactor_profile_edit = bearbeiten
 redactor_profile_description = Beschreibung
 redactor_profile_functions = Funktionen
 redactor_profile_max_height = Maximalhöhe
-redactor_profile_message_copy_success = Prodil wurde erfolgreich kopiert.
+redactor_profile_message_copy_success = Profil wurde erfolgreich dupliziert.
 redactor_profile_min_height = Mindesthöhe
 redactor_profile_name = Name
+redactor_profile_name_copy = Kopie
 redactor_profile_no_results = Keine Profile gefunden
 redactor_profile_plugin_counter = Statusleiste anzeigen
 redactor_profile_plugin_counter_notice = Fügt einen Zeichen- und Wortzähler hinzu.
@@ -24,10 +25,12 @@ redactor_profile_plugin_limiter = Zeichenanzahl
 redactor_profile_plugin_limiter_notice = Beschränkt die Anzahl der Zeichen, die ein Benutzer eingeben kann.
 redactor_profile_plugins = Plugins
 redactor_profile_plugins_notice = Plugins kommasepariert notieren
+redactor_profile_settings = Settings
+redactor_profile_settings_notice = Ein Setting pro Zeile, formatiert als <code>key: value</code>. Das Einfügen von Bildern wird standardmäßig unterbunden. Um es zu aktivieren, <code>pasteImages: true</code> setzen.
 redactor_profile_selector = Selektor
 redactor_profiles = Profile
 
-redactor_plugin_cancel = Abrechen
+redactor_plugin_cancel = Abbrechen
 redactor_plugin_edit = Bearbeiten
 redactor_plugin_insert = Einfügen
 redactor_plugin_save = Speichern
@@ -111,3 +114,57 @@ redactor_plugin_underline_tooltip = Unterstrichen
 redactor_plugin_undo_title = Widerrufen
 redactor_plugin_undo_tooltip = Widerrufen
 
+
+# Übersetzungen der PlugIns, die die direkt vom Vendor kommen
+# Anpassungen dieser Übersetzungen erfolgen in der install.php
+# Counter
+redactor_plugin_vendor_chars = Zeichen
+redactor_plugin_vendor_words = Wörter
+
+# Fontcolor
+redactor_plugin_vendor_fontcolor = Textfarbe
+redactor_plugin_vendor_text = Text
+redactor_plugin_vendor_highlight = Hervorgehoben
+
+# Fontfamily
+redactor_plugin_vendor_fontfamily = Schriftfamilie
+redactor_plugin_vendor_remove_font_family = Schriftfamilie entfernen
+
+# Fontsize
+redactor_plugin_vendor_size = Schriftgröße,
+redactor_plugin_vendor_remove_size = Schriftgröße entfernen
+
+# Fullscreen
+redactor_plugin_vendor_fullscreen = Vollbild
+
+# Properties
+redactor_plugin_vendor_properties = Eigenschaften
+
+# Specialchars
+redactor_plugin_vendor_specialchars = Sonderzeichen
+
+# Table
+redactor_plugin_vendor_table = Tabelle
+redactor_plugin_vendor_insert_table = Tabelle einfügen
+redactor_plugin_vendor_insert_row_above = Zeile oberhalb einfügen
+redactor_plugin_vendor_insert_row_below = Zeile unterhalb einfügen
+redactor_plugin_vendor_insert_column_left = Spalte links einfügen
+redactor_plugin_vendor_insert_column_right = Spalte rechts einfügen
+redactor_plugin_vendor_add_head = Tabellenkopf einfügen
+redactor_plugin_vendor_delete_head = Tabellenkopf löschen
+redactor_plugin_vendor_delete_column = Spalte löschen
+redactor_plugin_vendor_delete_row = Zeile löschen
+redactor_plugin_vendor_delete_table = Tabelle löschen
+
+# Text direction
+redactor_plugin_vendor_change_text_direction = Leserichtung
+redactor_plugin_vendor_left_to_right = Links nach Rechts
+redactor_plugin_vendor_right_to_left = Rechts nach Links
+
+# Video
+redactor_plugin_vendor_video = Video
+redactor_plugin_vendor_video_html_code = Video-Einbettungscode oder Youtube/Vimeo Link
+
+# Widget
+redactor_plugin_vendor_widget = Widget
+redactor_plugin_vendor_widget_html_code = Widget HTML Code

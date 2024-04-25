@@ -17,14 +17,14 @@ class rex_yform_value_submit extends rex_yform_value_abstract
     public function enterObject()
     {
         $labels = $this->getElement('labels');
-        if ($labels == '') {
-            $labels = [$this->getElement('label')];
+        if ('' == $labels) {
+            $labels = [];
         } else {
-            $labels = explode(',', $this->getElement('labels'));
+            $labels = explode(',', $labels);
         }
 
         $values = $this->getElement('values');
-        if ($values == '') {
+        if ('' == $values) {
             $values = [];
         } else {
             $values = explode(',', $values);
@@ -48,35 +48,38 @@ class rex_yform_value_submit extends rex_yform_value_abstract
 
         $this->setValue($value);
 
-        if (count($labels) == 0) {
+        if (0 == count($labels)) {
             $labels = [$value];
         }
 
-        if (count($labels) == 1 && $this->getElement('css_classes') == '') {
+        if (1 == count($labels) && '' == $this->getElement('css_classes')) {
             $this->setElement('css_classes', 'btn-primary');
         }
 
-        if ($this->needsOutput()) {
-            $this->params['form_output'][$this->getId()] = $this->parse('value.submit.tpl.php', compact('labels'));
+        if ($this->needsOutput() && $this->isViewable()) {
+            if (!$this->isEditable()) {
+            } else {
+                $this->params['form_output'][$this->getId()] = $this->parse('value.submit.tpl.php', compact('labels'));
+            }
         }
 
-        if (!isset($this->params['value_pool']['email'][$this->getName()]) || $this->params['value_pool']['email'][$this->getName()] == '') {
+        if (!isset($this->params['value_pool']['email'][$this->getName()]) || '' == $this->params['value_pool']['email'][$this->getName()]) {
             $this->params['value_pool']['email'][$this->getName()] = $this->getValue();
         }
 
-        if ($this->saveInDb() && $this->getElement(3) != 'no_db') { // BC element[3]
-            if (!isset($this->params['value_pool']['sql'][$this->getName()]) || $this->params['value_pool']['sql'][$this->getName()] == '') {
+        if ($this->saveInDb() && 'no_db' != $this->getElement(3)) { // BC element[3]
+            if (!isset($this->params['value_pool']['sql'][$this->getName()]) || '' == $this->params['value_pool']['sql'][$this->getName()]) {
                 $this->params['value_pool']['sql'][$this->getName()] = $this->getValue();
             }
         }
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'submit|name|labelvalue1_on_button1,labelvalue2_on_button2| [value_1_to_save_if_clicked,value_2_to_save_if_clicked] | [no_db] | [Default-Wert] | [cssclassname1,cssclassname2]';
     }
 
-    public function getDefinitions()
+    public function getDefinitions(): array
     {
         return [
             'type' => 'value',

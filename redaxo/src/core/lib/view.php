@@ -9,12 +9,12 @@ class rex_view
     public const JS_ASYNC = 'async';
     public const JS_IMMUTABLE = 'immutable';
 
-    /** @var string[][] */
-    private static $cssFiles = [];
+    /** @var array<string, list<string>> */
+    private static array $cssFiles = [];
     /** @var list<array{string, array}> */
-    private static $jsFiles = [];
+    private static array $jsFiles = [];
     /** @var array<string, mixed> */
-    private static $jsProperties = [];
+    private static array $jsProperties = [];
     /** @var string */
     private static $favicon;
 
@@ -25,6 +25,7 @@ class rex_view
      * @param string $media
      *
      * @throws rex_exception
+     * @return void
      */
     public static function addCssFile($file, $media = 'all')
     {
@@ -38,7 +39,7 @@ class rex_view
     /**
      * Returns the CSS files.
      *
-     * @return string[][]
+     * @return array<string, list<string>>
      */
     public static function getCssFiles()
     {
@@ -49,9 +50,10 @@ class rex_view
      * Adds a JS file.
      *
      * @param string $file
-     * @psalm-param array<self::JS_*, bool>|array<self::JS_*> $options
+     * @param array<self::JS_*, bool>|array<self::JS_*> $options
      *
      * @throws rex_exception
+     * @return void
      */
     public static function addJsFile($file, array $options = [])
     {
@@ -69,7 +71,7 @@ class rex_view
     /**
      * Returns the JS files.
      *
-     * @return string[]
+     * @return list<string>
      */
     public static function getJsFiles()
     {
@@ -82,9 +84,7 @@ class rex_view
     /**
      * Returns all JS files besides their options.
      *
-     * @psalm-return list<array{string, array}>
-     *
-     * @return array
+     * @return list<array{string, array}>
      */
     public static function getJsFilesWithOptions()
     {
@@ -95,7 +95,8 @@ class rex_view
      * Sets a JS property.
      *
      * @param string $key
-     * @param mixed  $value
+     * @param mixed $value
+     * @return void
      */
     public static function setJsProperty($key, $value)
     {
@@ -105,9 +106,7 @@ class rex_view
     /**
      * Returns the JS properties.
      *
-     * @psalm-return array<string, mixed>
-     *
-     * @return array
+     * @return array<string, mixed>
      */
     public static function getJsProperties()
     {
@@ -118,6 +117,7 @@ class rex_view
      * Sets the favicon path.
      *
      * @param string $file
+     * @return void
      */
     public static function setFavicon($file)
     {
@@ -141,6 +141,8 @@ class rex_view
      * @param string $cssClass
      *
      * @return string
+     *
+     * @psalm-taint-specialize
      */
     public static function info($message, $cssClass = '')
     {
@@ -159,6 +161,8 @@ class rex_view
      * @param string $cssClass
      *
      * @return string
+     *
+     * @psalm-taint-specialize
      */
     public static function success($message, $cssClass = '')
     {
@@ -177,6 +181,8 @@ class rex_view
      * @param string $cssClass
      *
      * @return string
+     *
+     * @psalm-taint-specialize
      */
     public static function warning($message, $cssClass = '')
     {
@@ -195,6 +201,8 @@ class rex_view
      * @param string $cssClass
      *
      * @return string
+     *
+     * @psalm-taint-specialize
      */
     public static function error($message, $cssClass = '')
     {
@@ -221,15 +229,13 @@ class rex_view
             $cssClassMessage .= ' ' . $cssClass;
         }
 
-        $return = '<div class="' . $cssClassMessage . '">' . $message . '</div>';
-
         /*
         $fragment = new rex_fragment();
         $fragment->setVar('class', $cssClass);
         $fragment->setVar('message', $content, false);
         $return = $fragment->parse('message.php');
         */
-        return $return;
+        return '<div class="' . $cssClassMessage . '">' . $message . '</div>';
     }
 
     /**
@@ -238,6 +244,7 @@ class rex_view
      * @param string $content
      * @param string $brand
      * @param string $cssClass
+     * @param bool $inverse
      *
      * @return string
      */
@@ -248,9 +255,8 @@ class rex_view
         $fragment->setVar('cssClass', $cssClass);
         $fragment->setVar('brand', $brand);
         $fragment->setVar('content', $content, false);
-        $return = $fragment->parse('core/toolbar.php');
 
-        return $return;
+        return $fragment->parse('core/toolbar.php');
     }
 
     /**
@@ -272,8 +278,8 @@ class rex_view
     /**
      * Returns the formatted title.
      *
-     * @param string            $head
-     * @param null|string|array $subtitle
+     * @param string $head
+     * @param string|array|null $subtitle
      *
      * @throws InvalidArgumentException
      *
@@ -320,9 +326,7 @@ class rex_view
         $fragment->setVar('subtitle', $subtitle, false);
         $return = $fragment->parse('core/page/header.php');
 
-        $return .= rex_extension::registerPoint(new rex_extension_point('PAGE_TITLE_SHOWN', ''));
-
-        return $return;
+        return $return . rex_extension::registerPoint(new rex_extension_point('PAGE_TITLE_SHOWN', ''));
     }
 
     /**
@@ -344,7 +348,7 @@ class rex_view
 
         $items = [];
         foreach (rex_clang::getAll() as $id => $clang) {
-            if (rex::getUser()->getComplexPerm('clang')->hasPerm($id)) {
+            if (rex::requireUser()->getComplexPerm('clang')->hasPerm($id)) {
                 $icon = ($id == $context->getParam('clang')) ? '<i class="rex-icon rex-icon-language-active"></i> ' : '<i class="rex-icon rex-icon-language"></i> ';
                 $item = [];
                 $item['href'] = $context->getUrl(['clang' => $id]);
@@ -380,7 +384,7 @@ class rex_view
 
         $items = [];
         foreach (rex_clang::getAll() as $id => $clang) {
-            if (rex::getUser()->getComplexPerm('clang')->hasPerm($id)) {
+            if (rex::requireUser()->getComplexPerm('clang')->hasPerm($id)) {
                 $icon = $clang->isOnline() ? '<i class="rex-icon rex-icon-online"></i> ' : '<i class="rex-icon rex-icon-offline"></i> ';
                 $item = [];
                 $item['label'] = $icon . rex_i18n::translate($clang->getName());
@@ -410,16 +414,18 @@ class rex_view
             return '';
         }
 
-        $button_label = '';
+        $user = rex::requireUser();
+
+        $buttonLabel = '';
         $items = [];
         foreach (rex_clang::getAll() as $id => $clang) {
-            if (rex::getUser()->getComplexPerm('clang')->hasPerm($id)) {
+            if ($user->getComplexPerm('clang')->hasPerm($id)) {
                 $item = [];
                 $item['title'] = rex_i18n::translate($clang->getName());
                 $item['href'] = $context->getUrl(['clang' => $id]);
                 if ($id == $context->getParam('clang')) {
                     $item['active'] = true;
-                    $button_label = rex_i18n::translate($clang->getName());
+                    $buttonLabel = rex_i18n::translate($clang->getName());
                 }
                 $items[] = $item;
             }
@@ -428,11 +434,11 @@ class rex_view
         $fragment = new rex_fragment();
         $fragment->setVar('class', 'rex-language');
         $fragment->setVar('button_prefix', rex_i18n::msg('language'));
-        $fragment->setVar('button_label', $button_label);
+        $fragment->setVar('button_label', $buttonLabel);
         $fragment->setVar('header', rex_i18n::msg('clang_select'));
         $fragment->setVar('items', $items, false);
 
-        if (rex::getUser()->isAdmin()) {
+        if ($user->isAdmin()) {
             $fragment->setVar('footer', '<a href="' . rex_url::backendPage('system/lang') . '"><i class="fa fa-flag"></i> ' . rex_i18n::msg('languages_edit') . '</a>', false);
         }
 

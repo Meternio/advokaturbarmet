@@ -20,7 +20,7 @@ class rex_yform_validate_customfunction extends rex_yform_validate_abstract
         $parameter = $this->getElement('params');
 
         $comparator = true;
-        if (is_string($func) && mb_substr($func, 0, 1) == '!') {
+        if (is_string($func) && '!' == mb_substr($func, 0, 1)) {
             $comparator = false;
             $func = mb_substr($func, 1);
         }
@@ -39,7 +39,7 @@ class rex_yform_validate_customfunction extends rex_yform_validate_abstract
             $ObjectValues[$k] = $Object->getValue();
         }
 
-        if (count($ObjectValues) == 1) {
+        if (1 == count($ObjectValues)) {
             $ObjectValues = current($ObjectValues);
             $names = $names[0];
         }
@@ -59,33 +59,33 @@ class rex_yform_validate_customfunction extends rex_yform_validate_abstract
         }
     }
 
-    public function preValidateAction()
+    public function preValidateAction(): void
     {
-        if ($this->getElement('validate_type') == 'pre') {
-            return $this->customfunction_execute();
+        if ('pre' == $this->getElement('validate_type')) {
+            $this->customfunction_execute();
         }
     }
 
     public function enterObject()
     {
-        if ($this->getElement('validate_type') != 'pre' && $this->getElement('validate_type') != 'post') {
-            return $this->customfunction_execute();
+        if ('pre' != $this->getElement('validate_type') && 'post' != $this->getElement('validate_type')) {
+            $this->customfunction_execute();
         }
     }
 
-    public function postValueAction()
+    public function postValueAction(): void
     {
-        if ($this->getElement('validate_type') == 'post') {
-            return $this->customfunction_execute();
+        if ('post' == $this->getElement('validate_type')) {
+            $this->customfunction_execute();
         }
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'validate|customfunction|name[s]|[!]function/class::method|weitere_parameter|warning_message|type[default:normal,pre,post]';
     }
 
-    public function getDefinitions()
+    public function getDefinitions(): array
     {
         return [
             'type' => 'validate',

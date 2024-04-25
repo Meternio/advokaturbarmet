@@ -44,9 +44,23 @@ class rex_yform_value_be_manager_relation extends rex_yform_value_abstract
 
         // ---------- Value angleichen -> immer Array mit IDs daraus machen
         if (!is_array($this->getValue())) {
-            if ($this->getElement('relation_table') && (!$this->params['send'] || null === $this->getValue())) {
-                $this->setValue($this->getRelationTableValues());
-            } elseif ('' == trim($this->getValue())) {
+            if ($this->getElement('relation_table')) {
+                if (!$this->params['send']) {
+                    $this->setValue($this->getRelationTableValues());
+                } elseif (null === $this->getValue()) {
+                    // YOrm Erkennung.
+                    // if null in YOrm -> nothing has been set
+                    if ($this->needsOutput()) {
+                        $this->setValue([]);
+                    } else {
+                        $this->setValue($this->getRelationTableValues());
+                    }
+                } elseif (is_scalar($this->getValue()) && !empty($this->getValue())) {
+                    $this->setValue(explode(',', $this->getValue()));
+                } else {
+                    $this->setValue([]);
+                }
+            } elseif ('' == trim($this->getValue() ?? '')) {
                 $this->setValue([]);
             } else {
                 $this->setValue(explode(',', $this->getValue()));
@@ -64,16 +78,18 @@ class rex_yform_value_be_manager_relation extends rex_yform_value_abstract
 
         // ---------- check values
         $options = [];
+        $viewOptions = [];
         $valueName = '';
         $values = [];
 
         if (count($this->getValue()) > 0) {
             $listValues = self::getListValues($this->relation['target_table'], $this->relation['target_field'], $filter);
             foreach ((array) $this->getValue() as $v) {
-                if (is_string($v) && isset($listValues[$v])) {
+                if (is_scalar($v) && isset($listValues[$v])) {
                     $values[] = $v;
                     $valueName = $listValues[$v] . ' [id=' . $v . ']';
                     $options[] = ['id' => $v, 'name' => $valueName];
+                    $viewOptions[(string) $v] = $valueName;
                 }
             }
             $this->setValue($values);
@@ -91,28 +107,41 @@ class rex_yform_value_be_manager_relation extends rex_yform_value_abstract
         // ---------- save
         $this->params['value_pool']['email'][$this->getName()] = implode(',', $this->getValue());
         if (!$this->getElement('relation_table') && (4 != $this->relation['relation_type'] && 5 != $this->relation['relation_type'])) {
-            $this->params['value_pool']['sql'][$this->getName()] = implode(',', $this->getValue());
+            if ($this->saveInDB()) {
+                $this->params['value_pool']['sql'][$this->getName()] = implode(',', $this->getValue());
+            }
         }
 
-        if (!$this->needsOutput()) {
+        $this_relation = $this;
+        $this->getParam('this')->addPostSaveFunction(static function () use (&$this_relation) {
+            $this_relation->postSave();
+        });
+
+        if (!$this->needsOutput() && $this->isViewable()) {
             return;
         }
 
         // ------------------------------------ Selectbox, single 0 or multiple 1
-        if ($this->relation['relation_type'] < 2) {
+        if (0 == $this->relation['relation_type'] || 1 == $this->relation['relation_type']) {
             // ----- SELECT BOX
             $options = [];
             if (0 == $this->relation['relation_type'] && 1 == $this->relation['eoption']) {
                 $options[] = ['id' => '', 'name' => '-'];
             }
+            $viewOptions = [];
             foreach (self::getListValues($this->relation['target_table'], $this->relation['target_field'], $filter) as $id => $name) {
-                if (strlen($name) > 50) {
+                if (mb_strlen($name) > 50) {
                     $name = mb_substr($name, 0, 45) . ' ... ';
                 }
+                $viewOptions[$id] = $name;
                 $options[] = ['id' => $id, 'name' => $name . ' [id=' . $id . ']'];
             }
 
-            $this->params['form_output'][$this->getId()] = $this->parse('value.be_manager_relation.tpl.php', compact('options'));
+            if (!$this->isEditable()) {
+                $this->params['form_output'][$this->getId()] = $this->parse(['value.be_manager_relation-view.tpl.php', 'value.view.tpl.php'], ['options' => $viewOptions]);
+            } else {
+                $this->params['form_output'][$this->getId()] = $this->parse('value.be_manager_relation.tpl.php', compact('options'));
+            }
         }
 
         // ------------------------------------ POPUP, single, multiple 1-1, n-m
@@ -121,7 +150,11 @@ class rex_yform_value_be_manager_relation extends rex_yform_value_abstract
             foreach ($filter as $key => $value) {
                 $link .= '&rex_yform_filter[' . $key . ']=' . $value . '&rex_yform_set[' . $key . ']=' . $value;
             }
-            $this->params['form_output'][$this->getId()] = $this->parse('value.be_manager_relation.tpl.php', compact('valueName', 'options', 'link'));
+            if (!$this->isEditable()) {
+                $this->params['form_output'][$this->getId()] = $this->parse(['value.be_manager_relation-view.tpl.php', 'value.view.tpl.php'], ['options' => $viewOptions]);
+            } else {
+                $this->params['form_output'][$this->getId()] = $this->parse('value.be_manager_relation.tpl.php', compact('valueName', 'options', 'link'));
+            }
         }
 
         // ------------------------------------ POPUP, 1-n
@@ -160,7 +193,7 @@ class rex_yform_value_be_manager_relation extends rex_yform_value_abstract
             $form_name = $this->params['this']->getObjectparams('form_name');
             $form_array = array_merge($this->params['this']->getObjectparams('form_array'), [$this->getId()]);
 
-            $fieldkey = $this->relation['source_table'] . '-' . $this->relation['target_table'] . '-' . $this->relation['target_field'];
+            $fieldkey = $this->relation['source_table'] . '-' . $this->relation['target_table'] . '-' . $this->relation['target_field'] . '-' . uniqid();
             $relationKey = '__' . sha1($fieldkey) . '__';
 
             // ----- Existing Relations
@@ -216,14 +249,15 @@ class rex_yform_value_be_manager_relation extends rex_yform_value_abstract
                     $yform = $relation->getForm();
                     $yform->setObjectparams('form_name', $form_name);
                     $yform->setObjectparams('form_array', array_merge($form_array, [$counter]));
-
                     $yform->setObjectparams('form_action', '');
                     $yform->setObjectparams('form_showformafterupdate', 1);
-
                     $yform->setObjectparams('getdata', true);
-
                     $yform->setObjectparams('submit_btn_show', false);
                     $yform->setObjectparams('csrf_protection', false);
+
+                    $yform->canEdit(rex_yform_manager_table_authorization::onAttribute('EDIT', $table, rex::getUser()));
+                    $yform->canView(rex_yform_manager_table_authorization::onAttribute('VIEW', $table, rex::getUser()));
+
                     $form_elements = [];
                     foreach ($yform->objparams['form_elements'] as $form_element) {
                         if ('prio' == $form_element[0] && $form_element[1] == $prioFieldName) {
@@ -237,9 +271,10 @@ class rex_yform_value_be_manager_relation extends rex_yform_value_abstract
                     }
                     $yform->objparams['form_elements'] = $form_elements;
 
-                    $hiddenId = '<input type="hidden" name="' . $yform->getFieldName('id') . '" value="' . $relation->getId() . '" />';
+                    $form = $yform->getForm();
+                    $form .= '<input type="hidden" name="' . $yform->getFieldName('id') . '" value="' . $relation->getId() . '" />';
 
-                    $forms[] = $hiddenId . $yform->getForm();
+                    $forms[] = $form;
                 }
             }
 
@@ -250,18 +285,20 @@ class rex_yform_value_be_manager_relation extends rex_yform_value_abstract
                 $relationVars = $yform->getFieldValue('', []);
 
                 if (is_array($relationVars)) {
-                    foreach ($relationVars as $counter => $form) {
+                    foreach ($relationVars as $counter => $relatedVarData) {
                         $data = $table->createDataset();
                         $yform = $data->getForm();
                         $yform->setObjectparams('form_name', $form_name);
                         $yform->setObjectparams('form_array', array_merge($form_array, [$counter]));
-
                         $yform->setObjectparams('form_action', '');
                         $yform->setObjectparams('form_showformafterupdate', 1);
-                        $yform->setObjectparams('data', $form);
-
+                        $yform->setData($relatedVarData);
                         $yform->setObjectparams('submit_btn_show', false);
                         $yform->setObjectparams('csrf_protection', false);
+
+                        $yform->canEdit(rex_yform_manager_table_authorization::onAttribute('EDIT', $table, rex::getUser()));
+                        $yform->canView(rex_yform_manager_table_authorization::onAttribute('VIEW', $table, rex::getUser()));
+
                         $form_elements = [];
 
                         $relation_field = '';
@@ -278,20 +315,13 @@ class rex_yform_value_be_manager_relation extends rex_yform_value_abstract
                         }
                         $yform->objparams['form_elements'] = $form_elements;
 
-                        // Wenn Formular abgeschickt und id hatte..
-                        // beibehalten wenn in relations vorhanden
-                        $hiddenId = '';
-                        if (isset($form['id']) && in_array($form['id'], $relationIDs, true)) {
-                            $hiddenId = '<input type="hidden" name="' . $yform->getFieldName('id') . '" value="' . $form['id'] . '" />';
+                        $form = $yform->getForm();
+                        if (isset($relatedVarData['id'])) {
+                            $form .= '<input type="hidden" name="' . $yform->getFieldName('id') . '" value="' . $relatedVarData['id'] . '" />';
                         }
 
-                        $forms[] = $hiddenId . $yform->getForm();
-
-                        if (isset($form['id']) && in_array($form['id'], $relationIDs, true)) {
-                            $value[] = array_merge(['id' => $form['id']], $yform->getObjectparams('value_pool')['email']);
-                        } else {
-                            $value[] = $yform->getObjectparams('value_pool')['email'];
-                        }
+                        $forms[] = $form;
+                        $value[] = $yform->getObjectparams('value_pool')['email'];
 
                         if (count($yform->objparams['warning']) > 0) {
                             $warning = true;
@@ -308,14 +338,19 @@ class rex_yform_value_be_manager_relation extends rex_yform_value_abstract
             }
 
             $this->params['value_pool']['email'][$this->getName()] = $value;
-
-            $this->params['form_output'][$this->getId()] = $this->parse('value.be_manager_inline_relation.tpl.php', compact('forms', 'prototypeForm', 'fieldkey', 'prioFieldName', 'relationKey'));
+            if ($this->isViewable()) {
+                if (!$this->isEditable()) {
+                    $this->params['form_output'][$this->getId()] = $this->parse('value.be_manager_inline_relation-view.tpl.php', compact('forms', 'fieldkey', 'prioFieldName', 'relationKey'));
+                } else {
+                    $this->params['form_output'][$this->getId()] = $this->parse('value.be_manager_inline_relation.tpl.php', compact('forms', 'prototypeForm', 'fieldkey', 'prioFieldName', 'relationKey'));
+                }
+            }
         }
     }
 
     // -------------------------------------------------------------------------
 
-    public function postAction()
+    public function postSave(): void
     {
         if ($this->needsOutput()) {
             if (5 == $this->relation['relation_type'] && $this->params['main_id'] > 0) {
@@ -403,9 +438,8 @@ class rex_yform_value_be_manager_relation extends rex_yform_value_abstract
         if ($source_id < 1 && isset($this->params['main_id']) && $this->params['main_id'] > 0) {
             $source_id = (int) $this->params['main_id'];
         }
-
         if ($source_id < 1 || '' == $this->params['main_table']) {
-            return false;
+            return;
         }
 
         $relationTableField = $this->getRelationTableFields();
@@ -444,7 +478,7 @@ class rex_yform_value_be_manager_relation extends rex_yform_value_abstract
 
     // -------------------------------------------------------------------------
 
-    public function getDefinitions()
+    public function getDefinitions(): array
     {
         return [
             'type' => 'value',
@@ -454,7 +488,14 @@ class rex_yform_value_be_manager_relation extends rex_yform_value_abstract
                 'label' => ['type' => 'text',    'label' => rex_i18n::msg('yform_values_defaults_label')],
                 'table' => ['type' => 'table',   'label' => rex_i18n::msg('yform_values_be_manager_relation_table')],
                 'field' => ['type' => 'text',    'label' => rex_i18n::msg('yform_values_be_manager_relation_field')],
-                'type' => ['type' => 'choice',  'label' => rex_i18n::msg('yform_values_be_manager_relation_type'), 'choices' => ['0' => 'select (single)', '1' => 'select (multiple)', '2' => 'popup (single)', '3' => 'popup (multiple)', '4' => 'popup (multiple 1-n)', '5' => 'inline (multiple 1-n)']], // ,popup (multiple / relation)=4
+                'type' => ['type' => 'choice',  'label' => rex_i18n::msg('yform_values_be_manager_relation_type'), 'choices' => [
+                    '0' => 'Single (select)',
+                    '2' => 'Single (popup)',
+                    '1' => 'Multiple (select)',
+                    '3' => 'Multiple (popup)',
+                    '5' => '1-n (inline)',
+                    '4' => '1-n (popup)',
+                ]], // ,popup (multiple / relation)=4
                 'empty_option' => ['type' => 'boolean', 'label' => rex_i18n::msg('yform_values_be_manager_relation_empty_option')],
                 'empty_value' => ['type' => 'text',    'label' => rex_i18n::msg('yform_values_be_manager_relation_empty_value')],
                 'size' => ['type' => 'text', 'name' => 'boxheight',    'label' => rex_i18n::msg('yform_values_be_manager_relation_size')],
@@ -464,7 +505,7 @@ class rex_yform_value_be_manager_relation extends rex_yform_value_abstract
                 'notice' => ['type' => 'text',    'label' => rex_i18n::msg('yform_values_defaults_notice')],
             ],
             'description' => rex_i18n::msg('yform_values_be_manager_relation_description'),
-            'db_type' => ['text', 'varchar(191)', 'int'],
+            'db_type' => ['text', 'varchar(191)', 'int', 'int(10) unsigned'],
             'formbuilder' => false,
             'hooks' => [
                 'preCreate' => static function (rex_yform_manager_field $field) {
@@ -482,60 +523,74 @@ class rex_yform_value_be_manager_relation extends rex_yform_value_abstract
         /** @var rex_yform_manager_field $field */
         $field = $params['params']['field'];
 
-        if (4 == $field['type'] || 5 == $field['type']) {
-            if (!isset($params['list'])) {
-                return '';
-            }
-
-            $link = 'index.php?page=yform/manager/data_edit&table_name=' . $field['table'];
-            if (isset($field['filter']) && $field['filter']) {
-                $filter = self::getFilterArray($field['filter'], $field['table_name'], static function ($key) use ($params) {
-                    return $params['list']->getValue($key);
-                });
-            }
-            $filter[$field['field']] = $params['list']->getValue('id');
-
-            self::addFilterParams($link, $filter);
-            $link = self::addOpenerParams($link);
-
-            return '<a href="' . $link . '">' . rex_i18n::translate($field['label']) . '</a>';
-        }
-
-        // with relation-table
-        if ((3 == $field['type'] || 1 == $field['type']) && @$field['relation_table'] && null === $params['value']) {
-            $params['value'] = [];
-            $relationTableFields = self::getRelationTableFieldsForTables($field['table_name'], $field['relation_table'], $field['table']);
-
-            if ($relationTableFields['source'] && $relationTableFields['target']) {
-                $sql = rex_sql::factory();
-                // $sql->setDebug();
-                $sql->setQuery('
-                    SELECT ' . $sql->escapeIdentifier($relationTableFields['target']) . ' as id
-                    FROM ' . $sql->escapeIdentifier($field['relation_table']) . '
-                    WHERE ' . $sql->escapeIdentifier($relationTableFields['source']) . ' = ' . (int) $params['list']->getValue('id')
-                );
-                while ($sql->hasNext()) {
-                    $id = $sql->getValue('id');
-                    $params['value'][$id] = $id;
-                    $sql->next();
+        switch ($field['type']) {
+            case 4:
+            case 5:
+                if (!isset($params['list'])) {
+                    return '';
                 }
-            }
 
-            $params['value'] = implode(',', $params['value']);
+                $link = 'index.php?page=yform/manager/data_edit&table_name=' . $field['table'];
+                if (isset($field['filter']) && $field['filter']) {
+                    $filter = self::getFilterArray($field['filter'], $field['table_name'], static function ($key) use ($params) {
+                        return $params['list']->getValue($key);
+                    });
+                }
+                $filter[$field['field']] = $params['list']->getValue('id');
+
+                self::addFilterParams($link, $filter);
+                $link = self::addOpenerParams($link);
+
+                return '<a href="' . $link . '">' . rex_i18n::translate($field['label']) . '</a>';
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+                // if values are in relation tables
+                if (isset($field['relation_table']) && '' != $field['relation_table']) {
+                    if (isset($params['list'])) {
+                        $params['value'] = [];
+                        $relationTableFields = self::getRelationTableFieldsForTables($field['table_name'], $field['relation_table'], $field['table']);
+
+                        if (isset($relationTableFields['source']) && '' != $relationTableFields['source'] && isset($relationTableFields['target']) && '' != $relationTableFields['target']) {
+                            $sql = rex_sql::factory();
+                            $sql->setQuery(
+                                '
+                            SELECT ' . $sql->escapeIdentifier($relationTableFields['target']) . ' as id
+                            FROM ' . $sql->escapeIdentifier($field['relation_table']) . '
+                            WHERE ' . $sql->escapeIdentifier($relationTableFields['source']) . ' = ' . (int) $params['list']->getValue('id'),
+                            );
+                            while ($sql->hasNext()) {
+                                $id = $sql->getValue('id');
+                                $params['value'][] = $id;
+                                $sql->next();
+                            }
+                        }
+                        $params['value'] = implode(',', $params['value']);
+                    }
+                }
+
+                // relation_table
+                $listValues = self::getListValues($field['table'], $field['field']);
+
+                // filter values
+                $return = [];
+
+                if (!is_array($params['value'])) {
+                    $params['value'] = explode(',', $params['value']);
+                }
+
+                foreach ($params['value'] as $value) {
+                    if (isset($listValues[$value])) {
+                        $return[] = $listValues[$value];
+                    }
+                }
+
+                return implode('<br />', $return);
+
+            default:
+                return '';
         }
-
-        // relation_table
-        $listValues = self::getListValues($field['table'], $field['field']);
-
-        // filter values
-        $return = [];
-        foreach (explode(',', $params['value']) as $value) {
-            if (isset($listValues[$value])) {
-                $return[] = $listValues[$value];
-            }
-        }
-
-        return implode('<br />', $return);
     }
 
     public static function getListValues($table, $field, array $filter = [])
@@ -591,7 +646,9 @@ class rex_yform_value_be_manager_relation extends rex_yform_value_abstract
                 }
                 self::$yform_list_values[$table][$field][$filterHash][$entry['id']] = $value;
             }
+            // dump(self::$yform_list_values[$table][$field][$filterHash]);
         }
+
         return self::$yform_list_values[$table][$field][$filterHash];
     }
 
@@ -631,7 +688,7 @@ class rex_yform_value_be_manager_relation extends rex_yform_value_abstract
         $rawFilter = preg_split('/\v+/', $rawFilter);
         $filter = [];
         $setValue = static function ($key, $value) use (&$filter) {
-            if (false !== strpos($key, '.')) {
+            if (str_contains($key, '.')) {
                 [$key1, $key2] = explode('.', $key, 2);
                 $filter[$key1][$key2] = $value;
             } else {
@@ -645,13 +702,13 @@ class rex_yform_value_be_manager_relation extends rex_yform_value_abstract
                 $value = trim($f[1]);
                 if (preg_match('/^###(.+)###$/', $value, $matches)) {
                     $value = $matches[1];
-                    if (false !== strpos($value, '.')) {
+                    if (str_contains($value, '.')) {
                         $value = explode('.', $value);
                         $relation = rex_yform_manager_table::get($table)->getRelation($value[0]);
                         $value[0] = $getValueForKey($value[0]);
                         if ($value[0] && $relation) {
                             $relationSql = rex_sql::factory();
-                            //$relationSql->debugsql = true;
+                            // $relationSql->debugsql = true;
                             $tables = '' . $relationSql->escapeIdentifier($relation['table']) . ' t0';
                             for ($i = 1; $i < count($value) - 1; ++$i) {
                                 $relation = rex_yform_manager_table::get($relation['table'])->getRelation($value[$i]);
@@ -709,10 +766,11 @@ class rex_yform_value_be_manager_relation extends rex_yform_value_abstract
         if ($relationTableFields['source'] && $relationTableFields['target']) {
             $sql = rex_sql::factory();
             $sql->setDebug($this->params['debug']);
-            $sql->setQuery('
+            $sql->setQuery(
+                '
                 SELECT ' . $sql->escapeIdentifier($relationTableFields['target']) . ' as id
                 FROM ' . $sql->escapeIdentifier($this->getElement('relation_table')) . '
-                WHERE ' . $sql->escapeIdentifier($relationTableFields['source']) . ' = ' . (int) $this->params['main_id']
+                WHERE ' . $sql->escapeIdentifier($relationTableFields['source']) . ' = ' . (int) $this->params['main_id'],
             );
             while ($sql->hasNext()) {
                 $id = $sql->getValue('id');
@@ -721,6 +779,21 @@ class rex_yform_value_be_manager_relation extends rex_yform_value_abstract
             }
         }
         return $values;
+    }
+
+    public function getRelationType(): int
+    {
+        return (int) $this->relation['relation_type'];
+    }
+
+    public function getRelationSize(): int
+    {
+        return (int) $this->relation['size'];
+    }
+
+    public function getRelationSourceTableName(): string
+    {
+        return $this->relation['source_table'];
     }
 
     public static function getSearchField($params)
@@ -742,36 +815,58 @@ class rex_yform_value_be_manager_relation extends rex_yform_value_abstract
     public static function getSearchFilter($params)
     {
         $value = $params['value'];
+        /** @var rex_yform_manager_query $query */
+        $query = $params['query'];
 
         if (null !== $value && !is_scalar($value) && !(is_object($value) && method_exists($value, '__toString'))) {
-            return null;
-        }
-        $value = (string) $value;
+            if (!is_array($value)) {
+                return $query;
+            }
 
-        if ('' == $value) {
-            return null;
+            $values = array_map('intval', $value);
+        } else {
+            $value = (string) $value;
+
+            if ('' == $value) {
+                return $query;
+            }
+
+            $values = [(int) $value];
         }
+
+        $value = null;
 
         /** @var rex_yform_manager_field $field */
         $field = $params['field'];
         $sql = rex_sql::factory();
 
         if (!$field->getElement('relation_table')) {
-            return 'FIND_IN_SET(' . $sql->escape($value) . ', ' . $sql->escapeIdentifier($field) . ')';
+            return $query->whereListContains($query->getTableAlias() . '.' . $field->getName(), $values);
         }
 
         $relationTableFields = self::getRelationTableFieldsForTables($field->getElement('table_name'), $field->getElement('relation_table'), $field->getElement('table'));
         if (!$relationTableFields['source'] || !$relationTableFields['target']) {
-            return null;
+            return $query;
         }
 
-        return sprintf(
-            'EXISTS (SELECT * FROM %s WHERE %1$s.%s = t0.id AND %1$s.%s = %d)',
-            $sql->escapeIdentifier($field->getElement('relation_table')),
-            $sql->escapeIdentifier($relationTableFields['source']),
-            $sql->escapeIdentifier($relationTableFields['target']),
-            (int) $value
-        );
+        if (0 < count($values)) {
+            // t0 vs $field->getElement('table_name')
+            // Achtung getSearchFilter immer mit t0 als alias Tabelle aufrufen
+
+            $exists = [];
+            foreach ($values as $value) {
+                $exists[] = '(' . sprintf(
+                    'EXISTS (SELECT * FROM %s WHERE %1$s.%s = t0.id AND %1$s.%s = %d)',
+                    $sql->escapeIdentifier($field->getElement('relation_table')),
+                    $sql->escapeIdentifier($relationTableFields['source']),
+                    $sql->escapeIdentifier($relationTableFields['target']),
+                    (int) $value,
+                ) . ')';
+            }
+
+            $query->whereRaw('(' . implode(' OR ', $exists) . ')');
+        }
+        return $query;
     }
 
     private static function getRelationTableFieldsForTables($mainTable, $relationTable, $targetTable)

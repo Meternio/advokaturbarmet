@@ -1,14 +1,10 @@
 <?php
-/**
- * @author mail[at]doerr-softwaredevelopment[dot]com Joachim Doerr
- * @package redaxo5
- * @license MIT
- */
 
-// set default template
-if (!$this->hasConfig()) {
-    $this->setConfig('mform_theme', 'default_theme');
+// old plugin docs still exists ? -> delete
+$pluginDocs = __DIR__ . '/plugins/docs';
+if (file_exists($pluginDocs)) {
+    rex_dir::delete($pluginDocs);
 }
 
-// copy data directory
-rex_dir::copy($this->getPath('data'), $this->getDataPath());
+$addon = rex_addon::get('mform');
+$addon->setProperty('successmsg', '<br><strong>' . rex_i18n::msg('mform_change_message') . '</strong>');

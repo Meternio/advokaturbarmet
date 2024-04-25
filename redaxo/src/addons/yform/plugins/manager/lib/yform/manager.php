@@ -16,8 +16,8 @@ if (!function_exists('rex_yform_manager_checkField')) {
 
 class rex_yform_manager
 {
-    /** @var rex_yform_manager_table */
-    public $table = '';
+    /** @var rex_yform_manager_table|null */
+    public $table;
     public $linkvars = [];
     public $type = '';
     public $dataPageFunctions = [];
@@ -52,16 +52,12 @@ class rex_yform_manager
         return $this->linkvars;
     }
 
-    // ---------------------------------- data functions
     public function getDataPage()
     {
         rex_extension::registerPoint(new rex_extension_point('YFORM_MANAGER_DATA_PAGE', $this));
 
-        // ********************************************* DATA ADD/EDIT/LIST
-
         $func = rex_request('func', 'string', '');
         $data_id = rex_request('data_id', 'int', 0);
-        $show_list = true;
 
         // -------------- rex_yform_manager_filter and sets
 
@@ -88,9 +84,9 @@ class rex_yform_manager
         $rex_yform_list['list'] = rex_request('list', 'string');
         $rex_yform_list['sort'] = rex_request('sort', 'string');
         $rex_yform_list['sorttype'] = rex_request('sorttype', 'string');
-        $rex_yform_list['start'] = rex_request('start', 'int', null) ?? rex_request($rex_yform_list['list'].'_start', 'int', null) ?? 0;
+        $rex_yform_list['start'] = rex_request('start', 'int', null) ?? rex_request($rex_yform_list['list'] . '_start', 'int', null) ?? 0;
 
-        $_csrf_key = 'table_field-'.$this->table->getTableName();
+        $_csrf_key = $this->table->getCSRFKey();
         $rex_yform_list += rex_csrf_token::factory($_csrf_key)->getUrlParams();
 
         $popup = false;
@@ -104,8 +100,6 @@ class rex_yform_manager
             $popup = true;
         }
 
-        rex_extension::registerPoint(new rex_extension_point('YFORM_MANAGER_DATA_PAGE', $this));
-
         $rex_yform_filter = rex_extension::registerPoint(new rex_extension_point('YFORM_MANAGER_DATA_EDIT_FILTER', $rex_yform_filter, [
             'table' => $this->table,
         ]));
@@ -115,516 +109,432 @@ class rex_yform_manager
         ]));
 
         $searchObject = new rex_yform_manager_search($this->table);
-        $searchObject->setSearchLinkVars($this->getLinkVars());
-        $searchObject->setSearchLinkVars($rex_yform_list);
-        $searchObject->setSearchLinkVars(['rex_yform_filter' => $rex_yform_filter]);
-        $searchObject->setSearchLinkVars(['rex_yform_set' => $rex_yform_set]);
-        $searchObject->setSearchLinkVars(['rex_yform_manager_opener' => $rex_yform_manager_opener]);
-        $searchObject->setSearchLinkVars(['rex_yform_manager_popup' => $rex_yform_manager_popup]);
+        $searchObject
+            ->setSearchLinkVars($this->getLinkVars())
+            ->setSearchLinkVars($rex_yform_list)
+            ->setSearchLinkVars(['rex_yform_filter' => $rex_yform_filter])
+            ->setSearchLinkVars(['rex_yform_set' => $rex_yform_set])
+            ->setSearchLinkVars(['rex_yform_manager_opener' => $rex_yform_manager_opener])
+            ->setSearchLinkVars(['rex_yform_manager_popup' => $rex_yform_manager_popup]);
 
-        $searchform = '';
-        if ($this->hasDataPageFunction('search')) {
+        $searchForm = '';
+        if ($this->table->isSearchable() && $this->hasDataPageFunction('search')) {
             $fragment = new rex_fragment();
             $fragment->setVar('class', 'edit', false);
             $fragment->setVar('title', rex_i18n::msg('yform_manager_search'));
             $fragment->setVar('body', $searchObject->getForm(), false);
-            $searchform = $fragment->parse('core/page/section.php');
+            $searchForm = $fragment->parse('core/page/section.php');
             $this->setLinkVars($searchObject->getSearchVars());
         }
 
-        $description = $popup || ('' == $this->table->getDescription()) ? '' : '<br />' . $this->table->getDescription();
+        $description = $popup || ('' == $this->table->getDescription()) ? '' : '<p>' . nl2br(rex_escape($this->table->getDescription())) . '</p>';
 
         echo rex_extension::registerPoint(
             new rex_extension_point(
                 'YFORM_MANAGER_DATA_PAGE_HEADER',
-                rex_view::title(rex_i18n::msg('yform_table') . ': ' . rex_i18n::translate($this->table->getName()) . ' <small>[' . $this->table->getTablename() . ']' . $description . '</small>', ''),
+                rex_view::title(rex_i18n::msg('yform_table') . ': ' . rex_escape($this->table->getNameLocalized()) . ' <small>[' . rex_escape($this->table->getTablename()) . ']</small>', '') . $description,
                 [
                     'yform' => $this,
-                ]
-            )
+                ],
+            ),
         );
-
-        if ('' != $func && in_array($func, ['delete', 'dataset_delete', 'truncate_table'])) {
-            if (!rex_csrf_token::factory($_csrf_key)->isValid()) {
-                echo rex_view::error(rex_i18n::msg('csrf_token_invalid'));
-                $func = '';
-            }
-        }
 
         echo rex_extension::registerPoint(new rex_extension_point('YFORM_MANAGER_REX_INFO', ''));
 
-        $show_editpage = rex_extension::registerPoint(new rex_extension_point('YFORM_MANAGER_DATA_EDIT_FUNC', true,
-        [
-            'table' => $this->table,
-            'link_vars' => $this->getLinkVars(),
-        ]
-        ));
+        // -------------- Searchfields / Searchtext
+        $rex_link_vars = array_merge(
+            $this->getLinkVars(),
+            $rex_yform_list,
+            ['rex_yform_manager_opener' => $rex_yform_manager_opener],
+            ['rex_yform_manager_popup' => $rex_yform_manager_popup],
+            ['rex_yform_filter' => $rex_yform_filter],
+            ['rex_yform_set' => $rex_yform_set],
+        );
 
-        if ($show_editpage) {
-            if ($data_id > 0) {
-                $data_query = $this->table->query()
-                    ->alias('t0')
-                    ->where('id', $data_id);
-                $where = $this->getDataListQueryWhere(array_merge($rex_yform_filter, $rex_yform_set), $searchObject, $this->table);
-                if ($where) {
-                    $data_query->whereRaw($where);
+        if ($data_id > 0) {
+            $data_query = $this->table->query()
+                ->alias('t0')
+                ->where('t0.id', $data_id);
+            $data_query = $this->getDataListQuery($data_query, array_merge($rex_yform_filter, $rex_yform_set), $searchObject);
+            $data_collection = $data_query->find();
+
+            if (1 == count($data_collection)) {
+                $data_id = $data_collection[0]->getId();
+            } else {
+                $data_id = null;
+            }
+        }
+
+        $mainFragment = new rex_fragment();
+        $mainMessages = [];
+
+        if ($this->table->isGranted('EDIT', rex::getUser())) {
+            $func = !in_array($func, ['delete', 'dataset_delete', 'truncate_table', 'add', 'edit', 'clone', 'import', 'history', 'dataset_export', 'collection_edit']) ? '' : $func;
+        } else {
+            $func = ('edit' != $func) ? '' : 'edit';
+        }
+
+        if ('' != $func) {
+            if (!rex_csrf_token::factory($_csrf_key)->isValid()) {
+                $mainMessages[] = [
+                    'type' => 'error',
+                    'message' => rex_i18n::msg('csrf_token_invalid'),
+                ];
+            }
+        }
+
+        switch ($func) {
+            case 'import':
+                if (!$popup && $this->hasDataPageFunction('import')) {
+                    $mainMessages[] = [
+                        'type' => 'info',
+                        'message' => '<b>&laquo; ' . rex_i18n::msg('yform_back_to_overview') . '</b>',
+                        'link' => 'index.php?' . http_build_query(array_merge($rex_link_vars)),
+                    ];
+
+                    ob_start();
+                    include rex_path::plugin('yform', 'manager', 'pages/data_import.php');
+                    $dataImport = ob_get_contents();
+                    ob_end_clean();
+
+                    $mainFragment->setVar('importPage', $dataImport, false);
                 }
-                $data_collection = $data_query->find();
+                break;
+            case 'history':
+                if (!$popup) {
+                    $mainMessages[] = [
+                        'type' => 'info',
+                        'message' => '<b>&laquo; ' . rex_i18n::msg('yform_back_to_overview') . '</b>',
+                        'link' => 'index.php?' . http_build_query(array_merge($rex_link_vars)),
+                    ];
 
-                if (1 == count($data_collection)) {
-                    $data_id = $data_collection[0]->getId();
-                } else {
-                    $data_id = null;
+                    ob_start();
+                    include rex_path::plugin('yform', 'manager', 'pages/data_history.php');
+                    $dataHistory = ob_get_contents();
+                    ob_end_clean();
+
+                    $mainFragment->setVar('historyPage', $dataHistory, false);
                 }
-            }
-
-            // -------------- Searchfields / Searchtext
-            $rex_link_vars = array_merge(
-                $this->getLinkVars(),
-                $rex_yform_list,
-                ['rex_yform_manager_opener' => $rex_yform_manager_opener],
-                ['rex_yform_manager_popup' => $rex_yform_manager_popup],
-                ['rex_yform_filter' => $rex_yform_filter],
-                ['rex_yform_set' => $rex_yform_set]
-            );
-
-            // -------------- FILTER UND SETS PRÜFEN
-
-            if (!$popup && 'import' == $func && $this->hasDataPageFunction('import')) {
-                include rex_path::plugin('yform', 'manager', 'pages/data_import.php');
-            }
-
-            if (!$popup && 'history' == $func) {
-                echo rex_view::info('<a href="index.php?' . http_build_query(array_merge($rex_link_vars)) . '"><b>&laquo; ' . rex_i18n::msg('yform_back_to_overview') . '</b></a>');
-                include rex_path::plugin('yform', 'manager', 'pages/data_history.php');
-                $show_list = false;
-            }
-
-            if ('delete' == $func && $data_id && $this->hasDataPageFunction('delete')) {
-                if ($this->table->getRawDataset($data_id)->delete()) {
-                    echo rex_view::success(rex_i18n::msg('yform_datadeleted'));
-                    $func = '';
-                }
-            }
-
-            if ('dataset_delete' == $func && $this->hasDataPageFunction('truncate_table')) {
-                $query = $this->table->query();
-                $where = $this->getDataListQueryWhere(array_merge($rex_yform_filter, $rex_yform_set), $searchObject, $this->table);
-                if ($where) {
-                    $query->whereRaw($where);
-                }
-                $collection = $query->find();
-                $collection->delete();
-                echo rex_view::success(rex_i18n::msg('yform_dataset_deleted'));
-                $func = '';
-            }
-
-            if (!$popup && 'truncate_table' == $func && $this->hasDataPageFunction('truncate_table')) {
-                $this->table->query()->find()->delete();
-                echo rex_view::success(rex_i18n::msg('yform_table_truncated'));
-                $func = '';
-            }
-
-            if (!$popup && 'dataset_export' == $func && $this->hasDataPageFunction('export')) {
-                ob_end_clean();
-
-                $sql = $this->getDataListQuery(array_merge($rex_yform_filter, $rex_yform_set), $searchObject, $this->table);
-
-                $g = rex_sql::factory();
-                $g->setQuery($sql);
-                $dataset = rex_extension::registerPoint(new rex_extension_point('YFORM_DATA_TABLE_EXPORT', $g->getArray(), ['table' => $this->table]));
-
-                $fields = ['id' => '"id"'];
-                foreach ($this->table->getFields() as $field) {
-                    if ('value' == $field->getType() && 'none' != $field->getDatabaseFieldType()) {
-                        $fields[$field->getName()] = '"' . $field->getName() . '"';
+                break;
+            case 'delete':
+                if ($data_id && $this->hasDataPageFunction('delete')) {
+                    if ($this->table->getRawDataset($data_id)->delete()) {
+                        $mainMessages[] = [
+                            'type' => 'success',
+                            'message' => rex_i18n::msg('yform_datadeleted'),
+                        ];
                     }
                 }
-
-                $exportDataset = [];
-                foreach ($dataset as $data) {
-                    $exportData = [];
-                    foreach ($fields as $fieldName => $fV) {
-                        $exportData[$fieldName] = '"' . str_replace(['"', "\n", "\r"], ['""', '', ''], $data[$fieldName]) . '"';
-                    }
-                    $exportDataset[] = implode(';', $exportData);
+                break;
+            case 'dataset_delete':
+                if ($this->hasDataPageFunction('truncate_table')) {
+                    $query = $this->table->query()->alias('t0');
+                    $query = $this->getDataListQuery($query, array_merge($rex_yform_filter, $rex_yform_set), $searchObject);
+                    $collection = $query->find();
+                    $collection->delete();
+                    $mainMessages[] = [
+                        'type' => 'success',
+                        'message' => rex_i18n::msg('yform_dataset_deleted'),
+                    ];
                 }
-
-                $fileContent = pack('CCC', 0xef, 0xbb, 0xbf);
-                $fileContent .= implode(';', $fields);
-                $fileContent .= "\n".implode("\n", $exportDataset);
-
-                $fileName = 'export_data_' . date('YmdHis') . '.csv';
-                header('Content-Disposition: attachment; filename="' . $fileName . '"; charset=utf-8');
-                rex_response::sendContent($fileContent, 'application/octetstream');
-
-                exit;
-            }
-
-            // -------------- form
-            if (
-                    ('add' == $func && $this->hasDataPageFunction('add')) ||
-                    ('edit' == $func && $data_id) ||
-                    ('collection_edit' == $func && $this->table->isMassEditAllowed())
-            ) {
-                $back = rex_view::info('<a href="index.php?' . http_build_query(array_merge($rex_link_vars)) . '"><b>&laquo; ' . rex_i18n::msg('yform_back_to_overview') . '</b></a>');
-
-                if ('collection_edit' === $func) {
-                    $query = $this->table->query();
-                    $where = $this->getDataListQueryWhere(array_merge($rex_yform_filter, $rex_yform_set), $searchObject, $this->table);
-                    if ($where) {
-                        $query->whereRaw($where);
-                    }
-                    $data = $query->find();
-
-                    $yform = $data->getForm();
-                } else {
-                    $data = 'add' == $func ? $this->table->createDataset() : $this->table->getRawDataset($data_id);
-
-                    $yform = $data->getForm();
-                    $yform->setObjectparams('form_name', 'data_edit-'.$this->table->getTableName());
+                break;
+            case 'truncate_table':
+                if (!$popup && $this->hasDataPageFunction('truncate_table')) {
+                    $this->table->query()->find()->delete();
+                    $mainMessages[] = [
+                        'type' => 'success',
+                        'message' => rex_i18n::msg('yform_table_truncated'),
+                    ];
                 }
-
-                $yform->setHiddenFields($this->getLinkVars());
-                $yform->setHiddenFields($rex_yform_list);
-                $yform->setHiddenFields(['rex_yform_filter' => $rex_yform_filter]);
-                $yform->setHiddenFields(['rex_yform_set' => $rex_yform_set]);
-                $yform->setHiddenFields(['rex_yform_manager_opener' => $rex_yform_manager_opener]);
-                $yform->setHiddenFields(['rex_yform_manager_popup' => $rex_yform_manager_popup]);
-
-                if ('' != rex_request('rex_yform_show_formularblock', 'string')) {
-                    // Optional .. kann auch geloescht werden. Dient nur zu Hilfe beim Aufbau
-                    // von yform-Formularen über php
-                    // Textblock gibt den formalarblock als text aus, um diesen in das yform modul einsetzen zu können.
-                    //  rex_yform_show_formularblock=1
-                    $text_block = '';
-                    foreach ($this->table->getFields() as $field) {
-                        $class = 'rex_yform_'.$field->getType().'_'.$field->getTypeName();
-
-                        /** @var rex_yform_base_abstract $cl */
-                        $cl = new $class();
-                        $definitions = $cl->getDefinitions();
-
-                        $values = [];
-                        $i = 1;
-                        foreach ($definitions['values'] as $key => $_) {
-                            $key = $this->getFieldName($key, $field->getType());
-                            if (isset($field[$key])) {
-                                $values[] = $field[$key];
-                            } elseif (isset($field['f' . $i])) {
-                                $values[] = $field['f' . $i];
-                            } else {
-                                $values[] = '';
-                            }
-                            ++$i;
-                        }
-
-                        if ('value' == $field->getType()) {
-                            $text_block .= "\n" . '$yform->setValueField("' . $field->getTypeName() . '",array("' . implode('","', $values) . '"));';
-                        } elseif ('validate' == $field->getType()) {
-                            $text_block .= "\n" . '$yform->setValidateField("' . $field->getTypeName() . '",array("' . implode('","', $values) . '"));';
-                        } elseif ('action' == $field->getType()) {
-                            $text_block .= "\n" . '$yform->setActionField("' . $field->getTypeName() . '",array("' . implode('","', $values) . '"));';
-                        }
-                        // $text_block .= "\n".$field["type_name"].'|'.implode("|",$values);
-                    }
-                    echo '<pre>' . $text_block . '</pre>';
+                break;
+            case 'dataset_export':
+                if (!$popup && $this->hasDataPageFunction('export')) {
+                    ob_end_clean();
+                    include rex_path::plugin('yform', 'manager', 'pages/data_export.php');
+                    exit;
                 }
-
-                $yform->setObjectparams('fixdata', $rex_yform_set);
-
-                $yform_clone = clone $yform;
-                $yform->setHiddenField('func', $func); // damit es neu im clone gesetzt werden kann
-
-                if ('edit' == $func && $data_id) {
-                    $yform->setHiddenField('data_id', $data_id);
-                    $yform->setObjectparams('getdata', true);
-                    $yform->setValueField('submit', ['name' => 'submit', 'labels' => rex_i18n::msg('yform_save').','.rex_i18n::msg('yform_save_apply'), 'values' => '1,2', 'no_db' => true, 'css_classes' => 'btn-save,btn-apply']);
-                } elseif ('add' == $func) {
-                    $yform->setValueField('submit', ['name' => 'submit', 'labels' => rex_i18n::msg('yform_add').','.rex_i18n::msg('yform_add_apply'), 'values' => '1,2', 'no_db' => true, 'css_classes' => 'btn-save,btn-apply']);
-                } elseif ('collection_edit' === $func) {
-                    $yform->setValueField('submit', ['name' => 'submit', 'labels' => rex_i18n::msg('yform_save').','.rex_i18n::msg('yform_save_apply'), 'values' => '1,2', 'no_db' => true, 'css_classes' => 'btn-save,btn-apply']);
-                }
-
-                $sql_db = rex_sql::factory();
-                $sql_db->beginTransaction();
-
-                $transactionErrorMessage = null;
-
-                try {
-                    $form = $data->executeForm($yform, static function (rex_yform $yform) {
-                        /** @var rex_yform_value_abstract $valueObject */
-                        foreach ($yform->objparams['values'] as $valueObject) {
-                            if ('submit' == $valueObject->getName()) {
-                                if (2 == $valueObject->getValue()) { // apply
-                                    $yform->setObjectparams('form_showformafterupdate', 1);
-                                    $yform->executeFields();
-                                }
-                            }
-                        }
-                    });
-
-                    $sql_db->commit();
-                } catch (\Throwable $e) {
-                    $sql_db->rollBack();
-                    $transactionErrorMessage = $e->getMessage();
-
-                    if ($transactionErrorMessage) {
-                        echo rex_view::error(rex_i18n::msg('yform_editdata_collection_error_abort', $transactionErrorMessage));
-                    }
-                }
-
-                if ($yform->objparams['actions_executed']) {
-                    if ('edit' == $func) {
-                        echo rex_view::info(rex_i18n::msg('yform_thankyouforupdate'));
-                    } elseif ('add' == $func) {
-                        echo rex_view::info(rex_i18n::msg('yform_thankyouforentry'));
-
-                        $submit_type = 1; // normal, 2=apply
-                        foreach ($yform->objparams['values'] as $valueObject) {
-                            /** @var rex_yform_value_abstract $valueObject */
-                            if ('submit' == $valueObject->getName()) {
-                                if (2 == $valueObject->getValue()) { // apply
-                                    $submit_type = 2;
-                                }
-                            }
-                        }
-
-                        if (2 == $submit_type) {
-                            $data_id = $yform->objparams['main_id'];
-                            $func = 'edit';
-                            $yform = $yform_clone;
-                            $yform->setFieldValue('send', [], '');
-                            $yform->setHiddenField('func', $func);
-                            $yform->setHiddenField('data_id', $data_id);
-                            $yform->setObjectparams('main_id', $data_id);
-                            $yform->setObjectparams('main_where', "id=$data_id");
-                            $yform->setObjectparams('getdata', true);
-                            $yform->setObjectparams('send', false);
-                            $yform->setValueField('submit', ['name' => 'submit', 'labels' => rex_i18n::msg('yform_save').','.rex_i18n::msg('yform_save_apply'), 'values' => '1,2', 'no_db' => true, 'css_classes' => 'btn-save,btn-apply']);
-                            $form = $yform->getForm();
-                        }
-                    }
-                }
-
-                if ($yform->objparams['form_show'] || ($yform->objparams['form_showformafterupdate'])) {
+                break;
+            case 'add':
+            case 'edit':
+            case 'clone':
+            case 'collection_edit':
+                if (
+                    ('add' == $func && $this->hasDataPageFunction('add'))
+                    || (('edit' == $func || 'clone' == $func) && $data_id)
+                    || ('collection_edit' == $func && $this->table->isMassEditAllowed())
+                ) {
                     if ('collection_edit' === $func) {
-                        $title = rex_i18n::msg('yform_editdata_collection', $data->count());
-                    } elseif ('add' == $func) {
-                        $title = rex_i18n::msg('yform_adddata');
+                        $query = $this->table->query()->alias('t0');
+                        $query = $this->getDataListQuery($query, array_merge($rex_yform_filter, $rex_yform_set), $searchObject);
+                        $data = $query->find();
+                        $yform = $data->getForm();
+                        $yform->setObjectparams('csrf_protection', false);
                     } else {
-                        $title = rex_i18n::rawMsg('yform_editdata', $data_id);
+                        $data = 'add' == $func ? $this->table->createDataset() : $this->table->getRawDataset($data_id);
+                        $yform = $data->getForm();
+                        $yform->setObjectparams('form_name', 'data_edit-' . $this->table->getTableName());
                     }
 
-                    $fragment = new rex_fragment();
-                    $fragment->setVar('class', 'edit', false);
-                    $fragment->setVar('title', $title);
-                    $fragment->setVar('body', $form, false);
-                    // $fragment->setVar('buttons', $buttons, false);
-                    $form = $fragment->parse('core/page/section.php');
+                    $yform->canEdit(rex_yform_manager_table_authorization::onAttribute('EDIT', $this->table, rex::getUser()));
+                    $yform->canView(rex_yform_manager_table_authorization::onAttribute('VIEW', $this->table, rex::getUser()));
 
-                    if ($this->table->isSearchable() && $this->hasDataPageFunction('search')) {
-                        $fragment = new rex_fragment();
-                        $fragment->setVar('content', [$searchform, $form], false);
-                        $fragment->setVar('classes', ['col-sm-3 col-md-3 col-lg-2', 'col-sm-9 col-md-9 col-lg-10'], false);
-                        echo $fragment->parse('core/page/grid.php');
-                    } else {
-                        echo $form;
-                    }
+                    $yform->setHiddenFields($this->getLinkVars());
+                    $yform->setHiddenFields($rex_yform_list);
+                    $yform->setHiddenFields(['rex_yform_filter' => $rex_yform_filter]);
+                    $yform->setHiddenFields(['rex_yform_set' => $rex_yform_set]);
+                    $yform->setHiddenFields(['rex_yform_manager_opener' => $rex_yform_manager_opener]);
+                    $yform->setHiddenFields(['rex_yform_manager_popup' => $rex_yform_manager_popup]);
 
-                    echo rex_extension::registerPoint(new rex_extension_point('YFORM_DATA_FORM', '', ['form' => $form, 'func' => $func, 'this' => $this, 'table' => $this->table]));
+                    if ('' != rex_request('rex_yform_show_formularblock', 'string')) {
+                        // Optional .. kann auch geloescht werden. Dient nur zu Hilfe beim Aufbau
+                        // von yform-Formularen über php
+                        // Textblock gibt den formalarblock als text aus, um diesen in das yform modul einsetzen zu können.
+                        //  rex_yform_show_formularblock=1
+                        $text_block = '';
+                        foreach ($this->table->getFields() as $field) {
+                            $class = 'rex_yform_' . $field->getType() . '_' . $field->getTypeName();
 
-                    echo $back;
+                            /** @var rex_yform_base_abstract $cl */
+                            $cl = new $class();
+                            $definitions = $cl->getDefinitions();
 
-                    $show_list = false;
-                }
-            }
-
-            if ($show_list) {
-                $sql = $this->getDataListQuery($rex_yform_filter, $searchObject, $this->table);
-
-                /** @var rex_list $list */
-                $list = rex_list::factory($sql, $this->table->getListAmount());
-                $list->addTableAttribute('class', 'table-striped table-hover yform-table-' . rex_string::normalize($this->table->getTableName()));
-
-                $rex_yform_list[$list->getPager()->getCursorName()] = rex_request($list->getPager()->getCursorName(), 'int', 0);
-
-                $tdIcon = '<i class="rex-icon rex-icon-table"></i>';
-                $thIcon = '_';
-                if ($this->hasDataPageFunction('add')) {
-                    $thIcon = '<a href="index.php?' . http_build_query(array_merge(['func' => 'add'], $rex_link_vars)) . '"' . rex::getAccesskey(rex_i18n::msg('add'), 'add') . '><i class="rex-icon rex-icon-add"></i></a>';
-                }
-                $list->addColumn($thIcon, $tdIcon, 0, ['<th class="rex-table-icon">###VALUE###</th>', '<td class="rex-table-icon" data-title="' . rex_i18n::msg('id') . '">###VALUE###</td>']);
-                $list->setColumnParams($thIcon, array_merge(['data_id' => '###id###', 'func' => 'edit'], $rex_yform_list));
-
-                $list->setColumnLabel('id', rex_i18n::msg('yform_id'));
-                $list->setColumnSortable('id');
-
-                $link_list_params = array_merge(
-                    $this->getLinkVars(),
-                    ['table_name' => $this->table->getTablename()],
-                    ['rex_yform_filter' => $rex_yform_filter],
-                    ['rex_yform_set' => $rex_yform_set],
-                    ['rex_yform_manager_opener' => $rex_yform_manager_opener],
-                    ['rex_yform_manager_popup' => $rex_yform_manager_popup]
-                );
-
-                foreach ($link_list_params as $paramKey => $paramValue) {
-                    if (is_array($paramValue)) {
-                        foreach ($paramValue as $paramKey2 => $paramValue2) {
-                            if (is_array($paramValue2)) {
-                                throw new \Exception('multi dimensional arrays are not supported!');
-                            }
-
-                            $list->addParam($paramKey.'['.$paramKey2.']', $paramValue2);
-                        }
-                    } else {
-                        $list->addParam($paramKey, $paramValue);
-                    }
-                }
-
-                foreach ($this->table->getFields() as $field) {
-                    if (!$field->isHiddenInList() && $field->getTypeName()) {
-                        if (method_exists('rex_yform_value_' . $field->getTypeName(), 'getListValue')) {
-                            $list->setColumnFormat(
-                            $field->getName(),
-                            'custom',
-                                ['rex_yform_value_' . $field->getTypeName(), 'getListValue'],
-                                ['field' => $field->toArray(), 'fields' => $this->table->getFields()]
-                            );
-                        }
-                    }
-
-                    if ('value' == $field->getType()) {
-                        if ($field->isHiddenInList()) {
-                            $list->removeColumn($field->getName());
-                        } else {
-                            $list->setColumnSortable($field->getName());
-                            $list->setColumnLabel($field->getName(), $field->getLabel());
-                        }
-                    }
-                }
-
-                if (isset($rex_yform_manager_opener['id'])) {
-                    $list->addColumn(rex_i18n::msg('yform_data_select'), '');
-                    $list->setColumnFormat(
-                    rex_i18n::msg('yform_data_select'),
-                    'custom',
-                    static function ($params) {
-                        $value = '';
-
-                        $tablefield = explode('.', $params['params']['opener_field']);
-                        if (1 == count($tablefield)) {
-                            if (isset($params['list']->getParams()['table_name'])) {
-                                $target_table = $params['list']->getParams()['table_name'];
-                                $target_field = $tablefield[0];
-                                $values = rex_yform_value_be_manager_relation::getListValues($target_table, $target_field);
-                                $value = $values[$params['list']->getValue('id')];
-                            }
-                        } else {
-                            [$table_name, $field_name] = explode('.', $params['params']['opener_field']);
-                            $table = rex_yform_manager_table::get($table_name);
-                            if ($table) {
-                                $fields = $table->getValueFields(['name' => $field_name]);
-                                if (isset($fields[$field_name])) {
-                                    $target_table = $fields[$field_name]->getElement('table');
-                                    $target_field = $fields[$field_name]->getElement('field');
-
-                                    $values = rex_yform_value_be_manager_relation::getListValues($target_table, $target_field);
-                                    $value = $values[$params['list']->getValue('id')];
+                            $values = [];
+                            $i = 1;
+                            foreach ($definitions['values'] as $key => $_) {
+                                $key = $this->getFieldName($key, $field->getType());
+                                if (isset($field[$key])) {
+                                    $values[] = $field[$key];
+                                } elseif (isset($field['f' . $i])) {
+                                    $values[] = $field['f' . $i];
+                                } else {
+                                    $values[] = '';
                                 }
+                                ++$i;
                             }
+
+                            if ('value' == $field->getType()) {
+                                $text_block .= "\n" . '$yform->setValueField("' . $field->getTypeName() . '",array("' . implode('","', $values) . '"));';
+                            } elseif ('validate' == $field->getType()) {
+                                $text_block .= "\n" . '$yform->setValidateField("' . $field->getTypeName() . '",array("' . implode('","', $values) . '"));';
+                            } elseif ('action' == $field->getType()) {
+                                $text_block .= "\n" . '$yform->setActionField("' . $field->getTypeName() . '",array("' . implode('","', $values) . '"));';
+                            }
+                            // $text_block .= "\n".$field["type_name"].'|'.implode("|",$values);
                         }
-                        return '<a href="javascript:setYFormDataset(' . $params['params']['opener_id'] . ',###id###,\''.rex_escape($value, 'js').' [id=###id###]\',' . $params['params']['opener_multiple'] . ')">'.rex_i18n::msg('yform_data_select').'</a>';
-                    },
-                    [
-                        'opener_id' => $rex_yform_manager_opener['id'],
-                        'opener_field' => $rex_yform_manager_opener['field'],
-                        'opener_multiple' => $rex_yform_manager_opener['multiple'],
-                    ]
-                    );
-                } else {
-
-                    // to take care, that db field are not in conflict with th names, ' ' have been added to identifier
-
-                    $list->addColumn(rex_i18n::msg('yform_function').' ', '<i class="rex-icon rex-icon-edit"></i> ' . rex_i18n::msg('yform_edit'));
-                    $list->setColumnParams(rex_i18n::msg('yform_function').' ', array_merge(['data_id' => '###id###', 'func' => 'edit'], $rex_yform_list));
-
-                    $colspan = 1;
-
-                    if ($this->hasDataPageFunction('delete')) {
-                        ++$colspan;
-
-                        $list->addColumn(rex_i18n::msg('yform_delete').' ', '<i class="rex-icon rex-icon-delete"></i> ' . rex_i18n::msg('yform_delete'));
-                        $list->setColumnLayout(rex_i18n::msg('yform_delete').' ', ['', '<td class="rex-table-action">###VALUE###</td>']);
-                        $list->setColumnParams(rex_i18n::msg('yform_delete').' ', array_merge(['data_id' => '###id###', 'func' => 'delete'], $rex_yform_list));
-                        $list->addLinkAttribute(rex_i18n::msg('yform_delete').' ', 'onclick', 'return confirm(\' id=###id### ' . rex_i18n::msg('yform_delete') . ' ?\')');
+                        echo '<pre>' . $text_block . '</pre>';
                     }
 
-                    if (!$popup && $this->table->hasHistory()) {
-                        ++$colspan;
+                    $yform->setObjectparams('fixdata', $rex_yform_set);
+                    $yform_clone = clone $yform;
+                    $yform->setHiddenField('func', $func); // damit es neu im clone gesetzt werden kann
 
-                        $list->addColumn(rex_i18n::msg('yform_history').' ', '<i class="rex-icon fa-history"></i> ' . rex_i18n::msg('yform_history'));
-                        $list->setColumnLayout(rex_i18n::msg('yform_history').' ', ['', '<td class="rex-table-action">###VALUE###</td>']);
-                        $list->setColumnParams(rex_i18n::msg('yform_history').' ', ['func' => 'history', 'dataset_id' => '###id###', 'filter_dataset' => 1]);
+                    $buttonLabels = '';
+                    switch ($func) {
+                        case 'clone':
+                        case 'edit':
+                            $yform->setHiddenField('data_id', $data_id);
+                            $yform->setObjectparams('getdata', true);
+                            $buttonLabels = rex_i18n::msg('yform_save') . ',' . rex_i18n::msg('yform_save_apply');
+                            break;
+                        case 'add':
+                            $buttonLabels = rex_i18n::msg('yform_add') . ',' . rex_i18n::msg('yform_add_apply');
+                            break;
+                        case 'collection_edit':
+                            $buttonLabels = rex_i18n::msg('yform_save') . ',' . rex_i18n::msg('yform_save_apply');
                     }
 
-                    $list->setColumnLayout(rex_i18n::msg('yform_function').' ', ['<th class="rex-table-action" colspan="'.$colspan.'">###VALUE###</th>', '<td class="rex-table-action">###VALUE###</td>']);
+                    if ($yform->isEditable()) {
+                        $yform->setValueField('submit', ['name' => 'submit', 'labels' => $buttonLabels, 'values' => '1,2', 'no_db' => true, 'css_classes' => 'btn-save,btn-apply']);
+                    } else {
+                        $yform->setFieldValue('send', [], '');
+                        $yform->setObjectparams('submit_btn_show', false);
+                        if (isset($rex_yform_manager_opener['id'])) {
+                            // TODO:
+                            // Übernehmen aus dem Datensatz heraus
 
-                }
+                            // $yform->setValueField('submit', ['name' => 'submit', 'labels' => rex_i18n::msg('yform_save').','.rex_i18n::msg('yform_save_apply'), 'values' => '1,2', 'no_db' => true, 'css_classes' => 'btn-save,btn-apply']);
 
-                $list = rex_extension::registerPoint(new rex_extension_point('YFORM_DATA_LIST', $list, ['table' => $this->table]));
-
-                if ($rex_yform_filter) {
-                    $filter = [];
-                    $getFilter = static function (rex_yform_manager_field $field, $value) {
-                        if ('be_manager_relation' == $field->getTypeName()) {
-                            $listValues = rex_yform_value_be_manager_relation::getListValues($field->getElement('table'), $field->getElement('field'), ['id' => $value]);
-                            if (isset($listValues[$value])) {
-                                $value = $listValues[$value];
-                            }
-                        }
-                        return '<b>' . rex_i18n::translate($field->getLabel()) .':</b> ' . $value;
-                    };
-                    foreach ($rex_yform_filter as $key => $value) {
-                        if (is_array($value)) {
-                            $relTable = rex_yform_manager_table::get($this->table->getValueField($key)->getElement('table'));
-                            foreach ($value as $k => $v) {
-                                $filter[] = $getFilter($relTable->getValueField($k), $v);
-                            }
-                        } else {
-                            $filter[] = $getFilter($this->table->getValueField($key), $value);
+                            /*return '<a href="javascript:setYFormDataset('.$params['params']['opener_id'].',###id###,\''.rex_escape(
+                                    $value,
+                                    'js'
+                                ).' [id=###id###]\','.$params['params']['opener_multiple'].')">'.rex_i18n::msg(
+                                    'yform_data_select'
+                                ).'</a>';
+                            */
                         }
                     }
-                    echo rex_view::info(implode('<br>', $filter));
+
+                    try {
+                        $sql_db = rex_sql::factory();
+                        $form = '';
+                        $sql_db->transactional(static function () use (&$form, &$yform, $data, $func) {
+                            $afterFieldsExecuted = static function (rex_yform $yform) {
+                                /** @var rex_yform_value_abstract $valueObject */
+                                foreach ($yform->objparams['values'] as $valueObject) {
+                                    if ('submit' == $valueObject->getName()) {
+                                        if (2 == $valueObject->getValue()) { // apply
+                                            $yform->setObjectparams('form_showformafterupdate', 1);
+                                            // $yform->executeFields();
+                                        }
+                                    }
+                                }
+                            };
+
+                            if ('clone' == $func) {
+                                $afterFieldsExecuted = static function (rex_yform $yform) use ($afterFieldsExecuted) {
+                                    $yform->objparams['form_hiddenfields']['func'] = 'add';
+                                    unset($yform->objparams['form_hiddenfields']['data_id']);
+
+                                    // In den Feldern Anpassungen vornehmen
+                                    foreach ($yform->objparams['values'] as $k => $v) {
+                                        // Submit-Buttons von "Edit" auf "Add" zurückstellen
+                                        if ($v instanceof rex_yform_value_submit) {
+                                            $yform->objparams['form_output'][$k] = str_replace(
+                                                [rex_i18n::msg('yform_save') . '</button', rex_i18n::msg('yform_save_apply') . '</button'],
+                                                [rex_i18n::msg('yform_add') . '</button', rex_i18n::msg('yform_add_apply') . '</button'],
+                                                $yform->objparams['form_output'][$k],
+                                            );
+                                            continue;
+                                        }
+
+                                        // im Feldtyp be_manager_relation / Typ 5 (inline) ebenfalls die Datensatz-ID der
+                                        // verbundenen Sätze entfernen. Nur "inline" ist problematisch
+                                        if ($v instanceof rex_yform_value_be_manager_relation && 5 == $v->getElement('type')) {
+                                            $fieldName = preg_quote($v->getFieldName());
+                                            $pattern = '/<input type="hidden" name="' . $fieldName . '(\[\d+\])*\[id\]" value="\d+" \/>/';
+                                            $yform->objparams['form_output'][$k] = preg_replace($pattern, '', $yform->objparams['form_output'][$k]);
+                                        }
+                                    }
+
+                                    if (is_callable($afterFieldsExecuted)) {
+                                        $afterFieldsExecuted($yform);
+                                    }
+                                };
+                            }
+
+                            $form = $data->executeForm($yform, $afterFieldsExecuted);
+                        });
+
+                        if ($yform->objparams['actions_executed']) {
+                            switch ($func) {
+                                case 'add':
+                                case 'clone':
+                                case 'edit':
+                                    $submit_type = 1; // normal, 2=apply
+                                    foreach ($yform->objparams['values'] as $valueObject) {
+                                        /** @var rex_yform_value_abstract $valueObject */
+                                        if ('submit' == $valueObject->getName()) {
+                                            if (2 == $valueObject->getValue()) { // apply
+                                                $submit_type = 2;
+                                            }
+                                        }
+                                    }
+
+                                    if (2 == $submit_type) {
+                                        $data_id = $yform->objparams['main_id'];
+                                        $func = 'edit';
+                                        $yform = $yform_clone;
+                                        $yform->setFieldValue('send', [], '');
+                                        $yform->setHiddenField('func', $func);
+                                        $yform->setHiddenField('data_id', $data_id);
+                                        $yform->setObjectparams('main_id', $data_id);
+                                        $yform->setObjectparams('main_where', "id=$data_id");
+                                        $yform->setObjectparams('getdata', true);
+                                        $yform->setObjectparams('send', false);
+                                        $yform->setValueField('submit', ['name' => 'submit', 'labels' => rex_i18n::msg('yform_save') . ',' . rex_i18n::msg('yform_save_apply'), 'values' => '1,2', 'no_db' => true, 'css_classes' => 'btn-save,btn-apply']);
+                                        $form = $yform->getForm();
+                                    }
+                                    break;
+                            }
+                        }
+
+                        if ($yform->objparams['form_show'] || $yform->objparams['form_showformafterupdate']) {
+                            if ('collection_edit' === $func) {
+                                $title = rex_i18n::msg('yform_editdata_collection', $data->count());
+                            } elseif ('add' == $func) {
+                                $title = rex_i18n::msg('yform_adddata');
+                            } elseif ('clone' == $func) {
+                                $title = rex_i18n::msg('yform_clonedata', $data_id);
+                            } else {
+                                $title = rex_i18n::rawMsg('yform_editdata', $data_id);
+                            }
+
+                            $fragment = new rex_fragment();
+                            $fragment->setVar('class', 'edit', false);
+                            $fragment->setVar('title', $title);
+                            $fragment->setVar('body', $form, false);
+                            // $fragment->setVar('buttons', $buttons, false);
+                            $form = $fragment->parse('core/page/section.php');
+
+                            $mainFragment->setVar('detailForm', $form, false);
+
+                            $mainMessages[] = [
+                                'type' => 'info',
+                                'message' => rex_i18n::msg('yform_back_to_overview'),
+                                'link' => 'index.php?' . http_build_query(array_merge($rex_link_vars)),
+                            ];
+                        }
+
+                        if ($yform->objparams['actions_executed']) {
+                            if ($yform->hasWarnings()) {
+                                $mainMessages[] = [
+                                    'type' => 'error',
+                                    'message' => rex_i18n::msg('yform_errors_occurred'),
+                                ];
+                            } elseif (!$yform->isEditable()) {
+                            } elseif ('collection_edit' == $func) {
+                                $mainMessages[] = [
+                                    'type' => 'info',
+                                    'message' => rex_i18n::msg('yform_thankyouforupdates'),
+                                ];
+                            } elseif ('edit' == $func) {
+                                $mainMessages[] = [
+                                    'type' => 'info',
+                                    'message' => rex_i18n::msg('yform_thankyouforupdate'),
+                                ];
+                            } else {
+                                // -> add
+                                $mainMessages[] = [
+                                    'type' => 'info',
+                                    'message' => rex_i18n::msg('yform_thankyouforentry'),
+                                ];
+                            }
+                        }
+                    } catch (Throwable $e) {
+                        $mainMessages[] = [
+                            'type' => 'error',
+                            'message' => rex_i18n::msg('yform_editdata_collection_error_abort', $e->getMessage()),
+                        ];
+                    }
                 }
-                $panel_options = '';
-                $data_links = [];
+                break;
+        }
 
-                if (count($data_links) > 0) {
-                    $fragment = new rex_fragment();
-                    $fragment->setVar('size', 'xs', false);
-                    $fragment->setVar('buttons', $data_links, false);
-                    $panel_options .= '<small class="rex-panel-option-title">' . rex_i18n::msg('yform_data') . '</small> ' . $fragment->parse('core/buttons/button_group.php');
-                }
+        $query = $this->table->query()->alias('t0');
+        $query = $this->getDataListQuery($query, $rex_yform_filter, $searchObject);
 
-                // INFO LINK
-                $dataset_links = [];
+        $panel_options = [];
+        if (!$popup) {
+            $dataset_links = [];
 
-                if (!$popup && $this->table->isMassEditAllowed()) {
+            if ($this->table->isGranted('EDIT', rex::getUser())) {
+                if ($this->table->isMassEditAllowed()) {
                     $item = [];
                     $item['label'] = rex_i18n::msg('yform_edit');
                     $item['url'] = 'index.php?' . http_build_query(array_merge(['func' => 'collection_edit'], $rex_link_vars));
                     $item['attributes']['class'][] = 'btn-default';
+                    $item['attributes']['data-confirm'][] = rex_i18n::msg('yform_dataset_edit_confirm');
                     $dataset_links[] = $item;
                 }
-                if (!$popup && (1 == $this->table->isExportable() && $this->hasDataPageFunction('export'))) {
+
+                if (1 == $this->table->isExportable() && $this->hasDataPageFunction('export')) {
                     $item = [];
                     $item['label'] = rex_i18n::msg('yform_export');
                     $item['url'] = 'index.php?' . http_build_query(array_merge(['func' => 'dataset_export'], $rex_link_vars));
                     $item['attributes']['class'][] = 'btn-default';
                     $dataset_links[] = $item;
                 }
+
                 if ($this->table->isMassDeletionAllowed() && $this->hasDataPageFunction('truncate_table')) {
                     $item = [];
                     $item['label'] = rex_i18n::msg('yform_delete');
@@ -634,29 +544,26 @@ class rex_yform_manager
                     $item['attributes']['onclick'][] = 'return confirm(\'' . rex_i18n::msg('yform_dataset_delete_confirm') . '\');';
                     $dataset_links[] = $item;
                 }
-                if (count($dataset_links) > 0) {
-                    $fragment = new rex_fragment();
-                    $fragment->setVar('size', 'xs', false);
-                    $fragment->setVar('buttons', $dataset_links, false);
-                    $panel_options .= '<small class="rex-panel-option-title">' . rex_i18n::msg('yform_dataset') . '</small> ' . $fragment->parse('core/buttons/button_group.php');
-                }
+            }
 
-                $table_links = [];
-                if (!$popup && $this->table->isImportable() && $this->hasDataPageFunction('import')) {
+            $table_links = [];
+
+            if ($this->table->isGranted('EDIT', rex::getUser())) {
+                if ($this->table->isImportable() && $this->hasDataPageFunction('import')) {
                     $item = [];
                     $item['label'] = rex_i18n::msg('yform_import');
                     $item['url'] = 'index.php?' . http_build_query(array_merge(['func' => 'import'], $rex_link_vars));
                     $item['attributes']['class'][] = 'btn-default';
                     $table_links[] = $item;
                 }
-                if (!$popup && rex::getUser()->isAdmin()) {
+                if (rex::getUser()->isAdmin()) {
                     $item = [];
                     $item['label'] = rex_i18n::msg('yform_edit');
                     $item['url'] = 'index.php?page=yform/manager&table_id=' . $this->table->getId() . '&func=edit';
                     $item['attributes']['class'][] = 'btn-default';
                     $table_links[] = $item;
                 }
-                if (!$popup && $this->table->isMassDeletionAllowed() && $this->hasDataPageFunction('truncate_table')) {
+                if ($this->table->isMassDeletionAllowed() && $this->hasDataPageFunction('truncate_table')) {
                     $item = [];
                     $item['label'] = rex_i18n::msg('yform_truncate_table');
                     $item['url'] = 'index.php?' . http_build_query(array_merge(['func' => 'truncate_table'], $rex_link_vars));
@@ -665,140 +572,188 @@ class rex_yform_manager
                     $item['attributes']['onclick'][] = 'return confirm(\'' . rex_i18n::msg('yform_truncate_table_confirm') . '\');';
                     $table_links[] = $item;
                 }
-                if (!$popup && $this->table->hasHistory()) {
+                if ($this->table->hasHistory()) {
                     $item = [];
                     $item['label'] = rex_i18n::msg('yform_history');
                     $item['url'] = 'index.php?' . http_build_query(array_merge(['func' => 'history'], $rex_link_vars));
                     $item['attributes']['class'][] = 'btn-default';
                     $table_links[] = $item;
                 }
-                if (count($table_links) > 0) {
-                    $fragment = new rex_fragment();
-                    $fragment->setVar('size', 'xs', false);
-                    $fragment->setVar('buttons', $table_links, false);
-                    $panel_options .= '<small class="rex-panel-option-title">' . rex_i18n::msg('yform_table') . '</small> ' . $fragment->parse('core/buttons/button_group.php');
-                }
-
-                $field_links = [];
-                if (!$popup && rex::getUser()->isAdmin()) {
-                    $item = [];
-                    $item['label'] = rex_i18n::msg('yform_edit');
-                    $item['url'] = 'index.php?page=yform/manager/table_field&table_name=' . $this->table->getTableName();
-                    $item['attributes']['class'][] = 'btn-default';
-                    $field_links[] = $item;
-                }
-                if (count($field_links) > 0) {
-                    $fragment = new rex_fragment();
-                    $fragment->setVar('size', 'xs', false);
-                    $fragment->setVar('buttons', $field_links, false);
-                    $panel_options .= '<small class="rex-panel-option-title">' . rex_i18n::msg('yform_manager_fields') . '</small> ' . $fragment->parse('core/buttons/button_group.php');
-                }
-
-                $content = $list->get();
-                $fragment = new rex_fragment();
-                $fragment->setVar('title', rex_i18n::msg('yform_tabledata_overview'));
-                $fragment->setVar('options', $panel_options, false);
-                $fragment->setVar('content', $content, false);
-                $content = $fragment->parse('core/page/section.php');
-
-                $grid = [];
-                $grid['content'] = [];
-                if ($this->table->isSearchable() && $this->hasDataPageFunction('search')) {
-                    $grid['content']['searchform'] = $searchform;
-                }
-                $grid['content']['searchlist'] = $content;
-
-                $grid['classes'] = [];
-                $grid['classes']['searchform'] = 'col-sm-3 col-md-3 col-lg-2';
-                $grid['classes']['searchlist'] = 'col-sm-9 col-md-9 col-lg-10';
-
-                $grid['fragment'] = 'yform/manager/page/grid.php';
-
-                $grid = rex_extension::registerPoint(new rex_extension_point('YFORM_DATA_LIST_GRID', $grid, ['table' => $this->table]));
-
-                $fragment = new rex_fragment();
-                $fragment->setVar('content', $grid['content'], false);
-                $fragment->setVar('classes', $grid['classes'], false);
-                echo $fragment->parse($grid['fragment']);
             }
-        } // end: $show_editpage
+
+            $field_links = [];
+            if ($this->table->isGranted('EDIT', rex::getUser()) && rex::getUser()->isAdmin()) {
+                $item = [];
+                $item['label'] = rex_i18n::msg('yform_edit');
+                $item['url'] = 'index.php?page=yform/manager/table_field&table_name=' . $this->table->getTableName();
+                $item['attributes']['class'][] = 'btn-default';
+                $field_links[] = $item;
+            }
+
+            ['dataset_links' => $dataset_links, 'table_links' => $table_links, 'field_links' => $field_links] = rex_extension::registerPoint(
+                new rex_extension_point(
+                    'YFORM_DATA_LIST_LINKS',
+                    ['dataset_links' => $dataset_links, 'table_links' => $table_links, 'field_links' => $field_links],
+                    ['table' => $this->table, 'popup' => $popup],
+                ),
+            );
+
+            if (count($dataset_links) > 0) {
+                $fragment = new rex_fragment();
+                $fragment->setVar('size', 'xs', false);
+                $fragment->setVar('buttons', $dataset_links, false);
+                $panel_options[] = '<small class="rex-panel-option-title">' . rex_i18n::msg('yform_dataset') . '</small> ' . $fragment->parse('core/buttons/button_group.php');
+            }
+
+            if (count($table_links) > 0) {
+                $fragment = new rex_fragment();
+                $fragment->setVar('size', 'xs', false);
+                $fragment->setVar('buttons', $table_links, false);
+                $panel_options[] = '<small class="rex-panel-option-title">' . rex_i18n::msg('yform_table') . '</small> ' . $fragment->parse('core/buttons/button_group.php');
+            }
+            if (count($field_links) > 0) {
+                $fragment = new rex_fragment();
+                $fragment->setVar('size', 'xs', false);
+                $fragment->setVar('buttons', $field_links, false);
+                $panel_options[] = '<small class="rex-panel-option-title">' . rex_i18n::msg('yform_manager_fields') . '</small> ' . $fragment->parse('core/buttons/button_group.php');
+            }
+        }
+
+        $actionButtons = [];
+        $actionButtonParams = array_merge(
+            $rex_yform_list,
+            ['table_name' => $this->table->getTableName()],
+            ['rex_yform_manager_opener' => $rex_yform_manager_opener],
+            ['rex_yform_manager_popup' => $rex_yform_manager_popup],
+            ['data_id' => '___id___'],
+        );
+
+        if ($this->table->isGranted('EDIT', rex::getUser())) {
+            $actionButtons['edit'] = [
+                'params' => array_merge($actionButtonParams, ['func' => 'edit']),
+                'content' => '<i class="rex-icon rex-icon-editmode"></i> ' . rex_i18n::msg('yform_edit'),
+            ];
+
+            $actionButtons['clone'] = [
+                'params' => array_merge($actionButtonParams, ['func' => 'clone']),
+                'content' => '<i class="rex-icon rex-icon-add"></i> ' . rex_i18n::msg('yform_clone'),
+            ];
+
+            if ($this->hasDataPageFunction('delete')) {
+                $actionButtons['delete'] = [
+                    'params' => array_merge($actionButtonParams, ['func' => 'delete']),
+                    'content' => '<i class="rex-icon rex-icon-delete"></i> ' . rex_i18n::msg('yform_delete'),
+                    'attributes' => [
+                        'onclick' => 'return confirm(\' id=___id___ ' . rex_i18n::msg('yform_delete') . ' ?\')',
+                    ],
+                ];
+            }
+
+            if (!$popup && $this->table->hasHistory()) {
+                $actionButtons['history'] = [
+                    'params' => array_merge($actionButtonParams, ['func' => 'history', 'filter_dataset' => 1]),
+                    'content' => '<i class="rex-icon fa-history"></i> ' . rex_i18n::msg('yform_history'),
+                ];
+            }
+        } else {
+            $actionButtons['view'] = [
+                'params' => array_merge($actionButtonParams, ['func' => 'edit']),
+                'content' => '<i class="rex-icon rex-icon-view"></i> ' . rex_i18n::msg('yform_view'),
+            ];
+        }
+
+        $actionButtons = rex_extension::registerPoint(
+            new rex_extension_point(
+                'YFORM_DATA_LIST_ACTION_BUTTONS',
+                $actionButtons,
+                [
+                    'table' => $this->table,
+                    'this' => $this,
+                    'link_vars' => $rex_link_vars,
+                ],
+            ),
+        );
+
+        $fragment = new rex_fragment();
+        $fragment->setVar('query', $query, false);
+        $fragment->setVar('table', $this->table, false);
+        $fragment->setVar('panelOptions', $panel_options, false);
+        $fragment->setVar('actionButtons', $actionButtons, false);
+        $fragment->setVar('rex_link_vars', $rex_link_vars, false);
+        $fragment->setVar('rex_yform_manager_opener', $rex_yform_manager_opener, false);
+        $fragment->setVar('rex_yform_manager_popup', $rex_yform_manager_popup, false);
+        $fragment->setVar('popup', $popup, false);
+        $data_page_function = $this->dataPageFunctions;
+        $fragment->setVar(
+            'hasDataPageFunctions',
+            static function ($fnc) use ($data_page_function) {
+                return in_array($fnc, $data_page_function) ? true : false;
+            },
+            false,
+        );
+
+        $filterMessages = [];
+        if ($rex_yform_filter) {
+            $getFilter = static function (rex_yform_manager_field $field, $value, $table) {
+                $class = 'rex_yform_value_' . $field->getTypeName();
+                $listValues = '';
+                try {
+                    $listValues = $class::getListValue([
+                        'value' => $value,
+                        'subject' => $value,
+                        'field' => $field->getName(),
+                        'params' => [
+                            'field' => $field->toArray(),
+                            'fields' => $table->getFields(),
+                        ],
+                    ]);
+                } catch (Exception $e) {
+                    dump($e);
+                }
+
+                return '<b>' . rex_i18n::translate($field->getLabel()) . ':</b> ' . $listValues;
+            };
+            foreach ($rex_yform_filter as $key => $value) {
+                $field = $this->table->getValueField($key);
+                $filterMessages[] = $getFilter($field, $value, $this->table);
+            }
+        }
+
+        $mainFragment->setVar('table', $this->table, false);
+        $mainFragment->setVar('messages', $mainMessages, false);
+        $mainFragment->setVar('filterMessages', $filterMessages, false);
+        $mainFragment->setVar('searchForm', $searchForm, false);
+        $mainFragment->setVar('searchList', $fragment, false);
+        $mainFragment->setVar('this', $this, false);
+        return $this->table->parseLayout($mainFragment);
     }
 
-    public function getDataListQueryFilterWhere($rex_filter, rex_yform_manager_table $table)
+    public function getDataListQuery(rex_yform_manager_query $query, array $rex_filter = [], ?rex_yform_manager_search $searchObject = null)
     {
-        $sql_o = rex_sql::factory();
-        $sql = [];
-        if (count($rex_filter) > 0) {
-            $sql_filter = '';
-            foreach ($rex_filter as $k => $v) {
-                if ('' != $sql_filter) {
-                    $sql_filter .= ' AND ';
-                }
-                if (!is_array($v)) {
-                    $sql_filter .= $sql_o->escapeIdentifier($k) . ' = ' . $sql_o->escape($v);
-                } elseif ($relation = $table->getRelation($k)) {
-                    foreach ($v as $k2 => $v2) {
-                        $sql_filter .= '(SELECT ' . $sql_o->escapeIdentifier($k2) . ' FROM ' . $sql_o->escapeIdentifier($relation['table']) . ' WHERE id = t0.' . $sql_o->escapeIdentifier($k) . ') = ' . $sql_o->escape($v2);
+        $fields = $query->getTable()->getFields();
+
+        foreach ($query->getTable()->getFields() as $field) {
+            if (array_key_exists($field->getName(), $rex_filter) && 'value' == $field->getType()) { //  && $field->isSearchable()
+                if (method_exists('rex_yform_value_' . $field->getTypeName(), 'getSearchFilter')) {
+                    $query = call_user_func(
+                        'rex_yform_value_' . $field->getTypeName() . '::getSearchFilter',
+                        [
+                            'field' => $field,
+                            'fields' => $fields,
+                            'value' => $rex_filter[$field->getName()],
+                            'query' => $query,
+                        ],
+                    );
+                    if ('rex_yform_manager_query' != $query::class) {
+                        throw new Exception('getSearchFilter in rex_yform_value_' . $field->getTypeName() . ' does not return a rex_yform_manager_query');
                     }
                 }
             }
-            $sql[] = $sql_filter;
         }
-        return $sql;
-    }
-
-    public function getDataListQueryWhere($rex_filter, $searchObject, rex_yform_manager_table $table)
-    {
-        $sql = $this->getDataListQueryFilterWhere($rex_filter, $table);
-
-        $searchFilter = $searchObject->getQueryFilterArray();
-        if (count($searchFilter) > 0) {
-            $sql[] = '( ' . implode(' AND ', $searchFilter) . ' )';
+        if ($searchObject) {
+            $query = $searchObject->getQueryFilter($query);
         }
-
-        if (count($sql) > 0) {
-            $sql = implode(' and ', $sql);
-        } else {
-            $sql = '';
-        }
-
-        return $sql;
-    }
-
-    public function getDataListQuery($rex_filter, $searchObject, rex_yform_manager_table $table)
-    {
-        $sql = 'select * from ' . $table->getTablename() . ' t0';
-        $sql_felder = rex_sql::factory();
-        $sql_felder->setQuery('SELECT * FROM ' . rex_yform_manager_field::table() . ' WHERE table_name="' . $table->getTablename() . '" AND type_id="value" ORDER BY prio');
-
-        $max = $sql_felder->getRows();
-        if ($max > 0) {
-            $existingFields = array_map(static function ($column) {
-                return $column['name'];
-            }, rex_sql::showColumns($table->getTablename()));
-
-            $fields = [];
-            for ($i = 0; $i < $sql_felder->getRows(); ++$i) {
-                if (in_array($sql_felder->getValue('name'), $existingFields)) {
-                    $fields[] = '`' . $sql_felder->getValue('name') . '`';
-                } else {
-                    $fields[] = 'NULL AS `' . $sql_felder->getValue('name') . '`';
-                }
-                $sql_felder->next();
-            }
-            $sql = 'select `id`,' . implode(',', $fields) . ' from `' . $table->getTablename() . '` t0';
-        }
-
-        $where = $this->getDataListQueryWhere($rex_filter, $searchObject, $table);
-        if ($where) {
-            $sql .= ' where '.$where;
-        }
-        if ('' != $table->getSortFieldName()) {
-            $sql .= ' ORDER BY `' . $table->getSortFieldName() . '` ' . $table->getSortOrderName();
-        }
-        $sql = rex_extension::registerPoint(new rex_extension_point('YFORM_DATA_LIST_SQL', $sql, ['table' => $table]));
-
-        return $sql;
+        return rex_extension::registerPoint(new rex_extension_point('YFORM_DATA_LIST_QUERY', $query, ['filter' => $rex_filter]));
     }
 
     // ---------------------------------- table functions
@@ -826,10 +781,10 @@ class rex_yform_manager
 
         $table = $this->table;
 
-        $table_info = '<b>' . rex_i18n::translate($table->getName()) . ' [<a href="index.php?page=yform/manager/table_edit&start=0&table_id='.$table->getId().'&func=edit">' . $table->getTableName() . '</a>]</b> ';
+        $table_info = '<b>' . rex_escape($table->getNameLocalized()) . ' [<a href="index.php?page=yform/manager/table_edit&start=0&table_id=' . $table->getId() . '&func=edit">' . $table->getTableName() . '</a>]</b> ';
         echo rex_view::info($table_info);
 
-        $_csrf_key = 'table_field-'.$table->getTableName();
+        $_csrf_key = $this->table->getCSRFKey();
 
         if ('' != $func && in_array($func, ['delete', 'updatetablewithdelete', 'updatetable'])) {
             if (!rex_csrf_token::factory($_csrf_key)->isValid()) {
@@ -845,8 +800,7 @@ class rex_yform_manager
         }
 
         if ('' != $type_real_field) {
-            $panel = '';
-            $panel .= '<dl class="dl-horizontal text-left">';
+            $panel = '<dl class="dl-horizontal text-left">';
 
             $rfields = $this->table->getColumns();
             foreach ($rfields[$type_real_field] as $k => $v) {
@@ -869,7 +823,7 @@ class rex_yform_manager
             $panels = [];
 
             if (!$table->hasId()) {
-                $content[] = rex_i18n::msg('yform_id_is_missing').''.rex_i18n::msg('yform_id_missing_info');
+                $content[] = rex_i18n::msg('yform_id_is_missing') . '' . rex_i18n::msg('yform_id_missing_info');
             } else {
                 if ('' == $type_real_field && count($mfields) > 0) {
                     $tmp = '';
@@ -896,14 +850,14 @@ class rex_yform_manager
                     foreach ($types['value'] as $k => $v) {
                         if (isset($v['manager']) && !$v['manager']) {
                         } elseif (isset($v['deprecated']) && $v['deprecated']) {
-                            $tmp_deprecated .= '<tr class="yform-classes-deprecated"><th data-title="Value"><a class="btn btn-default btn-block" href="' . $link . 'type_id=value&type_name=' . $k . '&type_real_field=' . $type_real_field . '"><code>' . $k . '</code></a></th><td class="vertical-middle">' . $v['deprecated'] .'<br />' . $v['description'] . '</td></tr>';
+                            $tmp_deprecated .= '<tr class="yform-classes-deprecated"><th data-title="Value"><a class="btn btn-default btn-block" href="' . $link . 'type_id=value&type_name=' . $k . '&type_real_field=' . $type_real_field . '"><code>' . $k . '</code></a></th><td class="vertical-middle">' . $v['deprecated'] . '<br />' . $v['description'] . '</td></tr>';
                         } elseif (isset($v['famous']) && $v['famous']) {
                             $tmp_famous .= '<tr class="yform-classes-famous"><th data-title="Value"><a class="btn btn-default btn-block" href="' . $link . 'type_id=value&type_name=' . $k . '&type_real_field=' . $type_real_field . '"><code>' . $k . '</code></a></th><td class="vertical-middle">' . $v['description'] . '</td></tr>';
                         } else {
                             $tmp .= '<tr><th data-title="Value"><a class="btn btn-default btn-block" href="' . $link . 'type_id=value&type_name=' . $k . '&type_real_field=' . $type_real_field . '"><code>' . $k . '</code></a></th><td class="vertical-middle">' . $v['description'] . '</td></tr>';
                         }
                     }
-                    $tmp = '<table class="table table-hover yform-table-help">'.$tmp_famous.$tmp.$tmp_deprecated.'</table>';
+                    $tmp = '<table class="table table-hover yform-table-help">' . $tmp_famous . $tmp . $tmp_deprecated . '</table>';
                 }
                 $fragment = new rex_fragment();
                 $fragment->setVar('title', $TYPE['value']);
@@ -922,7 +876,7 @@ class rex_yform_manager
                             $tmp .= '<tr><th data-title="Validate"><a class="btn btn-default btn-block" href="' . $link . 'type_id=validate&type_name=' . $k . '"><code>' . $k . '</code></a></th><td class="vertical-middle">' . $v['description'] . '</td></tr>';
                         }
                     }
-                    $tmp = '<table class="table table-hover yform-table-help">'.$tmp_famous.$tmp.'</table>';
+                    $tmp = '<table class="table table-hover yform-table-help">' . $tmp_famous . $tmp . '</table>';
                 }
 
                 $fragment = new rex_fragment();
@@ -995,7 +949,7 @@ class rex_yform_manager
 
                             $yform->setValueField('text', [$k_field, rex_i18n::msg('yform_values_defaults_name'), $v['value'], 'notice' => $v['notice']]);
                             $yform->setValidateField('empty', [$k_field, rex_i18n::msg('yform_validatenamenotempty')]);
-                            $yform->setValidateField('preg_match', [$k_field, "/(([a-zA-Z])+([a-zA-Z0-9\_])*)/", rex_i18n::msg('yform_validatenamepregmatch')]);
+                            $yform->setValidateField('preg_match', [$k_field, '/(([a-zA-Z])+([a-zA-Z0-9\\_])*)/', rex_i18n::msg('yform_validatenamepregmatch')]);
                             $yform->setValidateField('customfunction', [$k_field, 'rex_yform_manager_checkField', ['table_name' => $table->getTableName()], rex_i18n::msg('yform_validatenamecheck')]);
                         }
                         break;
@@ -1076,7 +1030,7 @@ class rex_yform_manager
             }
 
             if (isset($types[$type_id][$type_name]['validates']) && is_array($types[$type_id][$type_name]['validates'])) {
-                foreach ($types[$type_id][$type_name]['validates'] as $k => $v) {
+                foreach ($types[$type_id][$type_name]['validates'] as $v) {
                     $yform->setValidateField(key($v), current($v));
                 }
             }
@@ -1084,27 +1038,31 @@ class rex_yform_manager
             $yform->setActionField('showtext', ['', '<p>' . rex_i18n::msg('yform_thankyouforentry') . '</p>']);
             $yform->setObjectparams('main_table', rex_yform_manager_field::table());
 
-            if ('edit' == $func) {
-                $yform->setObjectparams('submit_btn_label', rex_i18n::msg('yform_field_update'));
-                $yform->setHiddenField('field_id', $field_id);
-                $yform->setActionField('manage_db', [rex_yform_manager_field::table(), "id=$field_id"]);
-                $yform->setObjectparams('main_id', $field_id);
-                $yform->setObjectparams('main_where', "id=$field_id");
-                $sql = rex_sql::factory();
-                $sql->setQuery('SELECT * FROM ' . rex_yform_manager_field::table() . " WHERE id=$field_id");
-                foreach ($selectFields as $alias => $s_field) {
-                    if ($alias != $s_field) {
-                        if ((!$sql->hasValue($s_field) || null === $sql->getValue($s_field) || '' === $sql->getValue($s_field)) && $sql->hasValue($alias)) {
-                            $sql->setValue($s_field, $sql->getValue($alias));
+            switch ($func) {
+                case 'edit':
+                    $yform->setObjectparams('submit_btn_label', rex_i18n::msg('yform_field_update'));
+                    $yform->setHiddenField('field_id', $field_id);
+                    $yform->setActionField('manage_db', [rex_yform_manager_field::table(), "id=$field_id"]);
+                    $yform->setObjectparams('main_id', $field_id);
+                    $yform->setObjectparams('main_where', "id=$field_id");
+                    $sql = rex_sql::factory();
+                    $sql->setQuery('SELECT * FROM ' . rex_yform_manager_field::table() . " WHERE id=$field_id");
+                    foreach ($selectFields as $alias => $s_field) {
+                        if ($alias != $s_field) {
+                            if ((!$sql->hasValue($s_field) || null === $sql->getValue($s_field) || '' === $sql->getValue($s_field)) && $sql->hasValue($alias)) {
+                                $sql->setValue($s_field, $sql->getValue($alias));
+                            }
+                            $yform->setValueField('hidden', [$alias, '']);
                         }
-                        $yform->setValueField('hidden', [$alias, '']);
                     }
-                }
-                $yform->setObjectparams('sql_object', $sql);
-                $yform->setObjectparams('getdata', true);
-            } elseif ('add' == $func) {
-                $yform->setObjectparams('submit_btn_label', rex_i18n::msg('yform_field_add'));
-                $yform->setActionField('manage_db', [rex_yform_manager_field::table()]);
+                    $yform->setObjectparams('sql_object', $sql);
+                    $yform->setObjectparams('getdata', true);
+                    break;
+                case 'add':
+                default:
+                    $yform->setObjectparams('submit_btn_label', rex_i18n::msg('yform_field_add'));
+                    $yform->setActionField('manage_db', [rex_yform_manager_field::table()]);
+                    break;
             }
 
             if ('value' == $type_id) {
@@ -1117,7 +1075,7 @@ class rex_yform_manager
                 }
 
                 if (!$field->isSearchableDisabled()) {
-                    $yform->setValueField('checkbox', ['name' => 'search', 'label' => rex_i18n::msg('yform_useassearchfieldalidatenamenotempty'), 'default' => '1']);
+                    $yform->setValueField('checkbox', ['name' => 'search', 'label' => rex_i18n::msg('yform_useassearchfieldalidatenamenotempty'), 'default' => '0']);
                 }
             } elseif ('validate' == $type_id) {
                 $yform->setValueField('hidden', ['list_hidden', 1]);
@@ -1128,9 +1086,9 @@ class rex_yform_manager
 
             if ($yform->objparams['form_show']) {
                 if ('add' == $func) {
-                    $title = rex_i18n::msg('yform_addfield') . ' "' . $type_name. '"';
+                    $title = rex_i18n::msg('yform_addfield') . ' "' . $type_name . '"';
                 } else {
-                    $title = rex_i18n::msg('yform_editfield') . ' "' . $type_name .'"';
+                    $title = rex_i18n::msg('yform_editfield') . ' "' . $type_name . '"';
                 }
 
                 $fragment = new rex_fragment();
@@ -1148,12 +1106,16 @@ class rex_yform_manager
 
                 $func = '';
             } else {
-                if ('edit' == $func) {
-                    rex_yform_manager_table_api::generateTableAndFields($table);
-                    echo rex_view::success(rex_i18n::msg('yform_thankyouforupdate'));
-                } elseif ('add' == $func) {
-                    rex_yform_manager_table_api::generateTableAndFields($table);
-                    echo rex_view::success(rex_i18n::msg('yform_thankyouforentry'));
+                switch ($func) {
+                    case 'edit':
+                        rex_yform_manager_table_api::generateTableAndFields($table);
+                        echo rex_view::success(rex_i18n::msg('yform_thankyouforupdate'));
+                        break;
+                    case 'add':
+                    default:
+                        rex_yform_manager_table_api::generateTableAndFields($table);
+                        echo rex_view::success(rex_i18n::msg('yform_thankyouforentry'));
+                        break;
                 }
                 $func = 'list';
             }
@@ -1203,7 +1165,7 @@ class rex_yform_manager
 
             $notation_php_pre = [
                 '$yform = new rex_yform();',
-                '$yform->setObjectparams(\'form_name\', \'table-'.$table->getTableName().'\');',
+                '$yform->setObjectparams(\'form_name\', \'table-' . $table->getTableName() . '\');',
                 '$yform->setObjectparams(\'form_action\',rex_getUrl(\'REX_ARTICLE_ID\'));',
                 '$yform->setObjectparams(\'form_ytemplate\', \'bootstrap\');',
                 '$yform->setObjectparams(\'form_showformafterupdate\', 0);',
@@ -1213,7 +1175,7 @@ class rex_yform_manager
             $notation_php .= implode("\n", $notation_php_pre) . "\n";
 
             $notation_pipe_pre = [
-                'objparams|form_name|table-'.$table->getTableName().'',
+                'objparams|form_name|table-' . $table->getTableName() . '',
                 'objparams|form_ytemplate|bootstrap',
                 'objparams|form_showformafterupdate|0',
                 'objparams|real_field_names|true',
@@ -1222,7 +1184,7 @@ class rex_yform_manager
             $notation_pipe .= implode("\n", $notation_pipe_pre) . "\n";
 
             foreach ($formbuilder_fields as $field) {
-                $class = 'rex_yform_'.$field->getType().'_'.$field->getTypeName();
+                $class = 'rex_yform_' . $field->getType() . '_' . $field->getTypeName();
 
                 $cl = new $class();
                 $definitions = $cl->getDefinitions();
@@ -1232,16 +1194,16 @@ class rex_yform_manager
                 foreach ($definitions['values'] as $key => $_) {
                     $key = $this->getFieldName($key, $field['type_id']);
                     if (isset($field[$key])) {
-                        $values[] = htmlspecialchars($field[$key]);
+                        $values[] = rex_escape($field[$key]);
                     } elseif (isset($field['f' . $i])) {
-                        $values[] = htmlspecialchars($field['f' . $i]);
+                        $values[] = rex_escape($field['f' . $i]);
                     } else {
                         $values[] = '';
                     }
                     ++$i;
                 }
                 $php_values = array_map(static function ($v) {
-                    return str_replace("'", "\'", $v);
+                    return str_replace("'", "\\'", $v);
                 }, $values);
 
                 if ('value' == $field['type_id']) {
@@ -1257,10 +1219,10 @@ class rex_yform_manager
                 }
             }
 
-            $notation_php .= "\n\n"  . '$yform->setActionField(\'tpl2email\', [\'emailtemplate\', \'emaillabel\', \'email@domain.de\']);';
-            $notation_php .= "\n".'echo $yform->getForm();';
+            $notation_php .= "\n\n" . '$yform->setActionField(\'tpl2email\', [\'emailtemplate\', \'emailfieldname/email@example.org\']);';
+            $notation_php .= "\n" . 'echo $yform->getForm();';
 
-            $notation_pipe .= "\n\n"  . 'action|tpl2email|emailtemplate|emaillabel|email@domain.de';
+            $notation_pipe .= "\n\n" . 'action|tpl2email|emailtemplate|emailfieldname/email@example.org';
 
             $fragment = new rex_fragment();
             $fragment->setVar('title', 'PHP');
@@ -1285,51 +1247,20 @@ class rex_yform_manager
 
         if ('list' == $func) {
             $show_list = true;
-            $show_list = rex_extension::registerPoint(new rex_extension_point('YFORM_MANAGER_TABLE_FIELD_FUNC', $show_list,
-            [
-                'table' => $table,
-                'link_vars' => $this->getLinkVars(),
-            ]
-            )
+            $show_list = rex_extension::registerPoint(
+                new rex_extension_point(
+                    'YFORM_MANAGER_TABLE_FIELD_FUNC',
+                    $show_list,
+                    [
+                        'table' => $table,
+                        'link_vars' => $this->getLinkVars(),
+                    ],
+                ),
             );
 
             if ($show_list) {
-                function rex_yform_list_format($p, $value = '')
-                {
-                    if ('' != $value) {
-                        $p['value'] = $value;
-                    }
-                    switch ($p['list']->getValue('type_id')) {
-                        case 'validate':
-                            $style = 'color:#aaa;'; // background-color:#cfd9d9;
-                            break;
-                        case 'action':
-                            $style = 'background-color:#cfd9d9;';
-                            break;
-                        default:
-                            $style = 'background-color:#eff9f9;';
-                            break;
-                    }
-
-                    if ('label' == $p['field']) {
-                        $p['value'] = rex_i18n::translate($p['value']);
-                    }
-
-                    return '<td style="' . $style . '">' . $p['value'] . '</td>';
-                }
-
-                function rex_yform_list_edit_format($p)
-                {
-                    return rex_yform_list_format($p, $p['list']->getColumnLink(rex_i18n::msg('yform_function'), '<i class="rex-icon rex-icon-edit"></i> ' . rex_i18n::msg('yform_edit')));
-                }
-
-                function rex_yform_list_delete_format($p)
-                {
-                    return rex_yform_list_format($p, $p['list']->getColumnLink(rex_i18n::msg('yform_delete'), '<i class="rex-icon rex-icon-delete"></i> ' . rex_i18n::msg('yform_delete')));
-                }
-
                 $context = new rex_context(
-                $this->getLinkVars()
+                    $this->getLinkVars(),
                 );
 
                 $fragment = new rex_fragment();
@@ -1352,7 +1283,7 @@ class rex_yform_manager
                 $fragment->setVar('buttons', [
                     [
                         'label' => rex_i18n::msg('yform_edit'),
-                        'url' => 'index.php?page=yform/manager/table_edit&func=edit&table_id='.$table->getId(),
+                        'url' => 'index.php?page=yform/manager/table_edit&func=edit&table_id=' . $table->getId(),
                         'attributes' => [
                             'class' => [
                                 'btn-default',
@@ -1378,7 +1309,7 @@ class rex_yform_manager
                         ],
                     ],
                     [
-                        'label' => rex_i18n::msg('yform_updatetable').' '.rex_i18n::msg('yform_updatetable_with_delete'),
+                        'label' => rex_i18n::msg('yform_updatetable') . ' ' . rex_i18n::msg('yform_updatetable_with_delete'),
                         'url' => $context->getUrl(['table_name' => $table->getTableName(), 'func' => 'updatetablewithdelete'] + rex_csrf_token::factory($_csrf_key)->getUrlParams()),
                         'attributes' => [
                             'class' => [
@@ -1392,13 +1323,15 @@ class rex_yform_manager
                 ], false);
                 $panel_options .= '<small class="rex-panel-option-title">' . rex_i18n::msg('yform_table') . '</small> ' . $fragment->parse('core/buttons/button_group.php');
 
-                $sql = 'select id, prio, type_id, type_name, name, label from ' . rex_yform_manager_field::table() . ' where table_name="' . $table->getTableName() . '" order by prio';
-                $list = rex_list::factory($sql, 200);
-                // $list->debug = 1;
-                // $list->setColumnFormat('id', 'Id');
+                $sql = 'select id, prio, type_id, type_name, name, label from ' . rex_yform_manager_field::table() . ' where table_name="' . $table->getTableName() . '"';
+                $list = rex_list::factory($sql, defaultSort: [
+                    'prio' => 'asc',
+                ]);
 
-                $tdIcon = '<i class="rex-icon rex-icon-table"></i>';
-                $thIcon = '<a href="' . $list->getUrl(['table_name' => $table->getTableName(), 'func' => 'choosenadd']) . '"' . rex::getAccesskey(rex_i18n::msg('add'), 'add') . '><i class="rex-icon rex-icon-add"></i></a>';
+                $list->addTableAttribute('class', 'table-hover');
+
+                $tdIcon = '<i class="rex-icon rex-icon-editmode"></i>';
+                $thIcon = '<a class="rex-link-expanded" href="' . $list->getUrl(['table_name' => $table->getTableName(), 'func' => 'choosenadd']) . '" ' . rex::getAccesskey(rex_i18n::msg('add'), 'add') . '><i class="rex-icon rex-icon-add"></i></a>';
                 $list->addColumn($thIcon, $tdIcon, 0, ['<th class="rex-table-icon">###VALUE###</th>', '<td class="rex-table-icon">###VALUE###</td>']);
                 $list->setColumnParams($thIcon, ['field_id' => '###id###', 'func' => 'edit', 'type_name' => '###type_name###', 'type_id' => '###type_id###']);
 
@@ -1412,35 +1345,35 @@ class rex_yform_manager
                 $list->removeColumn('id');
 
                 $list->setColumnLabel('prio', rex_i18n::msg('yform_manager_table_prio_short'));
-                //$list->setColumnLayout('prio', ['<th class="rex-table-priority">###VALUE###</th>', '<td class="rex-table-priority" data-title="' . rex_i18n::msg('yform_manager_table_prio_short') . '">###VALUE###</td>']);
+                // $list->setColumnLayout('prio', ['<th class="rex-table-priority">###VALUE###</th>', '<td class="rex-table-priority" data-title="' . rex_i18n::msg('yform_manager_table_prio_short') . '">###VALUE###</td>']);
                 $list->setColumnLayout('prio', ['<th>###VALUE###</th>', '###VALUE###']);
-                $list->setColumnFormat('prio', 'custom', 'rex_yform_list_format');
+                $list->setColumnFormat('prio', 'custom', 'rex_yform_list_tools::listFormat');
 
                 $list->setColumnLabel('type_id', rex_i18n::msg('yform_manager_type_id'));
                 $list->setColumnLayout('type_id', ['<th>###VALUE###</th>', '###VALUE###']);
-                $list->setColumnFormat('type_id', 'custom', 'rex_yform_list_format');
+                $list->setColumnFormat('type_id', 'custom', 'rex_yform_list_tools::listFormat');
 
                 $list->setColumnLabel('type_name', rex_i18n::msg('yform_manager_type_name'));
                 $list->setColumnLayout('type_name', ['<th>###VALUE###</th>', '###VALUE###']);
-                $list->setColumnFormat('type_name', 'custom', 'rex_yform_list_format');
+                $list->setColumnFormat('type_name', 'custom', 'rex_yform_list_tools::listFormat');
 
                 $list->setColumnLabel('name', rex_i18n::msg('yform_values_defaults_name'));
                 $list->setColumnLayout('name', ['<th>###VALUE###</th>', '###VALUE###']); // ###VALUE###
-                $list->setColumnFormat('name', 'custom', 'rex_yform_list_format');
+                $list->setColumnFormat('name', 'custom', 'rex_yform_list_tools::listFormat');
 
                 $list->setColumnLabel('label', rex_i18n::msg('yform_values_defaults_label'));
                 $list->setColumnLayout('label', ['<th>###VALUE###</th>', '###VALUE###']); // ###VALUE###
-                $list->setColumnFormat('label', 'custom', 'rex_yform_list_format');
+                $list->setColumnFormat('label', 'custom', 'rex_yform_list_tools::listFormat');
 
-                $list->addColumn(rex_i18n::msg('yform_function'), '<i class="rex-icon rex-icon-edit"></i> ' . rex_i18n::msg('yform_edit'));
+                $list->addColumn(rex_i18n::msg('yform_function'), '<i class="rex-icon rex-icon-editmode"></i> ' . rex_i18n::msg('yform_edit'));
                 $list->setColumnParams(rex_i18n::msg('yform_function'), ['field_id' => '###id###', 'func' => 'edit', 'type_name' => '###type_name###', 'type_id' => '###type_id###']);
                 $list->setColumnLayout(rex_i18n::msg('yform_function'), ['<th class="rex-table-action" colspan="2">###VALUE###</th>', '###VALUE###']);
-                $list->setColumnFormat(rex_i18n::msg('yform_function'), 'custom', 'rex_yform_list_edit_format');
+                $list->setColumnFormat(rex_i18n::msg('yform_function'), 'custom', 'rex_yform_list_tools::editFormat');
 
                 $list->addColumn(rex_i18n::msg('yform_delete'), '<i class="rex-icon rex-icon-delete"></i> ' . rex_i18n::msg('yform_delete'));
                 $list->setColumnParams(rex_i18n::msg('yform_delete'), ['field_id' => '###id###', 'func' => 'delete'] + rex_csrf_token::factory($_csrf_key)->getUrlParams());
                 $list->setColumnLayout(rex_i18n::msg('yform_delete'), ['', '###VALUE###']);
-                $list->setColumnFormat(rex_i18n::msg('yform_delete'), 'custom', 'rex_yform_list_delete_format');
+                $list->setColumnFormat(rex_i18n::msg('yform_delete'), 'custom', 'rex_yform_list_tools::deleteFormat');
                 $list->addLinkAttribute(rex_i18n::msg('yform_delete'), 'onclick', 'return confirm(\' [###type_id###, ###type_name###, ###name###] ' . rex_i18n::msg('yform_delete') . ' ?\')');
 
                 $content = $list->get();
@@ -1537,55 +1470,19 @@ class rex_yform_manager
         return true;
     }
 
-    public static function checkMediaInUse($params)
+    public static function url(string $tableName, int $id = 0, array $params = []): string
     {
-        $warning = $params['subject'];
+        $table = rex_yform_manager_table::require($tableName);
 
-        $sql = rex_sql::factory();
-        $sql->setQuery('SELECT `table_name`, `type_name`, `name` FROM `' . rex_yform_manager_field::table() . '` WHERE `type_id`="value" AND `type_name` IN("be_medialist","be_mediapool","mediafile")');
+        $params['table_name'] = $table->getTableName();
 
-        $rows = $sql->getRows();
-
-        if (0 == $rows) {
-            return $warning;
+        if ($id > 0) {
+            $params['data_id'] = $id;
+            $params['func'] = 'edit';
+            $_csrf_key = $table->getCSRFKey();
+            $params += rex_csrf_token::factory($_csrf_key)->getUrlParams();
         }
 
-        $where = [];
-        $filename = addslashes($params['filename']);
-        while ($sql->hasNext()) {
-            $table = $sql->getValue('table_name');
-            switch ($sql->getValue('type_name')) {
-                case 'be_mediapool':
-                case 'mediafile':
-                    $where[$table][] = $sql->getValue('name') . '="' . $filename . '"';
-                    break;
-                case 'be_medialist':
-                    $where[$table][] = 'FIND_IN_SET("' . $filename . '", ' . $sql->getValue('name') . ')';
-                    break;
-                default:
-                    trigger_error('Unexpected fieldtype "' . $sql->getValue('type_name') . '"!', E_USER_ERROR);
-            }
-            $sql->next();
-        }
-
-        $tupel = '';
-        foreach ($where as $table => $cond) {
-            $sql->setQuery('SELECT id FROM ' . $table . ' WHERE ' . implode(' OR ', $cond));
-
-            while ($sql->hasNext()) {
-                $sql_tupel = rex_sql::factory();
-                $sql_tupel->setQuery('SELECT name FROM `' . rex_yform_manager_table::table() . '` WHERE `table_name`="' . $table . '"');
-
-                $tupel .= '<li><a href="javascript:openPage(\'index.php?page=yform/manager/data_edit&amp;table_name=' . $table . '&amp;data_id=' . $sql->getValue('id') . '&amp;func=edit\')">' . $sql_tupel->getValue('name') . ' [id=' . $sql->getValue('id') . ']</a></li>';
-
-                $sql->next();
-            }
-        }
-
-        if ('' != $tupel) {
-            $warning[] = 'Tabelle<br /><ul>' . $tupel . '</ul>';
-        }
-
-        return $warning;
+        return rex_url::backendPage('yform/manager/data_edit', $params);
     }
 }

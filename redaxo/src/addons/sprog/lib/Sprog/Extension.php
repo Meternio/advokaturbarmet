@@ -11,9 +11,16 @@
 
 namespace Sprog;
 
+use Sprog\Abbreviation;
+
 class Extension
 {
-    public static function replaceWildcards(\rex_extension_point $ep)
+    public static function replaceAbbreviations(\rex_extension_point $ep): void
+    {
+        $ep->setSubject(Abbreviation::parse($ep->getSubject(), null));
+    }
+
+    public static function replaceWildcards(\rex_extension_point $ep): void
     {
         $ep->setSubject(Wildcard::parse($ep->getSubject(), null));
     }
@@ -38,9 +45,9 @@ class Extension
     public static function articleMetadataUpdated(\rex_extension_point $ep)
     {
         $addon = \rex_addon::get('sprog');
-
-        if (count((array)$addon->getConfig('sync_metainfo_art'))) {
-            Sync::articleMetainfo($ep->getParams(), $addon->getConfig('sync_metainfo_art'));
+        $fields = $addon->getConfig('sync_metainfo_art', []);
+        if (count($fields)) {
+            Sync::articleMetainfo($ep->getParams(), $fields);
         }
     }
 
@@ -52,8 +59,9 @@ class Extension
             Sync::categoryNameToArticleName($ep->getParams());
         }
 
-        if (count($addon->getConfig('sync_metainfo_cat'))) {
-            Sync::categoryMetainfo($ep->getParams(), $addon->getConfig('sync_metainfo_cat'));
+        $fields = $addon->getConfig('sync_metainfo_cat', []);
+        if (count($fields)) {
+            Sync::categoryMetainfo($ep->getParams(), $fields);
         }
 
         if ($addon->getConfig('sync_structure_status')) {

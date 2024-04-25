@@ -1,21 +1,24 @@
 <?php
 
 /**
- * @method rex_yform_manager_dataset   offsetGet($offset)
- * @method rex_yform_manager_dataset   current()
- * @method rex_yform_manager_dataset[] toArray()
+ * @template T of rex_yform_manager_dataset
+ * @extends SplFixedArray<T>
+ *
+ * @method rex_yform_manager_dataset offsetGet($offset)
+ * @method list<T> toArray()
  */
 class rex_yform_manager_collection extends \SplFixedArray
 {
+    /** @var bool */
     private static $debug = false;
 
+    /** @var string */
     private $table;
 
     /**
-     * @param string                      $table
-     * @param rex_yform_manager_dataset[] $data
+     * @param T[] $data
      */
-    public function __construct($table, array $data = [])
+    final public function __construct(string $table, array $data = [])
     {
         parent::__construct(count($data));
 
@@ -23,42 +26,25 @@ class rex_yform_manager_collection extends \SplFixedArray
         $this->setData($data);
     }
 
-    /**
-     * @return string
-     */
-    public function getTableName()
+    public function getTableName(): string
     {
         return $this->table;
     }
 
-    /**
-     * @return rex_yform_manager_table
-     */
-    public function getTable()
+    public function getTable(): rex_yform_manager_table
     {
-        return rex_yform_manager_table::get($this->table);
+        return rex_yform_manager_table::require($this->table);
     }
 
     /**
-     * @param rex_yform_manager_dataset[] $data
-     *
+     * @param T[] $data
      * @return $this
      */
-    public function setData(array $data)
+    public function setData(array $data): self
     {
         foreach ($data as $dataset) {
-            if (!$dataset instanceof rex_yform_manager_dataset) {
-                throw new InvalidArgumentException(sprintf(
-                    '$data has to be an array of rex_yform_manager_dataset objects, found "%s" array element.',
-                    is_object($dataset) ? get_class($dataset) : gettype($dataset)
-                ));
-            }
             if ($dataset->getTableName() !== $this->table) {
-                throw new InvalidArgumentException(sprintf(
-                    '$data has to be an array of rex_yform_manager_dataset objects of table "%s", found dataset of table "%s".',
-                    $this->table,
-                    $dataset->getTableName()
-                ));
+                throw new InvalidArgumentException(sprintf('$data has to be an array of rex_yform_manager_dataset objects of table "%s", found dataset of table "%s".', $this->table, $dataset->getTableName()));
             }
         }
 
@@ -72,40 +58,47 @@ class rex_yform_manager_collection extends \SplFixedArray
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return 0 === $this->count();
     }
 
     /**
-     * @return null|rex_yform_manager_dataset
+     * @return null|T
      */
-    public function first()
+    public function first(): ?rex_yform_manager_dataset
     {
         return $this->count() ? $this[0] : null;
     }
 
     /**
-     * @return null|rex_yform_manager_dataset
+     * @return null|T
      */
-    public function last()
+    public function last(): ?rex_yform_manager_dataset
     {
         return $this->count() ? $this[$this->count() - 1] : null;
     }
 
+    /**
+     * @param callable(T):bool $callback
+     * @return static<T>
+     */
     public function filter(callable $callback): self
     {
         return new static($this->table, array_filter($this->toArray(), $callback));
     }
 
-    public function slice(int $offset, int $length = null): self
+    /**
+     * @return static<T>
+     */
+    public function slice(int $offset, ?int $length = null): self
     {
         return new static($this->table, array_slice($this->toArray(), $offset, $length));
     }
 
+    /**
+     * @return static<T>
+     */
     public function shuffle(): self
     {
         $data = $this->toArray();
@@ -114,6 +107,10 @@ class rex_yform_manager_collection extends \SplFixedArray
         return new static($this->table, $data);
     }
 
+    /**
+     * @param callable(T,T):int $callback
+     * @return static<T>
+     */
     public function sort(callable $callback): self
     {
         $data = $this->toArray();
@@ -122,11 +119,20 @@ class rex_yform_manager_collection extends \SplFixedArray
         return new static($this->table, $data);
     }
 
+    /**
+     * @template TResult
+     * @param callable(T):TResult $callback
+     * @return list<TResult>
+     */
     public function map(callable $callback): array
     {
+        /** @var list<TResult> */
         return array_map($callback, $this->toArray());
     }
 
+    /**
+     * @return list<list<T>>
+     */
     public function split(int $groups): array
     {
         $size = (int) floor($this->count() / $groups);
@@ -147,17 +153,18 @@ class rex_yform_manager_collection extends \SplFixedArray
         return $result;
     }
 
+    /**
+     * @return list<list<T>>
+     */
     public function chunk(int $size): array
     {
         return array_chunk($this->toArray(), $size);
     }
 
     /**
-     * @param string $key
-     *
-     * @return rex_yform_manager_dataset[]
+     * @return T[]
      */
-    public function toKeyIndex($key = 'id')
+    public function toKeyIndex(string $key = 'id'): array
     {
         $array = [];
         foreach ($this as $dataset) {
@@ -167,13 +174,7 @@ class rex_yform_manager_collection extends \SplFixedArray
         return $array;
     }
 
-    /**
-     * @param string $key
-     * @param string $value
-     *
-     * @return array
-     */
-    public function toKeyValue($key, $value)
+    public function toKeyValue(string $key, string $value): array
     {
         $array = [];
         foreach ($this as $dataset) {
@@ -185,11 +186,8 @@ class rex_yform_manager_collection extends \SplFixedArray
 
     /**
      * @param string|string[] $keys
-     * @param null|string     $value
-     *
-     * @return array
      */
-    public function groupBy($keys, $value = null)
+    public function groupBy($keys, ?string $value = null): array
     {
         if (is_string($keys)) {
             $keys = [$keys];
@@ -197,7 +195,7 @@ class rex_yform_manager_collection extends \SplFixedArray
             $keys = array_reverse($keys);
         }
 
-        $setValue = function (&$array, array $keys, rex_yform_manager_dataset $dataset) use (&$setValue, $value) {
+        $setValue = static function (&$array, array $keys, rex_yform_manager_dataset $dataset) use (&$setValue, $value) {
             if (!$keys) {
                 $array[] = $value ? $dataset->getValue($value) : $dataset;
                 return;
@@ -225,7 +223,7 @@ class rex_yform_manager_collection extends \SplFixedArray
      * @param string         $separator Separator between elements
      * @param null|string    $and       Optional separator between last two elements
      */
-    public function implode($value, string $separator, string $and = null): string
+    public function implode($value, string $separator, ?string $and = null): string
     {
         if (!$value instanceof Closure) {
             $value = static function (rex_yform_manager_dataset $dataset) use ($value) {
@@ -241,23 +239,21 @@ class rex_yform_manager_collection extends \SplFixedArray
 
         $last = array_pop($data);
 
-        return implode($separator, $data).$and.$last;
+        return implode($separator, $data) . $and . $last;
     }
 
     /**
-     * @return int[]
+     * @return list<int>
      */
-    public function getIds()
+    public function getIds(): array
     {
         return $this->getValues('id');
     }
 
     /**
-     * @param string $key
-     *
-     * @return array
+     * @return list<mixed>
      */
-    public function getValues($key)
+    public function getValues(string $key): array
     {
         $values = [];
         foreach ($this as $dataset) {
@@ -269,12 +265,7 @@ class rex_yform_manager_collection extends \SplFixedArray
         return $values;
     }
 
-    /**
-     * @param string $key
-     *
-     * @return bool
-     */
-    public function isValueUnique($key)
+    public function isValueUnique(string $key): bool
     {
         $uniqueValue = null;
         $hasNull = false;
@@ -298,23 +289,15 @@ class rex_yform_manager_collection extends \SplFixedArray
         return !$this->isEmpty();
     }
 
-    /**
-     * @param string $key
-     *
-     * @return mixed
-     */
-    public function getUniqueValue($key)
+    public function getUniqueValue(string $key)
     {
         return $this->isValueUnique($key) ? $this[0]->getValue($key) : null;
     }
 
     /**
-     * @param string $key
-     * @param mixed  $value
-     *
      * @return $this
      */
-    public function setValue($key, $value)
+    public function setValue(string $key, $value): self
     {
         foreach ($this as $dataset) {
             $dataset->setValue($key, $value);
@@ -324,11 +307,9 @@ class rex_yform_manager_collection extends \SplFixedArray
     }
 
     /**
-     * @param string $key
-     *
      * @return self A new collection containing all datasets related to this collection by $key relation
      */
-    public function populateRelation($key)
+    public function populateRelation(string $key)
     {
         $relation = $this->getTable()->getRelation($key);
 
@@ -371,7 +352,7 @@ class rex_yform_manager_collection extends \SplFixedArray
                 }
 
                 foreach ($ids as $id) {
-                    $relatedIds[$id][$dataset->getId()] = true;
+                    $relatedIds[(int) $id][$dataset->getId()] = true;
                 }
             }
 
@@ -387,10 +368,10 @@ class rex_yform_manager_collection extends \SplFixedArray
         } else {
             $columns = $this->getTable()->getRelationTableColumns($key);
             $query
-                ->join($relation['relation_table'], null, $relation['relation_table'].'.'.$columns['target'], $relation['table'].'.id')
-                ->where($relation['relation_table'].'.'.$columns['source'], $this->getIds())
-                ->groupBy($relation['table'].'.id')
-                ->selectRaw(sprintf('GROUP_CONCAT(%s SEPARATOR ",")', $query->quoteIdentifier($relation['relation_table'].'.'.$columns['source'])), '__related_ids')
+                ->join($relation['relation_table'], null, $relation['relation_table'] . '.' . $columns['target'], $relation['table'] . '.id')
+                ->where($relation['relation_table'] . '.' . $columns['source'], $this->getIds())
+                ->groupBy($relation['table'] . '.id')
+                ->selectRaw(sprintf('GROUP_CONCAT(%s SEPARATOR ",")', $query->quoteIdentifier($relation['relation_table'] . '.' . $columns['source'])), '__related_ids')
             ;
 
             $allRelatedDatasets = $query->find();
@@ -409,10 +390,7 @@ class rex_yform_manager_collection extends \SplFixedArray
         return $allRelatedDatasets;
     }
 
-    /**
-     * @return bool
-     */
-    public function isValid()
+    public function isValid(): bool
     {
         $valid = true;
         foreach ($this as $dataset) {
@@ -424,10 +402,7 @@ class rex_yform_manager_collection extends \SplFixedArray
         return $valid;
     }
 
-    /**
-     * @return bool
-     */
-    public function save()
+    public function save(): bool
     {
         if (!$this->isValid()) {
             return false;
@@ -442,10 +417,7 @@ class rex_yform_manager_collection extends \SplFixedArray
         return true;
     }
 
-    /**
-     * @return bool
-     */
-    public function delete()
+    public function delete(): bool
     {
         $success = true;
 
@@ -456,10 +428,7 @@ class rex_yform_manager_collection extends \SplFixedArray
         return $success;
     }
 
-    /**
-     * @return rex_yform
-     */
-    public function getForm()
+    public function getForm(): rex_yform
     {
         $yform = new rex_yform();
         $yform->setDebug(self::$debug);
@@ -472,11 +441,12 @@ class rex_yform_manager_collection extends \SplFixedArray
         $validations = [];
         $useValidations = [];
         foreach ($this->getTable()->getFields() as $field) {
-            if ($field->getType() == 'action') {
+            if ('action' == $field->getType()) {
                 continue;
             }
 
-            $class = 'rex_yform_'.$field->getType().'_'.$field->getTypeName();
+            /** @var class-string<rex_yform_base_abstract> $class */
+            $class = 'rex_yform_' . $field->getType() . '_' . $field->getTypeName();
 
             /** @var rex_yform_base_abstract $cl */
             $cl = new $class();
@@ -499,7 +469,7 @@ class rex_yform_manager_collection extends \SplFixedArray
                 continue;
             }
 
-            if ($field->getType() == 'validate') {
+            if ('validate' == $field->getType()) {
                 if ($name = $field->getElement('name')) {
                     $validations[$name][] = ['type' => $field->getTypeName(), 'values' => $values];
                 }
@@ -524,14 +494,14 @@ class rex_yform_manager_collection extends \SplFixedArray
             $default = 0;
             if (!$send || !$enabled) {
                 if ($this->isValueUnique($key)) {
-                    $yform->setFieldValue($i, [], $this->getUniqueValue($key));
+                    $yform->setFieldValue((string) $i, [], $this->getUniqueValue($key));
                     $default = 1;
                 }
             }
 
             if ($useCheckbox) {
                 $yform->setValueField('checkbox', [
-                    'name' => $key.'_multi_edit',
+                    'name' => $key . '_multi_edit',
                     'label' => rex_i18n::msg('yform_manager_multi_edit_field', $field->getLabel()),
                     'default' => $default,
                     'no_db' => true,
@@ -558,7 +528,10 @@ class rex_yform_manager_collection extends \SplFixedArray
         return $yform;
     }
 
-    public function executeForm(rex_yform $yform, callable $afterFieldsExecuted = null)
+    /**
+     * @param null|callable(rex_yform):void $afterFieldsExecuted
+     */
+    public function executeForm(rex_yform $yform, ?callable $afterFieldsExecuted = null): string
     {
         $yform->executeFields();
 
@@ -566,7 +539,7 @@ class rex_yform_manager_collection extends \SplFixedArray
             call_user_func($afterFieldsExecuted, $yform);
         }
 
-        if ($yform->objparams['send'] == 1 && !$yform->objparams['warning_messages']) {
+        if (1 == $yform->objparams['send'] && !$yform->objparams['warning_messages']) {
             $ignoreFields = [];
             /** @var rex_yform_value_abstract $field */
             foreach ($yform->objparams['values'] as $field) {
@@ -584,7 +557,7 @@ class rex_yform_manager_collection extends \SplFixedArray
             if (!$this->save()) {
                 foreach ($this as $dataset) {
                     foreach ($dataset->getMessages() as $message) {
-                        $yform->objparams['warning_messages'][] = rex_i18n::msg('yform_data').' ID '.$dataset->getId().': '.$message;
+                        $yform->objparams['warning_messages'][] = rex_i18n::msg('yform_data') . ' ID ' . $dataset->getId() . ': ' . $message;
                     }
                 }
             }

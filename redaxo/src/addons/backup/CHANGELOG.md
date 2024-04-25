@@ -1,6 +1,57 @@
 Changelog
 =========
 
+Version 2.9.1 – 09.02.2024
+--------------------------
+
+### Bugfixes
+
+* Backup-Cronjob: Bei Mailversand hatten gz-kodierte Backup-Anhänge eine falsche Dateiendung (@gharlan)
+
+
+Version 2.8.3 – 20.02.2023
+--------------------------
+
+### Bugfixes
+
+* Backup-Cronjob: Deprecated-Meldung entfernt (@gharlan)
+
+
+Version 2.8.2 – 25.07.2022
+--------------------------
+
+### Bugfixes
+
+* Umlaute in Sprachdatei korrigiert (@frood)
+
+
+Version 2.8.1 – 03.05.2022
+--------------------------
+
+### Bugfixes
+
+* Cronjob: Beim Löschen älterer Backups wurden komprimierte Backups nicht berücksichtigt (@VIEWSION)
+* Fehlermeldung optimiert beim Dateiexport (@staabm)
+
+
+Version 2.8.0 – 17.11.2021
+--------------------------
+
+### Neu
+
+* Begrifflichkeiten optimiert (@gharlan)
+
+
+Version 2.7.0 – 03.03.2021
+--------------------------
+
+### Neu
+
+* Datenbank-Backups können im Cronjob optional gz-komprimiert werden, solche können auch wieder importiert werden (@staabm)
+* Es können deutlich größere Dateibackups ex-/importiert werden (bei programmatischer Nutzung von `rex_backup::exportFiles` sollte dafür der neue zweite Parameter mit einem Zielpfad gesetzt werden) (@staabm)
+* Code entfernt, der die User-Tabellen anlegt nach Import, falls nicht vorhanden, da die Tabellendefinition veraltet war und die Situation im Normalfall nicht vorkommen kann (@gharlan)
+
+
 Version 2.6.3 – 25.01.2021
 --------------------------
 

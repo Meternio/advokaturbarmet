@@ -1,5 +1,5 @@
 package: cache_warmup
-version: '3.6.1'
+version: '4.0.0'
 author: Friends Of REDAXO
 supportpage: https://github.com/FriendsOfREDAXO/cache_warmup
 
@@ -27,14 +27,12 @@ pages:
             readme: { title: translate:page_readme, subPath: README.md }
 
 requires:
-    redaxo: '^5.2'
-    php: '>=5.5'
+    redaxo: '^5.4'
+    php: '>=7.4'
 
 # define conflicts: prevents packages from update to avoid breaking changes
-# https://github.com/FriendsOfREDAXO/cache_warmup/pull/55#issuecomment-280906737
 conflicts:
     packages:
         media_manager: '>=3'
         metainfo: '>=3'
         structure: '>=3'
-        yform: '>=4'

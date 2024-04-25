@@ -9,22 +9,16 @@
  */
 class rex_cronjob_manager
 {
-    /**
-     * @template T of rex_cronjob
-     *
-     * @return class-string<T>[]
-     */
-    private static $types = [
-        'rex_cronjob_phpcode',
-        'rex_cronjob_phpcallback',
-        'rex_cronjob_urlrequest',
-    ];
+    /** @var list<class-string<rex_cronjob>>|null */
+    private static ?array $types = null;
 
     /** @var string */
     private $message = '';
+    /** @var rex_cronjob|class-string<rex_cronjob>|null */
     private $cronjob;
     /** @var string|null */
     private $name;
+    /** @var int|null */
     private $id;
 
     /**
@@ -35,6 +29,10 @@ class rex_cronjob_manager
         return new self();
     }
 
+    /**
+     * @param string $message
+     * @return void
+     */
     public function setMessage($message)
     {
         $this->message = $message;
@@ -56,17 +54,29 @@ class rex_cronjob_manager
         return !empty($this->message);
     }
 
+    /**
+     * @param rex_cronjob|class-string<rex_cronjob> $cronjob
+     * @return void
+     */
     public function setCronjob($cronjob)
     {
         $this->cronjob = $cronjob;
     }
 
+    /**
+     * @param rex_cronjob|class-string<rex_cronjob> $cronjob
+     * @param string $name
+     * @param array $params
+     * @param bool $log
+     * @param int|null $id
+     * @return bool
+     */
     public function tryExecute($cronjob, $name = '', $params = [], $log = true, $id = null)
     {
-        $success = $cronjob instanceof rex_cronjob;
-        if (!$success) {
+        if (!$cronjob instanceof rex_cronjob) {
+            $success = false;
             if (is_object($cronjob)) {
-                $message = 'Invalid cronjob class "' . get_class($cronjob) . '"';
+                $message = 'Invalid cronjob class "' . $cronjob::class . '"';
             } else {
                 $message = 'Class "' . $cronjob . '" not found';
             }
@@ -107,8 +117,9 @@ class rex_cronjob_manager
     }
 
     /**
-     * @param bool   $success
+     * @param bool $success
      * @param string $message
+     * @return void
      */
     public function log($success, $message)
     {
@@ -127,10 +138,10 @@ class rex_cronjob_manager
             $environment = rex::getEnvironment();
         }
 
-        $log = new rex_log_file(rex_path::log('cronjob.log'), 2000000);
+        $log = rex_log_file::factory(rex_path::log('cronjob.log'), 2_000_000);
         $data = [
-            ($success ? 'SUCCESS' : 'ERROR'),
-            ($this->id ?: '--'),
+            $success ? 'SUCCESS' : 'ERROR',
+            $this->id ?: '--',
             $name,
             strip_tags($message),
             $environment,
@@ -139,23 +150,32 @@ class rex_cronjob_manager
     }
 
     /**
-     * @template T of rex_cronjob
-     *
-     * @return class-string<T>[]
+     * @return list<class-string<rex_cronjob>>
      */
     public static function getTypes()
     {
+        if (null === self::$types) {
+            self::$types = [];
+
+            if (!rex::isLiveMode()) {
+                self::$types[] = rex_cronjob_phpcode::class;
+                self::$types[] = rex_cronjob_phpcallback::class;
+            }
+            self::$types[] = rex_cronjob_urlrequest::class;
+        }
+
         return self::$types;
     }
 
     /**
-     * @template T of rex_cronjob
-     *
-     * @param class-string<T> $class
+     * @param class-string<rex_cronjob> $class
+     * @return void
      */
     public static function registerType($class)
     {
-        self::$types[] = $class;
+        $types = self::getTypes();
+        $types[] = $class;
+        self::$types = $types;
     }
 
     /**

@@ -31,12 +31,12 @@ class rex_yform_value_emptyname extends rex_yform_value_abstract
         }
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'emptyname|name|';
     }
 
-    public function getDefinitions()
+    public function getDefinitions(): array
     {
         return [
             'type' => 'value',
@@ -50,5 +50,20 @@ class rex_yform_value_emptyname extends rex_yform_value_abstract
             'db_type' => ['text', 'mediumtext'],
             'multi_edit' => 'always',
         ];
+    }
+
+    public static function getSearchField($params)
+    {
+        rex_yform_value_text::getSearchField($params);
+    }
+
+    public static function getSearchFilter($params)
+    {
+        return rex_yform_value_text::getSearchFilter($params);
+    }
+
+    public static function getListValue($params)
+    {
+        return rex_yform_value_text::getListValue($params);
     }
 }

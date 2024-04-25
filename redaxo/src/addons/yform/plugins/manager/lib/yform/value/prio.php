@@ -41,7 +41,7 @@ class rex_yform_value_prio extends rex_yform_value_abstract
                 implode(', ', $selectFields),
                 $this->getElement('name'),
                 $this->params['main_table'],
-                $scopeWhere
+                $scopeWhere,
             ));
             $prio = 1;
             while ($sql->hasNext()) {
@@ -49,7 +49,7 @@ class rex_yform_value_prio extends rex_yform_value_abstract
                     $prio = $sql->getValue('prio') + 1;
                     $label = [];
                     foreach ($fields as $field) {
-                        $label[] = rex_i18n::translate($sql->getValue($field), false);
+                        $label[] = rex_i18n::translate((string) $sql->getValue($field), false);
                     }
                     $options[$prio] = rex_i18n::msg('yform_prio_after', implode(' | ', $label));
                 }
@@ -57,9 +57,9 @@ class rex_yform_value_prio extends rex_yform_value_abstract
             }
         }
 
-        if (!$this->params['send'] && $this->getValue() == '') {
-            if ($this->getElement('default') == '') {
-                $this->setValue(isset($prio) ? $prio : '');
+        if (!$this->params['send'] && '' == $this->getValue()) {
+            if ('' == $this->getElement('default')) {
+                $this->setValue($prio ?? '');
             } else {
                 $this->setValue($this->getElement('default'));
             }
@@ -69,22 +69,29 @@ class rex_yform_value_prio extends rex_yform_value_abstract
             $this->setValue(explode(',', $this->getValue()));
         }
 
-        if ($this->needsOutput()) {
-            $this->params['form_output'][$this->getId()] = $this->parse('value.select.tpl.php', ['options' => $options, 'multiple' => false, 'size' => 1]);
+        if ($this->needsOutput() && $this->isViewable()) {
+            if (!$this->isEditable()) {
+                $this->params['form_output'][$this->getId()] = $this->parse(['value.select-view.tpl.php', 'value.view.tpl.php'], ['options' => $options, 'multiple' => false, 'size' => 1]);
+            } else {
+                $this->params['form_output'][$this->getId()] = $this->parse('value.select.tpl.php', ['options' => $options, 'multiple' => false, 'size' => 1]);
+            }
         }
 
         $this->setValue(implode(',', $this->getValue()));
 
         $this->params['value_pool']['email'][$this->getName()] = $this->getValue();
-        $this->params['value_pool']['sql'][$this->getName()] = $this->getValue();
+
+        if ($this->saveInDB()) {
+            $this->params['value_pool']['sql'][$this->getName()] = $this->getValue();
+        }
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'prio|name|label|fields|scope|defaultwert';
     }
 
-    public function getDefinitions()
+    public function getDefinitions(): array
     {
         return [
             'type' => 'value',
@@ -104,7 +111,7 @@ class rex_yform_value_prio extends rex_yform_value_abstract
         ];
     }
 
-    public function postAction()
+    public function postAction(): void
     {
         $sql = rex_sql::factory();
         if ($this->debug) {
@@ -126,7 +133,7 @@ class rex_yform_value_prio extends rex_yform_value_abstract
             $this->params['main_table'],
             $this->getElement('name'),
             $scopeWhere,
-            $this->params['main_id']
+            $this->params['main_id'],
         ));
     }
 
@@ -153,9 +160,9 @@ class rex_yform_value_prio extends rex_yform_value_abstract
                 }
                 $sql->setQuery(sprintf(
                     'SELECT `%s` FROM `%s` WHERE id = %d',
-                    ($column),
-                    ($this->params['main_table']),
-                    $this->params['main_id']
+                    $column,
+                    $this->params['main_table'],
+                    $this->params['main_id'],
                 ));
                 $value = $sql->getValue($column);
             }
@@ -164,7 +171,7 @@ class rex_yform_value_prio extends rex_yform_value_abstract
             }
 
             $value = $sql->escape($value);
-            $where[] = sprintf('`%s` = %s', ($column), ($value));
+            $where[] = sprintf('`%s` = %s', $column, $value);
         }
         return ' WHERE ' . implode(' AND ', $where);
     }

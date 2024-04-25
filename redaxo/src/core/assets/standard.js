@@ -3,6 +3,11 @@
  */
 
 // -------------------------------------------------------------------------------------------------------------------
+window.addEventListener("unload", (event) => {
+    closeAll();
+});
+
+// -------------------------------------------------------------------------------------------------------------------
 
 function getObj(name)
 {
@@ -125,15 +130,15 @@ function newWindow(name,link,width,height,type)
 var winObj = new Array();
 if (opener != null)
 {
-	try{
-	    if (typeof(opener.winObjCounter) == "number")
-	    {
-	        var winObjCounter = opener.winObjCounter;
-	    }
-	} catch(e) {
-	    // in x-origin cases opener.winObjCounter would not be readable
-	    var winObjCounter = -1;
-	}
+    try{
+        if (typeof(opener.winObjCounter) == "number")
+        {
+            var winObjCounter = opener.winObjCounter;
+        }
+    } catch(e) {
+        // in x-origin cases opener.winObjCounter would not be readable
+        var winObjCounter = -1;
+    }
 }else
 {
     var winObjCounter = -1;
@@ -201,7 +206,7 @@ function deleteREX(id, i_list, i_select)
         source.options[position] = null;
         sourcelength--;
 
-        // Wenn das erste gel�scht wurde
+        // Wenn das erste geloescht wurde
         if(position == 0)
         {
             // Und es gibt noch weitere,
@@ -448,21 +453,46 @@ jQuery(function($){
     {
         time = new Date();
         time.setTime(time.getTime() + 1000 * 60 * 60 * 24);
-        setCookie('rex_htaccess_check', '1', time.toGMTString(), '', '', false, 'lax');
-        checkHtaccess('bin', 'console');
-        checkHtaccess('cache', '.redaxo');
-        checkHtaccess('data', '.redaxo');
-        checkHtaccess('src', 'core/boot.php');
-    }
 
-    function checkHtaccess(dir, file)
-    {
-        $.get(dir +'/'+ file +'?redaxo-security-self-test',
-            function(data) {
-                $('#rex-js-page-main').prepend('<div class="alert alert-danger" style="margin-top: 20px;">The folder <code>redaxo/'+ dir +'</code> is insecure. Please protect this folder.</div>');
-                setCookie('rex_htaccess_check', '');
-            }
+        setCookie(
+            'rex_htaccess_check',
+            '1',
+            time.toGMTString(),
+            rex.cookie_params.path,
+            rex.cookie_params.domain,
+            rex.cookie_params.secure,
+            rex.cookie_params.samesite.toLowerCase()
         );
+
+        var allowedUrl = 'index.php';
+
+        // test urls, which is not expected to be accessible
+        // after each expected error, run a request which is expected to succeed.
+        // that way we try to make sure tools like fail2ban dont block the client
+        var urls = [
+            'bin/console',
+            allowedUrl,
+            'data/.redaxo',
+            allowedUrl,
+            'src/core/boot.php',
+            allowedUrl,
+            'cache/.redaxo'
+        ];
+
+        // NOTE: we have essentially a copy of this code in the setup process.
+        $.each(urls, function (i, url) {
+            $.ajax({
+                // add a human readable suffix so people get an idea what we are doing here
+                url: url + '?redaxo-security-self-test',
+                cache: false,
+                success: function (data) {
+                    if (i % 2 == 0) {
+                        $('#rex-js-page-main').prepend('<div class="alert alert-danger" style="margin-top: 20px;">The folder <code>redaxo/' + url + '</code> is insecure. Please protect this folder.</div>');
+                        setCookie('rex_htaccess_check', '');
+                    }
+                }
+            });
+        });
     }
 });
 
@@ -497,6 +527,53 @@ function getCookie(cookieName) {
 
     return unescape(theCookie.substring(ind + cookieName.length + 1, ind1));
 }
+
+// scroll to anchor element + adjust scroll-padding-top
+function scrollToAnchor() {
+    if (window.location.hash) {
+        var scrollPadding = window.getComputedStyle(document.documentElement).getPropertyValue('scroll-padding-top');
+        scrollPadding = parseInt(scrollPadding, 10); // so 65px will be 65
+        if (scrollPadding > 0) {
+            var anchorItem = document.querySelector(window.location.hash);
+            if (anchorItem) {
+                var anchorItemPosition = anchorItem.getBoundingClientRect().top;
+                if (!isNaN(scrollPadding) && scrollPadding > 0 && anchorItemPosition < scrollPadding) {
+                    window.scrollBy(0, -scrollPadding);
+                }
+            }
+        }
+    }
+}
+
+var rex_loader = {
+    timeoutId: null,
+
+    show: function() {
+        document.documentElement.style.overflowY = 'hidden'; // freeze scroll position
+        document.querySelector('#rex-js-ajax-loader').classList.add('rex-visible');
+    },
+    hide: function() {
+        document.querySelector('#rex-js-ajax-loader').classList.remove('rex-visible');
+        document.documentElement.style.overflowY = null;
+    },
+
+    showAfterDelay: function() {
+        // show loader only if page takes longer than 200 ms to load
+        window.clearTimeout(rex_loader.timeoutId);
+
+        rex_loader.timeoutId = setTimeout(function () {
+            rex_loader.show();
+        }, 200);
+    },
+    hideAfterDelay: function() {
+        // make sure loader was visible for at least 500 ms to avoid flickering
+        window.clearTimeout(rex_loader.timeoutId);
+
+        rex_loader.timeoutId = setTimeout(function () {
+            rex_loader.hide();
+        }, 500);
+    }
+};
 
 jQuery(document).ready(function($) {
 
@@ -606,6 +683,7 @@ jQuery(document).ready(function($) {
             return $.pjax.click(event, options);
         };
 
+        var rexAjaxLoaderId;
         $(document)
             // install pjax handlers, see defunkt/jquery-pjax#142
             .on('click', '[data-pjax-container] a, a[data-pjax]', pjaxHandler)
@@ -630,10 +708,13 @@ jQuery(document).ready(function($) {
             /*.on('pjax:success', function(e, data, status, xhr, options) {
              })*/
             .on('pjax:start', function () {
-                $('#rex-js-ajax-loader').addClass('rex-visible');
+                rex_loader.showAfterDelay();
             })
             .on('pjax:end',   function (event, xhr, options) {
-                $('#rex-js-ajax-loader').removeClass('rex-visible');
+                // adjust scroll position for anchors depending on scroll-margin-top value
+                scrollToAnchor();
+
+                rex_loader.hideAfterDelay();
 
                 options.context.trigger('rex:ready', [options.context]);
             });
@@ -663,7 +744,7 @@ jQuery(document).ready(function($) {
                 $svg = $svg.attr('class', imgClass+' replaced-svg');
             }
 
-            // Remove any invalid XML tags as per http://validator.w3.org
+            // Remove any invalid XML tags as per https://validator.w3.org
             $svg = $svg.removeAttr('xmlns:a');
 
             // Replace image with new SVG
@@ -682,6 +763,8 @@ jQuery(document).ready(function($) {
             ((windowHeight - rect.bottom) < menuHeight) &&
             (rect.top > menuHeight));
     });
+
+    document.addEventListener('keydown', handleKeyEvents, true);
 });
 
 // keep session alive
@@ -694,4 +777,44 @@ if ('login' !== rex.page && rex.session_keep_alive) {
     setTimeout(function () {
         clearInterval(keepAliveInterval);
     }, rex.session_keep_alive * 1000 /* stop request after x seconds - see config.yml */);
+}
+
+// handle key events
+var handleKeyEvents = function (event) {
+
+    // submit forms via strg/cmd + enter
+    if (event.metaKey && event.keyCode === 13) {
+        var form = event.target.closest('form');
+        if (form) {
+            // click apply button if available (e.g. when editing content)
+            var applyButton = form.querySelector('.btn-apply');
+            if (applyButton) {
+                applyButton.click();
+            } else {
+                // click (first) submit button
+                var submitButton = form.querySelector('[type=\'submit\']');
+                if (submitButton) {
+                    submitButton.click();
+                }
+            }
+        }
+    }
+}
+
+/**
+ * @param {string} selector_id
+ */
+function rex_searchfield_init(selector_id) {
+
+    $(selector_id).find('input[type="text"]').on('input propertychange', function () {
+        var $this = $(this);
+        var visible = Boolean($this.val());
+        $this.siblings('.form-control-clear').toggleClass('hidden', !visible);
+    }).trigger('propertychange');
+
+    $(selector_id).find('.form-control-clear, .clear-button').click(function (event) {
+        event.stopPropagation();
+        $(this).siblings('input[type="text"]').val('').trigger("keyup")
+            .trigger('propertychange').focus();
+    });
 }

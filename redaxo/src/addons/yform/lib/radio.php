@@ -83,7 +83,7 @@ class rex_radio
      */
     public function setStyle($style)
     {
-        if (strpos($style, 'class=') !== false) {
+        if (str_contains($style, 'class=')) {
             if (preg_match('/class=["\']?([^"\']*)["\']?/i', $style, $matches)) {
                 $this->setAttribute('class', $matches[1]);
             }
@@ -99,7 +99,7 @@ class rex_radio
 
     public function setSelected($selected)
     {
-        $this->option_selected = htmlspecialchars($selected);
+        $this->option_selected = rex_escape($selected);
     }
 
     public function resetSelected()
@@ -142,7 +142,7 @@ class rex_radio
 
         $selected = '';
         foreach ($this->options as $option) {
-            if ($selected == '') {
+            if ('' == $selected) {
                 $selected = $option['value'];
             }
 

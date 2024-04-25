@@ -11,7 +11,7 @@ class rex_form_widget_customlink_element extends rex_form_element
 
     // 1. Parameter nicht genutzt, muss aber hier stehen,
     // wg einheitlicher Konstruktorparameter
-    public function __construct($tag = '', rex_form_base $table = null, array $attributes = [])
+    public function __construct($tag = '', ?rex_form_base $table = null, array $attributes = [])
     {
         parent::__construct('', $table, $attributes);
     }
@@ -54,6 +54,11 @@ class rex_form_widget_customlink_element extends rex_form_element
     public function setPhone($phone)
     {
         $this->args['phone'] = $phone;
+    }
+
+    public function setYLink($ylink)
+    {
+        $this->args['ylink'] = $ylink;
     }
 
     public function formatElement()

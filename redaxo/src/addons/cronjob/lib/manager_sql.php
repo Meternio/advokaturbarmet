@@ -10,26 +10,25 @@
 
 class rex_cronjob_manager_sql
 {
-    /** @var rex_sql */
-    private $sql;
-    /** @var rex_cronjob_manager|null */
-    private $manager;
+    private rex_sql $sql;
 
-    private function __construct(rex_cronjob_manager $manager = null)
-    {
+    private function __construct(
+        private ?rex_cronjob_manager $manager = null,
+    ) {
         $this->sql = rex_sql::factory();
-        // $this->sql->setDebug();
-        $this->manager = $manager;
     }
 
     /**
      * @return self
      */
-    public static function factory(rex_cronjob_manager $manager = null)
+    public static function factory(?rex_cronjob_manager $manager = null)
     {
         return new self($manager);
     }
 
+    /**
+     * @return rex_cronjob_manager
+     */
     public function getManager()
     {
         if (!is_object($this->manager)) {
@@ -46,21 +45,37 @@ class rex_cronjob_manager_sql
         return is_object($this->manager);
     }
 
+    /**
+     * @param string $message
+     * @return void
+     */
     public function setMessage($message)
     {
         $this->getManager()->setMessage($message);
     }
 
+    /**
+     * @return string
+     */
     public function getMessage()
     {
         return $this->getManager()->getMessage();
     }
 
+    /**
+     * @return bool
+     */
     public function hasMessage()
     {
         return $this->getManager()->hasMessage();
     }
 
+    /**
+     * @param int $id
+     *
+     * @throws rex_exception
+     * @return string
+     */
     public function getName($id)
     {
         $this->sql->setQuery('
@@ -72,10 +87,11 @@ class rex_cronjob_manager_sql
         if (1 == $this->sql->getRows()) {
             return $this->sql->getValue('name');
         }
-        return null;
+        throw new rex_exception(sprintf('No cronjob found with id %s', $id));
     }
 
     /**
+     * @param int $id
      * @return bool
      */
     public function setStatus($id, $status)
@@ -87,7 +103,7 @@ class rex_cronjob_manager_sql
         try {
             $this->sql->update();
             $success = true;
-        } catch (rex_sql_exception $e) {
+        } catch (rex_sql_exception) {
             $success = false;
         }
         $this->saveNextTime();
@@ -95,6 +111,7 @@ class rex_cronjob_manager_sql
     }
 
     /**
+     * @param int $id
      * @return bool
      */
     public function setExecutionStart($id, $reset = false)
@@ -105,12 +122,13 @@ class rex_cronjob_manager_sql
         try {
             $this->sql->update();
             return true;
-        } catch (rex_sql_exception $e) {
+        } catch (rex_sql_exception) {
             return false;
         }
     }
 
     /**
+     * @param int $id
      * @return bool
      */
     public function delete($id)
@@ -120,14 +138,18 @@ class rex_cronjob_manager_sql
         try {
             $this->sql->delete();
             $success = true;
-        } catch (rex_sql_exception $e) {
+        } catch (rex_sql_exception) {
             $success = false;
         }
         $this->saveNextTime();
         return $success;
     }
 
-    public function check()
+    /**
+     * @param callable(string,bool,string):void|null $callback Callback is called after every job execution (params: job name, success status, message)
+     * @return void
+     */
+    public function check(?callable $callback = null)
     {
         $env = rex_cronjob_manager::getCurrentEnvironment();
         $script = 'script' === $env;
@@ -137,7 +159,7 @@ class rex_cronjob_manager_sql
 
         $query = '
             SELECT    id, name, type, parameters, `interval`, execution_moment
-            FROM      '.rex::getTable('cronjob').'
+            FROM      ' . rex::getTable('cronjob') . '
             WHERE     status = 1
                 AND   execution_start < ?
                 AND   environment LIKE ?
@@ -153,7 +175,7 @@ class rex_cronjob_manager_sql
             $minExecutionStartDiff = 2 * ((int) ini_get('max_execution_time') ?: 60 * 60);
         }
 
-        $jobs = $sql->getArray($query, [rex_sql::datetime(time() - $minExecutionStartDiff), '%|' .$env. '|%', rex_sql::datetime()]);
+        $jobs = $sql->getArray($query, [rex_sql::datetime(time() - $minExecutionStartDiff), '%|' . $env . '|%', rex_sql::datetime()]);
 
         if (!$jobs) {
             $this->saveNextTime();
@@ -172,8 +194,11 @@ class rex_cronjob_manager_sql
                     continue;
                 }
 
+                /** @psalm-taint-escape callable */ // It is intended that the class name is coming from database
+                $type = $job['type'];
+
                 $manager = $this->getManager();
-                $manager->setCronjob(rex_cronjob::factory($job['type']));
+                $manager->setCronjob(rex_cronjob::factory($type));
                 $manager->log(false, 0 != connection_status() ? 'Timeout' : 'Unknown error');
                 $this->setNextTime($job['id'], $job['interval'], true);
             }
@@ -188,19 +213,34 @@ class rex_cronjob_manager_sql
         if ($script || 1 == $jobs[0]['execution_moment']) {
             foreach ($jobs as &$job) {
                 $job['started'] = true;
-                $this->tryExecuteJob($job, true, true);
+                $success = $this->tryExecuteJob($job, true, true);
+
+                if ($callback) {
+                    $callback($job['name'], $success, $this->getMessage());
+                }
+
                 $job['finished'] = true;
             }
             return;
         }
 
-        rex_extension::register('RESPONSE_SHUTDOWN', function () use (&$jobs) {
+        rex_extension::register('RESPONSE_SHUTDOWN', function () use (&$jobs, $callback) {
             $jobs[0]['started'] = true;
-            $this->tryExecuteJob($jobs[0], true, true);
+            $success = $this->tryExecuteJob($jobs[0], true, true);
+
+            if ($callback) {
+                $callback($jobs[0]['name'], $success, $this->getMessage());
+            }
+
             $jobs[0]['finished'] = true;
         });
     }
 
+    /**
+     * @param int $id
+     * @param bool $log
+     * @return bool
+     */
     public function tryExecute($id, $log = true)
     {
         $sql = rex_sql::factory();
@@ -220,19 +260,31 @@ class rex_cronjob_manager_sql
         return $this->tryExecuteJob($jobs[0], $log);
     }
 
+    /**
+     * @param array{id: int, interval: string, name: string, parameters: ?string, type: class-string<rex_cronjob>} $job
+     * @param bool $log
+     * @param bool $resetExecutionStart
+     * @return bool
+     */
     private function tryExecuteJob(array $job, $log = true, $resetExecutionStart = false)
     {
-        $params = json_decode($job['parameters'], true);
-        $cronjob = rex_cronjob::factory($job['type']);
+        $params = $job['parameters'] ? json_decode($job['parameters'], true) : [];
+
+        /** @psalm-taint-escape callable */ // It is intended that the class name is coming from database
+        $type = $job['type'];
+
+        $cronjob = rex_cronjob::factory($type);
 
         $this->setNextTime($job['id'], $job['interval'], $resetExecutionStart);
 
-        $success = $this->getManager()->tryExecute($cronjob, $job['name'], $params, $log, $job['id']);
-
-        return $success;
+        return $this->getManager()->tryExecute($cronjob, $job['name'], $params, $log, $job['id']);
     }
 
     /**
+     * @param int $id
+     * @param string $interval
+     * @param bool $resetExecutionStart
+     *
      * @return bool
      */
     public function setNextTime($id, $interval, $resetExecutionStart = false)
@@ -247,7 +299,7 @@ class rex_cronjob_manager_sql
                 WHERE   id = ?
             ', [$nexttime, $id]);
             $success = true;
-        } catch (rex_sql_exception $e) {
+        } catch (rex_sql_exception) {
             $success = false;
         }
         $this->saveNextTime();
@@ -272,6 +324,7 @@ class rex_cronjob_manager_sql
     }
 
     /**
+     * @param int|null $nexttime
      * @return true
      */
     public function saveNextTime($nexttime = null)
@@ -298,7 +351,7 @@ class rex_cronjob_manager_sql
             return null;
         }
 
-        $date = new \DateTime('+5 min');
+        $date = new DateTime('+5 min');
         $date->setTime((int) $date->format('G'), (int) floor((int) $date->format('i') / 5) * 5, 0);
 
         $isValid = static function ($value, $current) {
@@ -324,9 +377,9 @@ class rex_cronjob_manager_sql
         $validateTime();
 
         if (
-            !$isValid($interval['days'], $date->format('j')) ||
-            !$isValid($interval['weekdays'], $date->format('w')) ||
-            !$isValid($interval['months'], $date->format('n'))
+            !$isValid($interval['days'], $date->format('j'))
+            || !$isValid($interval['weekdays'], $date->format('w'))
+            || !$isValid($interval['months'], $date->format('n'))
         ) {
             $date->setTime(0, 0, 0);
             $validateTime();

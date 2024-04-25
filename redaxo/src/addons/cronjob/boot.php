@@ -4,14 +4,12 @@
  * Cronjob Addon.
  *
  * @author gharlan[at]web[dot]de Gregor Harlan
- *
- * @package redaxo5
  */
 
 $addon = rex_addon::get('cronjob');
 
 define('REX_CRONJOB_LOG_FOLDER', $addon->getDataPath());
-/* @deprecated use rex::getTable('cronjob') instead´*/
+/** @deprecated use rex::getTable('cronjob') instead´*/
 define('REX_CRONJOB_TABLE', rex::getTable('cronjob'));
 
 if (rex::getConsole()) {

@@ -5,28 +5,20 @@
  */
 class rex_be_controller
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private static $page;
 
-    /**
-     * @var array
-     */
-    private static $pageParts = [];
+    /** @var list<string> */
+    private static array $pageParts = [];
 
-    /**
-     * @var rex_be_page|null
-     */
-    private static $pageObject;
+    private static ?rex_be_page $pageObject = null;
 
-    /**
-     * @var rex_be_page[]
-     */
-    private static $pages = [];
+    /** @var array<string, rex_be_page> */
+    private static array $pages = [];
 
     /**
      * @param string $page
+     * @return void
      */
     public static function setCurrentPage($page)
     {
@@ -44,10 +36,11 @@ class rex_be_controller
     }
 
     /**
-     * @param null|int    $part    Part index, beginning with 1. If $part is null, an array of all current parts will be returned
-     * @param null|string $default Default value
-     *
-     * @return array|string|null
+     * @template T of positive-int|null
+     * @param T $part Part index, beginning with 1. If $part is null, an array of all current parts will be returned
+     * @param string|null $default Default value
+     * @return list<string>|string|null
+     * @psalm-return (T is null ? list<string> : string|null)
      */
     public static function getCurrentPagePart($part = null, $default = null)
     {
@@ -55,7 +48,7 @@ class rex_be_controller
             return self::$pageParts;
         }
         --$part;
-        return isset(self::$pageParts[$part]) ? self::$pageParts[$part] : $default;
+        return self::$pageParts[$part] ?? $default;
     }
 
     /**
@@ -69,8 +62,13 @@ class rex_be_controller
         return self::$pageObject;
     }
 
+    public static function requireCurrentPageObject(): rex_be_page
+    {
+        return rex_type::notNull(self::getCurrentPageObject());
+    }
+
     /**
-     * @param string|array $page
+     * @param string|list<string> $page
      *
      * @return rex_be_page|null
      */
@@ -94,7 +92,7 @@ class rex_be_controller
     }
 
     /**
-     * @return rex_be_page[]
+     * @return array<string, rex_be_page>
      */
     public static function getPages()
     {
@@ -102,7 +100,8 @@ class rex_be_controller
     }
 
     /**
-     * @param rex_be_page[] $pages
+     * @param array<string, rex_be_page> $pages
+     * @return void
      */
     public static function setPages(array $pages)
     {
@@ -116,7 +115,7 @@ class rex_be_controller
     {
         $parts = [];
 
-        $activePageObj = self::getCurrentPageObject();
+        $activePageObj = self::requireCurrentPageObject();
         if ($activePageObj->getTitle()) {
             $parts[] = $activePageObj->getTitle();
         }
@@ -149,6 +148,9 @@ class rex_be_controller
         return $page;
     }
 
+    /**
+     * @return void
+     */
     public static function appendLoggedInPages()
     {
         self::$pages['profile'] = (new rex_be_page('profile', rex_i18n::msg('profile')))
@@ -158,23 +160,23 @@ class rex_be_controller
         self::$pages['credits'] = (new rex_be_page('credits', rex_i18n::msg('credits')))
             ->setPath(rex_path::core('pages/credits.php'));
 
-        self::$pages['packages'] = (new rex_be_page_main('system', 'packages', rex_i18n::msg('addons')))
-            ->setPath(rex_path::core('pages/packages.php'))
-            ->setRequiredPermissions('isAdmin')
-            ->setPrio(60)
-            ->setPjax()
-            ->setIcon('rex-icon rex-icon-package-addon');
-
         $logsPage = (new rex_be_page('log', rex_i18n::msg('logfiles')))->setSubPath(rex_path::core('pages/system.log.php'));
         $logsPage->addSubpage((new rex_be_page('redaxo', rex_i18n::msg('syslog_redaxo')))->setSubPath(rex_path::core('pages/system.log.redaxo.php')));
-        if (@is_readable(ini_get('error_log'))) {
+        if ('' != ini_get('error_log') && @is_readable(ini_get('error_log'))) {
             $logsPage->addSubpage((new rex_be_page('php', rex_i18n::msg('syslog_phperrors')))->setSubPath(rex_path::core('pages/system.log.external.php')));
+        }
+
+        if ('system' === self::getCurrentPagePart(1) && 'log' === self::getCurrentPagePart(2)) {
+            $slowQueryLogPath = rex_sql_util::slowQueryLogPath();
+            if (null !== $slowQueryLogPath && @is_readable($slowQueryLogPath)) {
+                $logsPage->addSubpage((new rex_be_page('slow-queries', rex_i18n::msg('syslog_slowqueries')))->setSubPath(rex_path::core('pages/system.log.slow-queries.php')));
+            }
         }
 
         self::$pages['system'] = (new rex_be_page_main('system', 'system', rex_i18n::msg('system')))
             ->setPath(rex_path::core('pages/system.php'))
             ->setRequiredPermissions('isAdmin')
-            ->setPrio(70)
+            ->setPrio(80)
             ->setPjax()
             ->setIcon('rex-icon rex-icon-system')
             ->addSubpage((new rex_be_page('settings', rex_i18n::msg('main_preferences')))->setSubPath(rex_path::core('pages/system.settings.php')))
@@ -182,15 +184,29 @@ class rex_be_controller
             ->addSubpage($logsPage)
             ->addSubpage((new rex_be_page('report', rex_i18n::msg('system_report')))
                 ->addSubpage((new rex_be_page('html', rex_i18n::msg('system_report')))->setSubPath(rex_path::core('pages/system.report.html.php')))
-                ->addSubpage((new rex_be_page('markdown', rex_i18n::msg('system_report_markdown')))->setSubPath(rex_path::core('pages/system.report.markdown.php')))
+                ->addSubpage((new rex_be_page('markdown', rex_i18n::msg('system_report_markdown')))->setSubPath(rex_path::core('pages/system.report.markdown.php'))),
             )
             ->addSubpage((new rex_be_page('phpinfo', 'phpinfo'))
                 ->setHidden(true)
                 ->setHasLayout(false)
-                ->setPath(rex_path::core('pages/system.phpinfo.php'))
+                ->setPath(rex_path::core('pages/system.phpinfo.php')),
             );
+
+        if (rex::isLiveMode()) {
+            return;
+        }
+
+        self::$pages['packages'] = (new rex_be_page_main('system', 'packages', rex_i18n::msg('addons')))
+            ->setPath(rex_path::core('pages/packages.php'))
+            ->setRequiredPermissions('isAdmin')
+            ->setPrio(60)
+            ->setPjax()
+            ->setIcon('rex-icon rex-icon-package-addon');
     }
 
+    /**
+     * @return void
+     */
     public static function appendPackagePages()
     {
         $insertPages = [];
@@ -200,7 +216,7 @@ class rex_be_controller
 
             if (is_array($pages = $addon->getProperty('pages'))) {
                 foreach ($pages as $key => $page) {
-                    if (false !== strpos($key, '/')) {
+                    if (str_contains($key, '/')) {
                         $insertPages[$key] = [$addon, $page];
                     } else {
                         self::pageCreate($page, $addon, false, $mainPage, $key, true);
@@ -215,7 +231,7 @@ class rex_be_controller
 
                 if (is_array($pages = $plugin->getProperty('pages'))) {
                     foreach ($pages as $key => $page) {
-                        if (false !== strpos($key, '/')) {
+                        if (str_contains($key, '/')) {
                             $insertPages[$key] = [$plugin, $page];
                         } else {
                             self::pageCreate($page, $plugin, false, $mainPage, $key, true);
@@ -242,15 +258,15 @@ class rex_be_controller
 
     /**
      * @param rex_be_page|array $page
-     * @param bool              $createMainPage
-     * @param string            $pageKey
-     * @param bool|string       $prefix
+     * @param bool $createMainPage
+     * @param string $pageKey
+     * @param bool|string $prefix
      *
-     * @return null|rex_be_page
+     * @return rex_be_page|null
      */
-    private static function pageCreate($page, rex_package $package, $createMainPage, rex_be_page $parentPage = null, $pageKey = null, $prefix = false)
+    private static function pageCreate($page, rex_package $package, $createMainPage, ?rex_be_page $parentPage = null, $pageKey = null, $prefix = false)
     {
-        if (is_array($page) && isset($page['title'])) {
+        if (is_array($page) && isset($page['title']) && (false !== ($page['live_mode'] ?? null) || !rex::isLiveMode())) {
             $pageArray = $page;
             $pageKey = $pageKey ?: $package->getName();
             if ($createMainPage || isset($pageArray['main']) && $pageArray['main']) {
@@ -286,6 +302,7 @@ class rex_be_controller
 
     /**
      * @param string $prefix
+     * @return void
      */
     private static function pageSetSubPaths(rex_be_page $page, rex_package $package, $prefix = '')
     {
@@ -297,6 +314,9 @@ class rex_be_controller
         }
     }
 
+    /**
+     * @return void
+     */
     private static function pageAddProperties(rex_be_page $page, array $properties, rex_package $package)
     {
         foreach ($properties as $key => $value) {
@@ -304,7 +324,7 @@ class rex_be_controller
                 case 'subpages':
                     if (is_array($value)) {
                         foreach ($value as $pageKey => $subProperties) {
-                            if (isset($subProperties['title'])) {
+                            if (isset($subProperties['title']) && (false !== ($subProperties['live_mode'] ?? null) || !rex::isLiveMode())) {
                                 $subpage = new rex_be_page($pageKey, $subProperties['title']);
                                 $page->addSubpage($subpage);
                                 self::pageAddProperties($subpage, $subProperties, $package);
@@ -347,6 +367,9 @@ class rex_be_controller
         }
     }
 
+    /**
+     * @return void
+     */
     public static function checkPagePermissions(rex_user $user)
     {
         $check = static function (rex_be_page $page) use (&$check, $user) {
@@ -382,7 +405,7 @@ class rex_be_controller
                 $page = self::getPageObject(rex::getProperty('start_page'));
                 if (!$page) {
                     // --- fallback zur profile page
-                    $page = self::getPageObject('profile');
+                    $page = rex_type::notNull(self::getPageObject('profile'));
                 }
             }
             rex_response::setStatus(rex_response::HTTP_NOT_FOUND);
@@ -397,10 +420,11 @@ class rex_be_controller
 
     /**
      * Includes the current page. A page may be provided by the core, an addon or plugin.
+     * @return void
      */
     public static function includeCurrentPage()
     {
-        $currentPage = self::getCurrentPageObject();
+        $currentPage = self::requireCurrentPageObject();
 
         if (rex_request::isPJAXRequest() && !rex_request::isPJAXContainer('#rex-js-page-container')) {
             // non-core pjax containers should not have a layout.
@@ -412,7 +436,7 @@ class rex_be_controller
             require rex_path::core('layout/top.php');
         });
 
-        self::includePath($currentPage->getPath());
+        self::includePath(rex_type::string($currentPage->getPath()));
 
         rex_timer::measure('Layout: bottom.php', function () {
             require rex_path::core('layout/bottom.php');
@@ -426,27 +450,32 @@ class rex_be_controller
      */
     public static function includeCurrentPageSubPath(array $context = [])
     {
-        $path = self::getCurrentPageObject()->getSubPath();
+        $path = rex_type::string(self::requireCurrentPageObject()->getSubPath());
 
         if ('.md' !== strtolower(substr($path, -3))) {
             return self::includePath($path, $context);
         }
 
-        $languagePath = substr($path, 0, -3).'.'.rex_i18n::getLanguage().'.md';
+        $languagePath = substr($path, 0, -3) . '.' . rex_i18n::getLanguage() . '.md';
         if (is_readable($languagePath)) {
             $path = $languagePath;
         }
 
-        [$toc, $content] = rex_markdown::factory()->parseWithToc(rex_file::get($path));
+        [$toc, $content] = rex_markdown::factory()->parseWithToc(rex_file::require($path), 2, 3, [
+            rex_markdown::SOFT_LINE_BREAKS => false,
+            rex_markdown::HIGHLIGHT_PHP => true,
+        ]);
         $fragment = new rex_fragment();
         $fragment->setVar('content', $content, false);
         $fragment->setVar('toc', $toc, false);
         $content = $fragment->parse('core/page/docs.php');
 
         $fragment = new rex_fragment();
-        $fragment->setVar('title', self::getCurrentPageObject()->getTitle(), false);
+        $fragment->setVar('title', self::requireCurrentPageObject()->getTitle(), false);
         $fragment->setVar('body', $content, false);
         echo $fragment->parse('core/page/section.php');
+
+        return null;
     }
 
     /**
@@ -458,14 +487,17 @@ class rex_be_controller
      */
     private static function includePath($path, array $context = [])
     {
-        return rex_timer::measure('Page: '.rex_path::relative($path, rex_path::src()), function () use ($path, $context) {
+        return rex_timer::measure('Page: ' . rex_path::relative($path, rex_path::src()), function () use ($path, $context) {
             $pattern = '@' . preg_quote(rex_path::src('addons/'), '@') . '([^/\\\]+)(?:[/\\\]plugins[/\\\]([^/\\\]+))?@';
 
             if (!preg_match($pattern, $path, $matches)) {
                 $__context = $context;
                 $__path = $path;
+
                 unset($context, $path, $pattern, $matches);
+
                 extract($__context, EXTR_SKIP);
+
                 return include $__path;
             }
 

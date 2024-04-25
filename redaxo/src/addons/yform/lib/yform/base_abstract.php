@@ -9,7 +9,7 @@
 
 abstract class rex_yform_base_abstract
 {
-    public $id = null;
+    public $id;
     public $params = [];
     public $obj;
     public $elements;
@@ -20,8 +20,8 @@ abstract class rex_yform_base_abstract
         $this->params = &$params;
         $offset = 0;
         foreach ($elements as $key => $value) {
-            if (is_string($value) && !empty($value) && $value[0] == '#' && false !== strpos($value, ':')) {
-                list($key, $value) = explode(':', substr($value, 1), 2);
+            if (is_string($value) && !empty($value) && '#' == $value[0] && str_contains($value, ':')) {
+                [$key, $value] = explode(':', mb_substr($value, 1), 2);
                 ++$offset;
             }
             $this->setElement(is_numeric($key) ? $key - $offset : $key, $value);
@@ -79,7 +79,7 @@ abstract class rex_yform_base_abstract
 
     public function getParam($param, $default = null)
     {
-        return isset($this->params[$param]) ? $this->params[$param] : $default;
+        return $this->params[$param] ?? $default;
     }
 
     public function setObjects(&$obj)
@@ -92,56 +92,34 @@ abstract class rex_yform_base_abstract
         return $this->obj;
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return '';
     }
 
-    public function getDefinitions()
+    public function getDefinitions(): array
     {
         return [];
     }
 
-    public function preValidateAction()
-    {
-    }
+    public function preValidateAction(): void {}
 
-    public function postValidateAction()
-    {
-    }
+    public function postValidateAction(): void {}
 
-    public function postValueAction()
-    {
-    }
+    public function postValueAction(): void {}
 
-    public function postFormAction()
-    {
-    }
+    public function postFormAction(): void {}
 
-    public function preAction()
-    {
-    }
+    public function preAction(): void {}
 
-    public function executeAction()
-    {
-        return $this->execute();
-    }
+    public function executeAction(): void {}
 
-    public function postAction()
-    {
-    }
+    public function postAction(): void {}
 
-    public function isDeprecated()
+    public function isDeprecated(): bool
     {
         return false;
     }
 
-    /* deprecated */
-    public function execute()
-    {
-    }
-
-    public function init()
-    {
-    }
+    public function init() {}
 }

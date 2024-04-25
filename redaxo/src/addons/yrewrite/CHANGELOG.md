@@ -1,6 +1,116 @@
 Changelog
 =========
 
+Version 2.10.0 – 31.03.2023
+---------------------------
+
+### Neu
+
+* Neue PHP-Mindestversion 8.1 (@gharlan)
+* Eigene Seitentitel werden direkt genutzt, ohne Domain-Titelschema (@bitshiftersgmbh)
+* hreflangs: `x-default` wird gesetzt bei Auto-Sprachweiterleitung (@gharlan)
+* Weiterleitungen: Bei mehreren Matches, wird die Weiterleitung mit den meisten Params genutzt (@gharlan)
+* Weiterleitungen: Params ohne Werte werden unterstützt (`?foo&bar`) (@gharlan)
+* Sitemap: Vorbereitung für Videos (@TobiasKrais)
+* Mimetypes in `.htaccess` aktualisiert (@tyrant88)
+* Meta- und Link-Tags ohne schließenden Slash (@gharlan)
+* Doku-Optimierungen/Erweiterungen (@alxndr-w, @geraldurbas, @madiko, @tyrant88)
+
+### Bugfixes
+
+* `og:url`-Tag korrigiert (@isospin)
+* Weiterleitungsschleife beseitigt bei Aufrufen über `?article_ix=X` mit nicht existenter Artikel-ID (@TobiasKrais)
+* hreflangs wurden nicht korrekt gesetzt bei sprachspezifischen Domains mit gleichem Mountpoint (@marcohanke)
+* SEO-Tags: Auswahl `noindex, follow` wurde nicht korrekt beachtet (@gharlan)
+
+
+Version 2.9.1 – 16.08.2022
+--------------------------
+
+### Bugfixes
+
+* Umleitung bei Frontendaufrufen mit `?article_id=X`-Parameter nicht mehr bei API-Aufrufen und bei POST-Requests, um kompatibler zum Verhalten vor v2.9 zu sein (@gharlan)
+
+
+Version 2.9.0 – 03.08.2022
+--------------------------
+
+### Neu
+
+* SEO-Daten:
+    - Bild kann hinterlegt werden (mit neuem Media-Manager-Effekt `yrewrite_seo_image`) (@TobiasKrais)
+    - Neue Methode `getTags`, die alle Tags gemeinsam liefert (bisherige und zusätzliche bzgl. `og:` und `twitter:`); Anpassungen über EP `YREWRITE_SEO_TAGS` möglich (@tbaddade, @TobiasKrais)
+    - Bisherige Einzelmethoden für die Tags (`getTitleTag` etc.) als deprecated gesetzt (@tbaddade)
+* Weiterleitungen: 
+    - Ziel wird als URL in der Liste angezeigt (@DanielWeitenauer)
+    - Deaktivierungsdatum kann manuell gesetzt/geändert werden, das Datum wird formatiert ausgegeben und es wird der Wert "0000-00-00" vermieden (@gharlan)
+* Bei Frontend-Aufruf über Parameter `?article_id=X&clang=Y` wird auf die Artikel-URL umgeleitet (@gharlan)
+* YRewrite löscht nicht mehr den gesamten REDAXO-Cache, sondern nur den eigenen (@alxndr-w)
+* Hilfe erweitert/optimiert (@alxndr-w, @skerbis, @TobiasKrais, @tbaddade)
+
+### Bugfixes
+
+* Artikel, die als Mountpoint/Startartikel/Fehlerartikel verwendet werden, können nicht mehr gelöscht werden (@TobiasKrais)
+* Weiterleitungen mit URL-kodierten Zeichen wie `%20` funktionierten nicht (@gharlan)
+* Artikel-Weiterleitung auf sich selbst wird verhindert (@gharlan)
+* SEO-Daten: Default-Werte wurden teils nicht richtig berücksichtigt (@gharlan)
+* Fehler, wenn der Client keinen `Host`-Header sendet, beseitigt (@gharlan)
+* Warning in Sitemap beseitigt (@tyrant88)
+
+
+Version 2.8.3 – 15.12.2021
+--------------------------
+
+### Bugfixes
+
+* Im Release fehlte die `.htaccess`-Datei (@gharlan)
+
+
+Version 2.8.2 – 07.12.2021
+--------------------------
+
+### Bugfixes
+
+* Notice im path_resolver wird vermieden (@gharlan)
+
+
+Version 2.8.1 – 06.12.2021
+--------------------------
+
+### Bugfixes
+
+* Update/Installation schlug fehl wegen eines Unique-Keys auf eine TEXT-Spalte (@gharlan)
+
+
+Version 2.8 – 05.12.2021
+--------------------------
+
+### Neu
+
+- Installation unter PHP 8 und mit yform 4 ermöglicht (@alxndr-w, @TobiasKrais)
+- Neue REX_VAR: `REX_YREWRITE_DOMAIN` (@dergel)
+- Eigene URLs können Anker (`#foo`) enthalten (@tbaddade)
+- Artikel-spezifische Weiterleitungen: Original-URL ist aufrufbar und wird umgeleitet (@gharlan)
+- Weiterleitungen funktionieren nun ohne Berücksichtigung von Groß-/Kleinschreibung (@gharlan)
+- Weiterleitungen: URL/Ziel-URL können mehr als 191 Zeichen enthalten (@tbaddade)
+- Weiterleitungen werden standardmäßig absteigend nach Erstellung sortiert (@alxndr-w)
+- Unique-Keys auf Datenbankebene (@alxndr-w, @tbaddade)
+- Medien über Media Manager nutzen den Addonspezifischen Media-Type `yrewrite_default` (@gharlan)
+- Mime-Type für `.wasm`-Extension ergänzt (@novinet-markusd)
+- Setup-Page: Vorschaulinks öffnen in neuem Tab (@frood)
+- Texte/Readme optimiert (@skerbis, @tbaddade, @alxndr-w, @dergel)
+- Schwedische Übersetzung (@interweave-media)
+
+### Bugfixes
+
+* Anpassungen für neuere yform-Versionen (@marcohanke, @alxndr-w, @tbaddade)
+* Domainänderungen wirkten sich wegen Opcache teils verzögert aus (@gharlan)
+* Weiterleitungen konnten keine Umlaute enthalten (@gharlan)
+* Offline-Sprachen werden bei automatischer Sprachumleitung und beim 404-Artikel nicht mehr berücksichtigt (@TobiasKrais)
+* Es entstanden teils Redirects mit ungültiger URL (fehlender Slash zwischendrin) (@TobiasKrais, @gharlan)
+* `rex_yrewrite::getFullPath` hat im Backend eine ungültige URL geliefert (@gharlan)
+
+
 Version 2.7 – 18.09.2020
 --------------------------
 
@@ -204,4 +314,3 @@ Version 2.0.0 – 02.02.2016
 - Fürs Verständnis aus "undefined" -> "default" gemacht.
 - Standard-URL-Schema geändert .. aus .html -> /
 - Canonical Urls ergänzt
-

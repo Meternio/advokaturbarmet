@@ -10,33 +10,33 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @internal
  */
-class rex_command_config_set extends rex_console_command
+class rex_command_config_set extends rex_console_command implements rex_command_standalone
 {
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDescription('Set config variables')
             ->addArgument('config-key', InputArgument::REQUIRED, 'config path separated by periods, e.g. "setup" or "db.1.host"')
             ->addArgument('value', InputArgument::OPTIONAL, 'new value for config key, e.g. "somestring" or "1"')
-            ->addOption('type', 't', InputOption::VALUE_REQUIRED, 'php type of new value, e.g. "bool" or "int"', 'string')
+            ->addOption('type', 't', InputOption::VALUE_REQUIRED, 'php type of new value, e.g. "bool", "octal" or "int"', 'string')
             ->addOption('unset', null, InputOption::VALUE_NONE, 'sets the config key to null')
             ->setHelp(<<<'EOF'
-Set config variables in config.yml.
+                Set config variables in config.yml.
 
-Example: enable setup
-  <info>%command.full_name% --type boolean setup true</info>
+                Example: enable setup
+                  <info>%command.full_name% --type boolean setup true</info>
 
-Example: set password min length to 8
-  <info>%command.full_name% --type integer password_policy.length.min 8</info>
+                Example: set password min length to 8
+                  <info>%command.full_name% --type integer password_policy.length.min 8</info>
 
-Example: set error email
-  <info>%command.full_name% error_email mail@example.org</info>
+                Example: set error email
+                  <info>%command.full_name% error_email mail@example.org</info>
 
-EOF
+                EOF
             )
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = $this->getStyle($input, $output);
 
@@ -54,6 +54,10 @@ EOF
         } elseif ('bool' === $type || 'boolean' === $type) {
             $value = in_array($value, ['true', 'on', '1'], true) ? true : $value;
             $value = in_array($value, ['false', 'off', '0'], true) ? false : $value;
+        } elseif ('octal' === $type) {
+            // turns e.g. 755 into 0755
+            // a leading zero marks a octal-string
+            $value = '0' . $value;
         } else {
             $value = rex_type::cast($value, $type);
         }

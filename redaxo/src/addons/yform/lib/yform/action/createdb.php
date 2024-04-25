@@ -9,7 +9,7 @@
 
 class rex_yform_action_createdb extends rex_yform_action_abstract
 {
-    public function executeAction()
+    public function executeAction(): void
     {
         $table_name = $this->getElement(2);
         $table_exists = false;
@@ -26,6 +26,7 @@ class rex_yform_action_createdb extends rex_yform_action_abstract
             rex_sql::factory()->setQuery('CREATE TABLE `' . $table_name . '` (`id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
         }
 
+        $cols = [];
         foreach (rex_sql::factory()->getArray('show columns from ' . $table_name) as $k => $v) {
             $cols[] = $v['Field'];
         }
@@ -37,12 +38,12 @@ class rex_yform_action_createdb extends rex_yform_action_abstract
         }
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'action|createdb|tablename';
     }
 
-    public function isDeprecated()
+    public function isDeprecated(): bool
     {
         return true;
     }

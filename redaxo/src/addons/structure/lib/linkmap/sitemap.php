@@ -7,22 +7,19 @@
  */
 class rex_sitemap_category_tree extends rex_linkmap_tree_renderer
 {
-    private $context;
+    public function __construct(
+        private rex_context $context,
+    ) {}
 
-    public function __construct(rex_context $context)
-    {
-        $this->context = $context;
-    }
-
-    public function getTree($category_id)
+    public function getTree($categoryId)
     {
         // if not, let the structure as is, by providing a remembered id
-        if ($category_id <= 0) {
-            $category_id = rex_request::session('tree_category_id', 'int');
+        if ($categoryId <= 0) {
+            $categoryId = rex_request::session('tree_category_id', 'int');
         } else {
-            rex_request::setSession('tree_category_id', $category_id);
+            rex_request::setSession('tree_category_id', $categoryId);
         }
-        return parent::getTree($category_id);
+        return parent::getTree($categoryId);
     }
 
     /**
@@ -45,7 +42,7 @@ class rex_sitemap_category_tree extends rex_linkmap_tree_renderer
         $li = '';
         $li .= '<li' . $liClasses . ' data-cat-id="' . $cat->getId() . '" data-parent-id="' . $cat->getParentId() . '" data-priority="' . $cat->getPriority() . '">';
         $li .= '<a' . $linkClasses . ' href="' . $this->context->getUrl(['toggle_category_id' => $cat->getId()] + rex_api_sitemap_tree::getUrlParams()) . '">&nbsp;</a>';
-        $li .= '<a href="' . $this->context->getUrl(['category_id' => $cat->getId()]) . '">' . rex_escape($label) . '<span class="list-item-suffix">'.$cat->getId().'</span></a>';
+        $li .= '<a href="' . $this->context->getUrl(['category_id' => $cat->getId()]) . '">' . rex_escape($label) . '<span class="list-item-suffix">' . $cat->getId() . '</span></a>';
         $li .= $subHtml;
         $li .= '</li>';
 

@@ -47,11 +47,11 @@ yform_values_fieldset_description =				A fieldset groups form elements
 yform_values_float_description =				A simple input field for <b>floating-point numbers</b>.
 yform_values_generate_key_description =			An invisible field with which a <b>random 32 character key containing letters and numbers</b> can be stored, when a record is added or saved.
 yform_values_hashvalue_description =			A field which generates a <b>hash value</b> out of a value of another field..
+yform_values_hashvalue_deprecated =             Please use the <b>index</b> field instead.
 yform_values_html_description =					Outputs raw <b>HTML code</b> at a specified location in the form.
 yform_values_index_description =				A field that creates an <b>index / key</b> across multiple fields.
 yform_values_integer_description =				A simple input field for <b>whole numbers</b>.
 yform_values_number_description =               An input field for <b>exact numeric data values with or without decimal places (DECIMAL)</b>
-yform_values_mediafile_description =			A <b>file upload field</b> to upload a single file into the mediapool.
 yform_values_php_description =					Executes <b>PHP code</b> at a specific location in the form.
 yform_values_radio_description =				One or more <b>radio buttons</b>.
 yform_values_select_description =				A <b>select field</b> containing predefined options.
@@ -87,7 +87,6 @@ yform_search_number_notice = Examples: >5 / !=5 / 3-5 / 2..5 / !(empty) / (empty
 yform_search_defaults_select_notice = Please use CTRL or COMMAND to select more options
 
 yform_values_checkbox_values = Values (0,1 = unchecked, checked)
-yform_values_checkbox_values = Values (0,1 = unchecked, checked)
 yform_values_checkbox_default = Default status
 yform_values_checkbox_sql_query = Query with "SELECT id, name FROM ..."
 yform_values_date_year_start = Year start
@@ -102,6 +101,7 @@ yform_values_datetime_year_end = Year end
 yform_values_datetime_minutes = Minutes format
 yform_values_datetime_format = Display format
 yform_values_datetime_current_date = Preset current date/time
+yform_values_format_show_notice = This setting will only effect the output in the list-overview and an non editable view
 yform_values_email_default = Default status
 yform_values_email_classname = Class name
 yform_values_float_scale = Decimal place
@@ -116,14 +116,9 @@ yform_values_index_names_notice = Comma separated. Fields from related tables po
 yform_values_index_function = Optional coding function
 yform_values_index_function_notice = Example: md5, sha1
 yform_values_index_add_this_param = Pass field object as 2nd parameter to the function?
+yform_values_index_salt = Salt
 yform_values_integer_default = Default value
 yform_values_number_default = Default value
-yform_values_mediafile_max_size = Maximum size in kilobytes or a range, ex.: 100, 500
-yform_values_mediafile_types = Allowed file types, comma separated list. Ex. ".gif, .png"
-yform_values_mediafile_required = Required field
-yform_values_mediafile_messages = min_err,max_err,type_err,empty_err
-yform_values_mediafile_category = Media category ID
-yform_values_mediafile_user = Mediapool User (createuser/updateuser)
 yform_values_php_code = PHP code
 yform_values_radio_options = Radio buttons definition, comma separated.
 yform_values_radio_default = Default value
@@ -245,7 +240,7 @@ yform_values_status_output_values_notice = 2 comma separated values. Ex. offline
 
 yform_values_message_is_missing = [Warningmessage for field `{1}` is missing]
 
-yform_validate_object_is_missing = Object `{1}` for validation `{1}` is missing
+yform_validate_object_is_missing = Object `{1}` for validation `{0}` is missing
 
 yform_values_deprecated_checkbox_sql = Deprecated! Use choice field instead
 yform_values_deprecated_radio = Deprecated! Use choice field instead
@@ -262,7 +257,7 @@ yform_values_number_error_precision = Please enter a number between {0} and {1} 
 yform_values_number_error_scale = Please enter a number between {0} and {1} for the number of decimal places (SCALE)
 yform_values_number_error_compare = The number of decimal places must be lower than the number of digits
 
-
+yform_docs = Documentation
 yform_docs_intro = Intro
 yform_docs_table_manager = Manager
 yform_docs_formbuilder = Form builder

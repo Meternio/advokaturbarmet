@@ -13,12 +13,8 @@ class rex_yform_value_text extends rex_yform_value_abstract
     {
         $this->setValue((string) $this->getValue());
 
-        if ($this->getValue() == '' && !$this->params['send']) {
+        if ('' == $this->getValue() && !$this->params['send']) {
             $this->setValue($this->getElement('default'));
-        }
-
-        if ($this->needsOutput()) {
-            $this->params['form_output'][$this->getId()] = $this->parse('value.text.tpl.php', ['prepend' => $this->getElement('prepend'), 'append' => $this->getElement('append')]);
         }
 
         $this->params['value_pool']['email'][$this->getName()] = $this->getValue();
@@ -26,14 +22,29 @@ class rex_yform_value_text extends rex_yform_value_abstract
         if ($this->saveInDb()) {
             $this->params['value_pool']['sql'][$this->getName()] = $this->getValue();
         }
+
+        if (!$this->needsOutput() || !$this->isViewable()) {
+        }
+
+        $templateParams = [];
+        $templateParams['prepend'] = $this->getElement('prepend');
+        $templateParams['append'] = $this->getElement('append');
+        if (!$this->isEditable()) {
+            $attributes = empty($this->getElement('attributes')) ? [] : json_decode($this->getElement('attributes'), true);
+            $attributes['readonly'] = 'readonly';
+            $this->setElement('attributes', json_encode($attributes));
+            $this->params['form_output'][$this->getId()] = $this->parse(['value.text-view.tpl.php', 'value.view.tpl.php', 'value.text.tpl.php'], $templateParams);
+        } else {
+            $this->params['form_output'][$this->getId()] = $this->parse('value.text.tpl.php', $templateParams);
+        }
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'text|name|label|defaultwert|[no_db]|[attributes]|[notice]|[prepend]|[append]';
     }
 
-    public function getDefinitions()
+    public function getDefinitions(): array
     {
         return [
             'type' => 'value',
@@ -52,7 +63,7 @@ class rex_yform_value_text extends rex_yform_value_abstract
             'db_type' => ['varchar(191)', 'text'],
             'famous' => true,
             'hooks' => [
-                'preDefault' => function (rex_yform_manager_field $field) {
+                'preDefault' => static function (rex_yform_manager_field $field) {
                     return $field->getElement('default');
                 },
             ],
@@ -66,34 +77,51 @@ class rex_yform_value_text extends rex_yform_value_abstract
 
     public static function getSearchFilter($params)
     {
-        $sql = rex_sql::factory();
-        $value = $params['value'];
-        $field = $params['field']->getName();
+        $value = trim($params['value']);
+        /** @var rex_yform_manager_query $query */
+        $query = $params['query'];
+        $field = $query->getTableAlias() . '.' . $params['field']->getName();
 
-        if ($value == '(empty)') {
-            return ' (' . $sql->escapeIdentifier($field) . ' = "" or ' . $sql->escapeIdentifier($field) . ' IS NULL) ';
+        if ('(empty)' == $value) {
+            return $query->whereNested(static function (rex_yform_manager_query $query) use ($field) {
+                $query
+                    ->where($field, '')
+                    ->where($field, null)
+                ;
+            }, 'OR');
         }
-        if ($value == '!(empty)') {
-            return ' (' . $sql->escapeIdentifier($field) . ' <> "" and ' . $sql->escapeIdentifier($field) . ' IS NOT NULL) ';
+        if ('!(empty)' == $value) {
+            return $query->whereNested(static function (rex_yform_manager_query $query) use ($field) {
+                $query
+                    ->where($field, '', '<>')
+                    ->where($field, null, '<>')
+                ;
+            }, 'OR');
+        }
+
+        $invertWhere = false;
+        if ('!' === substr($value, 0, 1)) {
+            $invertWhere = true;
+            $value = substr($value, 1);
         }
 
         $pos = strpos($value, '*');
-        if ($pos !== false) {
+        if (false !== $pos) {
             $value = str_replace('%', '\%', $value);
             $value = str_replace('*', '%', $value);
-            return $sql->escapeIdentifier($field) . ' LIKE ' . $sql->escape($value);
+            return $query->where($field, $value, $invertWhere ? 'NOT LIKE' : 'LIKE');
         }
-        return $sql->escapeIdentifier($field) . ' = ' . $sql->escape($value);
+
+        return $query->where($field, $value, $invertWhere ? '<>' : '=');
     }
 
     public static function getListValue($params)
     {
-        $value = $params['subject'];
-        $length = strlen($value);
-        $title = $value;
-        if ($length > 40) {
-            $value = mb_substr($value, 0, 20).' ... '.mb_substr($value, -20);
+        $value = (string) $params['subject'];
+        $length = mb_strlen($value);
+        if ($length > 100) {
+            $value = mb_substr($value, 0, 50) . ' ... ' . mb_substr($value, -50);
         }
-        return '<span title="'.rex_escape($title).'">'.rex_escape($value).'</span>';
+        return '<span>' . rex_escape($value) . '</span>';
     }
 }

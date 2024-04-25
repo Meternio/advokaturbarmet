@@ -6,19 +6,23 @@
 abstract class rex_form_options_element extends rex_form_element
 {
     /** @var array<string, string|int> */
-    private $options;
+    private array $options = [];
 
     // 1. Parameter nicht genutzt, muss aber hier stehen,
     // wg einheitlicher Konstrukturparameter
-    public function __construct($tag = '', rex_form_base $table = null, array $attributes = [])
+    /**
+     * @param string $tag
+     * @param array<string, int|string> $attributes
+     */
+    public function __construct($tag = '', ?rex_form_base $form = null, array $attributes = [])
     {
-        parent::__construct($tag, $table, $attributes);
-        $this->options = [];
+        parent::__construct($tag, $form, $attributes);
     }
 
     /**
-     * @param string     $name
+     * @param string $name
      * @param string|int $value
+     * @return void
      */
     public function addOption($name, $value)
     {
@@ -27,29 +31,29 @@ abstract class rex_form_options_element extends rex_form_element
 
     /**
      * @param array<string|array{0: string, 1?: string|int}> $options
-     * @param bool                                           $useOnlyValues
+     * @param bool $useOnlyValues
+     * @return void
      */
     public function addOptions(array $options, $useOnlyValues = false)
     {
-        if (count($options) > 0) {
-            foreach ($options as $key => $option) {
-                $option = (array) $option;
-                if ($useOnlyValues) {
-                    $this->addOption($option[0], $option[0]);
-                } else {
-                    if (!isset($option[1])) {
-                        $option[1] = $key;
-                    }
-
-                    $this->addOption($option[0], $option[1]);
+        foreach ($options as $key => $option) {
+            $option = (array) $option;
+            if ($useOnlyValues) {
+                $this->addOption($option[0], $option[0]);
+            } else {
+                if (!isset($option[1])) {
+                    $option[1] = $key;
                 }
+
+                $this->addOption($option[0], $option[1]);
             }
         }
     }
 
     /**
-     * @param string[] $options
-     * @param bool     $useKeys
+     * @param array<string> $options
+     * @param bool $useKeys
+     * @return void
      */
     public function addArrayOptions(array $options, $useKeys = true)
     {
@@ -63,21 +67,23 @@ abstract class rex_form_options_element extends rex_form_element
     }
 
     /**
-     * @param string $qry
+     * @param string $query
+     * @return void
      */
-    public function addSqlOptions($qry)
+    public function addSqlOptions($query)
     {
         $sql = rex_sql::factory();
-        $this->addOptions($sql->getArray($qry, [], PDO::FETCH_NUM));
+        $this->addOptions($sql->getArray($query, [], PDO::FETCH_NUM));
     }
 
     /**
-     * @param string $qry
+     * @param string $query
+     * @return void
      */
-    public function addDBSqlOptions($qry)
+    public function addDBSqlOptions($query)
     {
         $sql = rex_sql::factory();
-        $this->addOptions($sql->getDBArray($qry, [], PDO::FETCH_NUM));
+        $this->addOptions($sql->getDBArray($query, [], PDO::FETCH_NUM));
     }
 
     /**

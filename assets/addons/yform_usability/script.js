@@ -1,31 +1,74 @@
-(function ($) {
+var YformUsability = (function ($) {
+    'use strict';
 
     $(document).on('rex:ready', function (event, container) {
-        initList(event, container);
+        initSort(container);
+        initSearch();
+        initStatusToggle(container);
+        initSelect2();
+        initSettings();
     });
 
-    function initList(event, container) {
-
-        function updateStatus($this, status, callback) {
-            $('#rex-js-ajax-loader').addClass('rex-visible');
-
-            $.post(rex.frontend_url + '?rex-api-call=yform_usability_api&method=changeStatus', {
-                data_id: $this.data('id'),
-                table: $this.data('table'),
-                status: status
-            }, function (resp) {
-                callback(resp);
-                $('#rex-js-ajax-loader').removeClass('rex-visible');
+    function initSelect2() {
+        if ($().select2) {
+            window.setTimeout(function() {
+                $('#rex-page-yform-manager-table-field select').each(function() {
+                    if ($(this).children('option').length > 6) {
+                        $(this).select2();
+                    }
+                });
+                $('#rex-page-yform-manager-usability select').select2();
+            }, 500);
+        }else{
+            // not select2 -> listen for yfu-term enter event
+            $('#yform_usability-search').find('[name=yfu-term]').on("keypress", function(event) {
+                if (event.key === "Enter") {
+                    $(this).closest('form').submit();
+                }
             });
         }
+    }
 
+    function initSettings() {
+        var $container = $('#rex-page-yform-manager-usability');
+
+        if ($container.length) {
+            window.setTimeout(function () {
+                $container.find('[data-toggle-wrapper] input[type=checkbox]').change(function () {
+                    var $wrapper = $(this).parents('[data-toggle-wrapper]'),
+                        $select = $wrapper.find('.rex-form-group:eq(1)');
+
+                    if ($(this).is(':checked')) {
+                        $select.addClass('hide');
+                    } else {
+                        $select.removeClass('hide');
+                    }
+                }).trigger('change');
+            }, 500);
+        }
+    }
+
+    function updateDatasetStatus($this, status, url, callback) {
+        $('#rex-js-ajax-loader').addClass('rex-visible');
+        $.post(url, {
+            data_id: $this.data('id'),
+            table: $this.data('table'),
+            status: status
+        }, function (resp) {
+            callback(resp);
+            $('#rex-js-ajax-loader').removeClass('rex-visible');
+        });
+    }
+
+    function initStatusToggle(container) {
         // status toggle
         if (container.find('.status-toggle').length) {
             var statusToggle = function () {
-                var _this = $(this);
+                var $this = $(this);
+                var url = container.find('.status-toggle').data('api-url');
 
-                updateStatus(_this, _this.data('status'), function (resp) {
-                    var $parent = _this.parent();
+                updateDatasetStatus($this, $this.data('status'), url, function (resp) {
+                    var $parent = $this.parent();
                     $parent.html(resp.message.element);
                     $parent.children('a:first').click(statusToggle);
                 });
@@ -33,89 +76,86 @@
             };
             container.find('.status-toggle').click(statusToggle);
         }
+
+
         // status select
         if (container.find('.status-select').length) {
             var statusChange = function () {
-                var _this = $(this);
+                var $this = $(this);
+                var url = container.find('.status-select').data('api-url');
 
-                updateStatus(_this, _this.val(), function (resp) {
-                    var $parent = _this.parent();
+                updateDatasetStatus($this, $this.val(), url, function (resp) {
+                    var $parent = $this.parent();
                     $parent.html(resp.message.element);
                     $parent.children('select:first').change(statusChange);
                 });
             };
             container.find('.status-select').change(statusChange);
         }
+    }
 
-
+    function initSort(container) {
         if (container.find('.sortable-list').length) {
             var $this = container.find('.sortable-list');
 
             $this.find('.sort-icon').parent().addClass('sort-handle');
 
-            $this.find('tbody').sortable({
-                animation: 150,
+            Sortable.create($this.find('tbody').get(0), {
+                group: false,
                 handle: '.sort-handle',
-                update: function (e, ui) {
-                    var $sort_icon = $(ui.item).find('.sort-icon'),
-                        $next = $(ui.item).next(),
-                        id = 0,
-                        prio_td_index = -1,
-                        lowest_prio = -1;
+                direction: 'vertical',
+                onUpdate: function (evt) {
+                    var $sortIcon = $(evt.item).find('.sort-icon'),
+                        $next = $(evt.from).children(':eq(' + (evt.newIndex + 1) + ')'),
+                        nextId = $next.length ? $next.find('.sort-icon').data('id') : 0;
 
-                    // find index of prio th
-                    $this.find('thead').find('th').each(function (idx, el) {
-                        var $a = $(el).find('a'),
-                            href = '';
-                        if (!$a.length) {
-                            return true; // no link, continue
-                        }
-                        href = $a.attr('href');
-                        if (href.indexOf('func=add') !== -1) {
-                            return true; // add link, continue
-                        }
-                        if (href.indexOf('sort=prio') !== -1) {
-                            prio_td_index = idx;
-                            return false; // found prio th, store index and break
-                        }
-                    });
-                    // find lowest prio
-                    if (prio_td_index > -1) {
-                        $this.find('tbody').find('tr').find('td:eq(' + prio_td_index + ')').each(function (idx, el) {
-                            var prio = parseInt($(el).text());
-                            if (lowest_prio < 0 || prio < lowest_prio) {
-                                lowest_prio = prio;
-                            }
-                        });
-                    }
-                    // set new prio
-                    if (lowest_prio > -1) {
-                        $this.find('tbody').find('tr').find('td:eq(' + prio_td_index + ')').each(function (idx, el) {
-                            $(el).text(lowest_prio + idx);
-                        });
-                    }
+                    var url = $sortIcon.data('url');
 
                     $('#rex-js-ajax-loader').addClass('rex-visible');
 
-                    if ($next.length) {
-                        id = $next.find('.sort-icon').data('id');
-                    }
-                    $.post(rex.frontend_url + '?rex-api-call=yform_usability_api&method=updateSort', {
-                        data_id: $sort_icon.data('id'),
-                        filter: $sort_icon.data('filter'),
-                        table: $sort_icon.data('table'),
-                        table_type: $sort_icon.data('table-type'),
-                        table_sort_order: $sort_icon.data('table-sort-order') || null,
-                        table_sort_field: $sort_icon.data('table-sort-field') || null,
-                        next_id: id
+                    $.post(url, {
+                        data_id: $sortIcon.data('id'),
+                        filter: $sortIcon.data('filter'),
+                        table: $sortIcon.data('table'),
+                        table_type: $sortIcon.data('table-type'),
+                        table_sort_order: $sortIcon.data('table-sort-order') || null,
+                        table_sort_field: $sortIcon.data('table-sort-field') || null,
+                        next_id: nextId
                     }).done(function (data) {
                         $('#rex-js-ajax-loader').removeClass('rex-visible');
-                        if (window.console) {
-                            console.log(data);
-                        }
                     });
                 }
             });
         }
     }
+
+    function initSearch() {
+        var $form = $('#yform_usability-search');
+
+        $form.on('submit', function (evt) {
+            $.pjax.submit(evt, {
+                push: true,
+                fragment: '#rex-js-page-main',
+                container: '#rex-js-page-main'
+            });
+            $(document).on('pjax:end', function () {
+                $('#yform_usability-search').find('[name=yfu-term]').focus();
+            });
+            return false;
+        });
+    }
+
+    return {
+        doYformSearch: function (_this, event) {
+            if ($('#yform_usability-search').find('[name=yfu-term]').val() != '') {
+                $('#yform_usability-search').submit();
+            }
+        },
+
+        resetYformSearch: function (_this) {
+            var $form = $(_this).parents('form');
+            $form.find('[name=yfu-term]').val('');
+            $form.submit();
+        }
+    };
 })(jQuery);

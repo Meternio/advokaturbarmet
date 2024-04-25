@@ -1,6 +1,8 @@
 # Suche über URLs aus dem URL Addon (>= Version 2.0)
 
-Dieses Suchergebnis-Modul gibt Suchergebnisse aus dem URL Addon 2.0 oder größer aus. Um URLs aus dem URL Addon zu indexieren muss in den Einstellungen die Indexierung der URLs aus dem URL Addon aktiviert sein.
+Dieses Suchergebnis-Modul gibt Suchergebnisse aus dem URL Addon 2.0 oder größer
+aus. Um URLs aus dem URL Addon zu indexieren muss in den Einstellungen die
+Indexierung der URLs aus dem URL Addon aktiviert sein.
 
 ## Modulausgabe
 
@@ -26,7 +28,7 @@ if($request) { // Wenn ein Suchbegriff eingegeben wurde
 				// url hits
 				$url_sql = rex_sql::factory();
 				$url_sql->setTable(search_it_getUrlAddOnTableName());
-				$url_sql->setWhere("url_hash = '". $hit['fid'] ."'");
+				$url_sql->setWhere(['url_hash' => $hit['fid']]);
 				if ($url_sql->select('article_id, clang_id, profile_id, data_id, seo')) {
 					if($url_sql->getRows() > 0) {
 						$url_info = json_decode($url_sql->getValue('seo'), true);
@@ -65,7 +67,8 @@ if($request) { // Wenn ein Suchbegriff eingegeben wurde
 
 ## CSS
 
-Das Sucheingabe-Formular kann beliebig formatiert und mit Klassen ausgezeichnet werden. Das nachfolgende CSS formatiert das oben vorgegebene Beispiel.
+Das Sucheingabe-Formular kann beliebig formatiert und mit Klassen ausgezeichnet
+werden. Das nachfolgende CSS formatiert das oben vorgegebene Beispiel.
 
 ```css
 <style>

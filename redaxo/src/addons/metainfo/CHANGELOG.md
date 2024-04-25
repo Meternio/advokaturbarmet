@@ -1,6 +1,87 @@
 Changelog
 =========
 
+Version 2.11.0 – 12.03.2024
+---------------------------
+
+### Bugfixes
+
+* Metainfo-Sidebar: Beim Status-Wechsel-Link wurde die aktuelle Sprache nicht mitgegeben (@gharlan)
+* Nach DB-Import wurde die Cleanup-Routine nicht korrekt ausgeführt (@gharlan)
+
+
+Version 2.10.1 – 09.02.2024
+---------------------------
+
+### Bugfixes
+
+* Löschen von Medien: Verwendungsprüfung und Verlinkung korrigiert (@TobiasKrais)
+
+
+Version 2.9.1 – 20.02.2023
+--------------------------
+
+### Bugfixes
+
+* Bei Feldnotizen (`note="..."`) wurde der `translate:`-Präfix nicht berücksichtigt (@gharlan)
+
+
+Version 2.9.0 – 25.07.2022
+--------------------------
+
+### Neu
+
+* Es können Notizen/Hinweise zu Feldern hinzugefügt werden (@gharlan)
+
+
+Version 2.8.5 – 03.05.2022
+--------------------------
+
+### Bugfixes
+
+* Prepared Statements nutzen (@staabm)
+
+
+Version 2.8.4 – 10.01.2022
+--------------------------
+
+### Bugfixes
+
+* Bei Datumsfeldern funktionierte die Checkbox mit PHP 8 nicht mehr (@gharlan)
+
+
+Version 2.8.3 – 29.11.2021
+--------------------------
+
+### Bugfixes
+
+* Klickfläche für den Hinzufügen-Link vergrößert (@schuer)
+
+
+Version 2.8.2 – 17.11.2021
+--------------------------
+
+### Bugfixes
+
+* Metainfos wurden teils doppelt gespeichert, teils erneut nach den entsprechenden `*_UPDATED` EPs (@gharlan)
+
+
+Version 2.8.1 – 21.06.2021
+--------------------------
+
+### Bugfixes
+
+* Media(list)- und Link(list)-Widgets hatten teils gleiche IDs wie entsprechende Widgets in den Slices, wodurch es zu Konflikten kam (@gharlan)
+
+
+Version 2.8.0 – 03.03.2021
+--------------------------
+
+### Neu
+
+* Die CSS-Datei wird nur noch auf der Content-Page eingebunden, da sie nur dort benötigt wird (@aeberhard)
+
+
 Version 2.7.3 – 25.01.2021
 --------------------------
 
@@ -145,4 +226,3 @@ Version 2.0.1 – 09.02.2016
 ### Bugfixes
 
 * Bei Datumsfeldern war es nicht möglich, den Monat zu ändern (Gort)
-

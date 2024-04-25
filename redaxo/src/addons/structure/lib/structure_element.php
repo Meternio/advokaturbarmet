@@ -5,10 +5,11 @@
  *
  * @package redaxo\structure
  */
+#[AllowDynamicProperties]
 abstract class rex_structure_element
 {
-    use rex_instance_pool_trait;
     use rex_instance_list_pool_trait;
+    use rex_instance_pool_trait;
 
     /** @var int */
     protected $id = 0;
@@ -27,6 +28,8 @@ abstract class rex_structure_element
 
     /** @var int */
     protected $template_id = 0;
+
+    /** @var string */
     protected $path = '';
 
     /** @var int */
@@ -53,11 +56,9 @@ abstract class rex_structure_element
     /** @var string */
     protected $createuser = '';
 
+    /** @var list<string>|null */
     protected static $classVars;
 
-    /**
-     * Constructor.
-     */
     protected function __construct(array $params)
     {
         foreach (self::getClassVars() as $var) {
@@ -121,7 +122,7 @@ abstract class rex_structure_element
     /**
      * Returns an Array containing article field names.
      *
-     * @return string[]
+     * @return list<string>
      */
     public static function getClassVars()
     {
@@ -132,10 +133,10 @@ abstract class rex_structure_element
             $file = rex_path::addonCache('structure', $startId . '.1.article');
             if (!rex::isBackend() && is_file($file)) {
                 // da getClassVars() eine statische Methode ist, können wir hier nicht mit $this->getId() arbeiten!
-                $genVars = rex_file::getCache($file);
+                $genVars = rex_file::getCache($file, []);
                 unset($genVars['last_update_stamp']);
                 foreach ($genVars as $name => $value) {
-                    self::$classVars[] = $name;
+                    self::$classVars[] = (string) $name;
                 }
             } else {
                 // Im Backend die Spalten aus der DB auslesen / via EP holen
@@ -150,6 +151,9 @@ abstract class rex_structure_element
         return self::$classVars;
     }
 
+    /**
+     * @return void
+     */
     public static function resetClassVars()
     {
         self::$classVars = null;
@@ -159,7 +163,7 @@ abstract class rex_structure_element
      * Return an rex_structure_element object based on an id.
      * The instance will be cached in an instance-pool and therefore re-used by a later call.
      *
-     * @param int $id    the article id
+     * @param int $id the article id
      * @param int $clang the clang id
      *
      * @return static|null A rex_structure_element instance typed to the late-static binding type of the caller
@@ -178,15 +182,15 @@ abstract class rex_structure_element
 
         $class = static::class;
         return static::getInstance([$id, $clang], static function ($id, $clang) use ($class) {
-            $article_path = rex_path::addonCache('structure', $id . '.' . $clang . '.article');
+            $articlePath = rex_path::addonCache('structure', $id . '.' . $clang . '.article');
 
             // load metadata from cache
-            $metadata = rex_file::getCache($article_path);
+            $metadata = rex_file::getCache($articlePath);
 
             // generate cache if not exists
             if (!$metadata) {
                 rex_article_cache::generateMeta($id, $clang);
-                $metadata = rex_file::getCache($article_path);
+                $metadata = rex_file::getCache($articlePath);
             }
 
             // if cache does not exist after generation, the article id is invalid
@@ -204,12 +208,12 @@ abstract class rex_structure_element
     }
 
     /**
-     * @param int    $parentId
+     * @param int $parentId
      * @param string $listType
-     * @param bool   $ignoreOfflines
-     * @param int    $clang
+     * @param bool $ignoreOfflines
+     * @param int $clang
      *
-     * @return static[]
+     * @return list<static>
      */
     protected static function getChildElements($parentId, $listType, $ignoreOfflines = false, $clang = null)
     {
@@ -243,7 +247,7 @@ abstract class rex_structure_element
                     $list = rex_file::getCache($listFile);
                 }
                 return $list;
-            }
+            },
         );
     }
 
@@ -311,7 +315,7 @@ abstract class rex_structure_element
     /**
      * Returns the path ids of the category/article as an array.
      *
-     * @return int[]
+     * @return list<int>
      */
     public function getPathAsArray()
     {
@@ -426,10 +430,10 @@ abstract class rex_structure_element
     /**
      * Returns a link to this article.
      *
-     * @param array  $params             Parameter für den Link
-     * @param array  $attributes         Attribute die dem Link hinzugefügt werden sollen. Default: array
-     * @param string $sorroundTag        HTML-Tag-Name mit dem der Link umgeben werden soll, z.b. 'li', 'div'. Default: null
-     * @param array  $sorroundAttributes Attribute die Umgebenden-Element hinzugefügt werden sollen. Default: array
+     * @param array $params Parameter für den Link
+     * @param array $attributes Attribute die dem Link hinzugefügt werden sollen. Default: array
+     * @param string $sorroundTag HTML-Tag-Name mit dem der Link umgeben werden soll, z.b. 'li', 'div'. Default: null
+     * @param array $sorroundAttributes Attribute die Umgebenden-Element hinzugefügt werden sollen. Default: array
      *
      * @return string
      */
@@ -452,10 +456,8 @@ abstract class rex_structure_element
     {
         $attr = '';
 
-        if (null !== $attributes && is_array($attributes)) {
-            foreach ($attributes as $name => $value) {
-                $attr .= ' ' . $name . '="' . $value . '"';
-            }
+        foreach ($attributes as $name => $value) {
+            $attr .= ' ' . $name . '="' . $value . '"';
         }
 
         return $attr;
@@ -465,9 +467,7 @@ abstract class rex_structure_element
      * Get an array of all parentCategories.
      * Returns an array of rex_structure_element objects.
      *
-     * @return rex_category[]
-     *
-     * @psalm-return list<rex_category>
+     * @return list<rex_category>
      */
     public function getParentTree()
     {
@@ -480,15 +480,13 @@ abstract class rex_structure_element
                 $explode = explode('|', $this->path);
             }
 
-            if (is_array($explode)) {
-                foreach ($explode as $var) {
-                    if ('' != $var) {
-                        $cat = rex_category::get((int) $var, $this->clang_id);
-                        if (!$cat) {
-                            throw new LogicException('No category found with id='. $var .' and clang='. $this->clang_id .'.');
-                        }
-                        $return[] = $cat;
+            foreach ($explode as $var) {
+                if ('' != $var) {
+                    $cat = rex_category::get((int) $var, $this->clang_id);
+                    if (!$cat) {
+                        throw new LogicException('No category found with id=' . $var . ' and clang=' . $this->clang_id . '.');
                     }
+                    $return[] = $cat;
                 }
             }
         }
@@ -504,18 +502,13 @@ abstract class rex_structure_element
     public function inParentTree(self $anObj)
     {
         $tree = $this->getParentTree();
-        foreach ($tree as $treeObj) {
-            if ($treeObj == $anObj) {
-                return true;
-            }
-        }
-        return false;
+        return in_array($anObj, $tree);
     }
 
     /**
      * Returns the closest element from parent tree (including itself) where the callback returns true.
      *
-     * @psalm-param callable(self):bool $callback
+     * @param callable(self):bool $callback
      */
     public function getClosest(callable $callback): ?self
     {

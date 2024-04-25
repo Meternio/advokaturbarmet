@@ -1,10 +1,12 @@
 <?php
 
-if (!rex::isDebugMode() || 'debug' === rex_get(rex_api_function::REQ_CALL_PARAM)) {
+use Clockwork\Clockwork;
+
+if (!rex_debug_clockwork::isRexDebugEnabled() || 'debug' === rex_get(rex_api_function::REQ_CALL_PARAM)) {
     return;
 }
 
-if (rex::isBackend() && 'debug' === rex_request::get('page') && rex::getUser() && rex::getUser()->isAdmin()) {
+if (rex::isBackend() && 'debug' === rex_request::get('page') && rex::getUser()?->isAdmin()) {
     $index = file_get_contents(rex_addon::get('debug')->getAssetsPath('clockwork/index.html'));
 
     $editor = rex_editor::factory();
@@ -20,31 +22,41 @@ if (rex::isBackend() && 'debug' === rex_request::get('page') && rex::getUser() &
         $realPath = rex_escape(rex_path::base(), 'js');
     }
 
+    // prepend backend folder
+    $apiUrl = dirname($_SERVER['REQUEST_URI']) . '/' . rex_debug_clockwork::getClockworkApiUrl();
+    $appearance = rex::getTheme();
+    if (!$appearance) {
+        $appearance = 'auto';
+    }
+
+    $nonce = rex_response::getNonce();
+
     $injectedScript = <<<EOF
-    <script>
-        let store;
-        try {
-            store = JSON.parse(localStorage.getItem('clockwork'));
-        } catch (e) {
-            store = {};
-        }
+        <script nonce="$nonce">
+            let store;
+            try {
+                store = JSON.parse(localStorage.getItem('clockwork'));
+            } catch (e) {
+                store = {};
+            }
 
-        if (!store) store = {};
-        if (!store.settings) store.settings = {};
-        if (!store.settings.global) store.settings.global = {};
+            if (!store) store = {};
+            if (!store.settings) store.settings = {};
+            if (!store.settings.global) store.settings.global = {};
 
-        store.settings.global.editor = '$curEditor';
-        store.settings.global.seenReleaseNotesVersion = "4.1";
+            store.settings.global.editor = '$curEditor';
+            store.settings.global.metadataPath = '$apiUrl';
+            store.settings.global.appearance = '$appearance';
 
-        if (!store.settings.site) store.settings.site = {};
+            if (!store.settings.site) store.settings.site = {};
 
-        store.settings.site['$siteKey'] = {localPathMap: {local: "$localPath", real: "$realPath"}};
+            store.settings.site['$siteKey'] = {localPathMap: {local: "$localPath", real: "$realPath"}};
 
-        localStorage.setItem('clockwork', JSON.stringify(store))
-    </script>
-EOF;
+            localStorage.setItem('clockwork', JSON.stringify(store))
+        </script>
+        EOF;
 
-    $index = str_replace('<body>', '<body>'.$injectedScript, $index);
+    $index = str_replace('<body>', '<body>' . $injectedScript, $index);
     rex_response::sendPage($index);
     exit;
 }
@@ -56,19 +68,19 @@ rex_logger::setFactoryClass(rex_logger_debug::class);
 rex_api_function::setFactoryClass(rex_api_function_debug::class);
 
 rex_response::setHeader('X-Clockwork-Id', rex_debug_clockwork::getInstance()->getRequest()->id);
-rex_response::setHeader('X-Clockwork-Version', \Clockwork\Clockwork::VERSION);
+rex_response::setHeader('X-Clockwork-Version', Clockwork::VERSION);
 
 rex_response::setHeader('X-Clockwork-Path', rex_debug_clockwork::getClockworkApiUrl());
 
 $shutdownFn = static function () {
     $clockwork = rex_debug_clockwork::getInstance();
 
-    $clockwork->getTimeline()->endEvent('total');
+    $clockwork->timeline()->finalize($clockwork->getRequest()->time);
 
     foreach (rex_timer::$serverTimings as $label => $timings) {
-        foreach ($timings['timings'] as $i => $timing) {
+        foreach ($timings['timings'] as $timing) {
             if ($timing['end'] - $timing['start'] >= 0.001) {
-                $clockwork->getTimeline()->addEvent($label.'_'.$i, $label, $timing['start'], $timing['end']);
+                $clockwork->timeline()->event($label, ['start' => $timing['start'], 'end' => $timing['end']]);
             }
         }
     }
@@ -76,35 +88,25 @@ $shutdownFn = static function () {
     $req = $clockwork->getRequest();
 
     if (rex::isBackend()) {
-        $req->controller = 'page: '.rex_be_controller::getCurrentPage();
+        $req->controller = 'page: ' . rex_be_controller::getCurrentPage();
     } elseif (rex_plugin::get('structure', 'content')->isAvailable()) {
-        $req->controller = 'article: '.rex_article::getCurrentId().'; clang: '.rex_clang::getCurrent()->getCode();
+        $req->controller = 'article: ' . rex_article::getCurrentId() . '; clang: ' . rex_clang::getCurrent()->getCode();
     }
 
     foreach ($req->databaseQueries as $query) {
-        switch (rex_sql::getQueryType($query['query'])) {
-            case 'SELECT':
-                $req->databaseSelects++;
-                break;
-            case 'INSERT':
-                $req->databaseInserts++;
-                break;
-            case 'UPDATE':
-                $req->databaseUpdates++;
-                break;
-            case 'DELETE':
-                $req->databaseDeletes++;
-                break;
-            default:
-                $req->databaseOthers++;
-                break;
-        }
+        match (rex_sql::getQueryType($query['query'])) {
+            'SELECT' => $req->databaseSelects++,
+            'INSERT' => $req->databaseInserts++,
+            'UPDATE' => $req->databaseUpdates++,
+            'DELETE' => $req->databaseDeletes++,
+            default => $req->databaseOthers++,
+        };
         if ($query['duration'] > 20) {
             ++$req->databaseSlowQueries;
         }
     }
 
-    $ep = $clockwork->userData('ep');
+    $ep = $clockwork->getRequest()->userData('ep');
     $ep->title('Extension Point');
     $ep->counters([
         'Extension Points' => count(rex_extension_debug::getExtensionPoints()),
@@ -115,13 +117,13 @@ $shutdownFn = static function () {
     $ep->table('Registered Extensions', rex_extension_debug::getExtensions());
 };
 
-if (rex::getConsole()) {
+if ('cli' === PHP_SAPI) {
     rex_extension::register(rex_extension_point_console_shutdown::NAME, static function (rex_extension_point_console_shutdown $extensionPoint) use ($shutdownFn) {
         $shutdownFn();
 
         $command = $extensionPoint->getCommand();
         $input = $extensionPoint->getInput();
-        $output = $extensionPoint->getOutput();
+        // $output = $extensionPoint->getOutput();
         $exitCode = $extensionPoint->getExitCode();
 
         // we need to make sure that the storage path exists after actions like cache:clear
@@ -135,13 +137,18 @@ if (rex::getConsole()) {
                 array_diff($input->getArguments(), $command->getDefinition()->getArgumentDefaults()),
                 array_diff($input->getOptions(), $command->getDefinition()->getOptionDefaults()),
                 $command->getDefinition()->getArgumentDefaults(),
-                $command->getDefinition()->getOptionDefaults()
+                $command->getDefinition()->getOptionDefaults(),
                 // $output->fetch()
             )
         ->storeRequest();
     });
 } else {
     register_shutdown_function(static function () use ($shutdownFn) {
+        // don't track preflight requests
+        if (in_array($_SERVER['REQUEST_URI'], ['/__clockwork/latest', '/assets/addons/debug/clockwork/manifest.json'], true)) {
+            return;
+        }
+
         $shutdownFn();
 
         // we need to make sure that the storage path exists after actions like cache:clear

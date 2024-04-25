@@ -11,8 +11,12 @@
 
 use Sprog\Wildcard;
 
+/**
+ * @deprecated since version 1.3.0, use \Sprog\Wildcard
+ */
 class_alias('\Sprog\Wildcard', 'Wildcard');
 
+rex_perm::register('sprog[abbreviation]', null, rex_perm::OPTIONS);
 rex_perm::register('sprog[wildcard]', null, rex_perm::OPTIONS);
 
 // number of articles to generate per single request
@@ -20,79 +24,7 @@ rex_perm::register('sprog[wildcard]', null, rex_perm::OPTIONS);
 // (hint: enable debug mode in sprog.js to report execution times)
 $this->setConfig('chunkSizeArticles', 4);
 
-/**
- * Replaced some wildcards in given text.
- */
-function sprogdown($text, $clang_id = null)
-{
-    return Wildcard::parse($text, $clang_id);
-}
-/**
- * Replaced given wildcard.
- */
-function sprogcard($wildcard, $clang_id = null)
-{
-    return Wildcard::get($wildcard, $clang_id);
-}
-/**
- * Returns a field with the suffix of the current clang id.
- */
-function sprogfield($field, $separator = '_')
-{
-    return $field.$separator.rex_clang::getCurrentId();
-}
-/**
- * Returns the value by given an array and field.
- * The field will be modified with the suffix of the current clang id.
- */
-function sprogvalue(array $array, $field, $fallback_clang_id = 0, $separator = '_')
-{
-    $modifiedField = sprogfield($field, $separator);
-    if (isset($array[$modifiedField])) {
-        return $array[$modifiedField];
-    }
-
-    $modifiedField = $field.$separator.$fallback_clang_id;
-    if (isset($array[$modifiedField])) {
-        return $array[$modifiedField];
-    }
-
-    if (isset($array[$field])) {
-        return $array[$field];
-    }
-
-    return false;
-}
-/**
- * Returns a modified array.
- *
- * $array = [
- *     'headline_1' => 'DE Überschrift',
- *     'headline_2' => 'EN Heading',
- *     'text_1' => 'DE Zwei flinke Boxer jagen die quirlige Eva und ihren Mops durch Sylt.',
- *     'text_2' => 'EN The quick, brown fox jumps over a lazy dog.',
- * ];
- * $fields = ['headline', 'text'];
- *
- * E.g. The current clang_id is 1 for german
- * $array = sprogarray($array, $fields);
- * Array
- * (
- *     'headline_1' => 'DE Überschrift',
- *     'headline_2' => 'EN Heading',
- *     'text_1' => 'DE Zwei flinke Boxer jagen die quirlige Eva und ihren Mops durch Sylt.',
- *     'text_2' => 'EN The quick, brown fox jumps over a lazy dog.',
- *     'headline' => 'DE Überschrift',
- *     'text' => 'DE Zwei flinke Boxer jagen die quirlige Eva und ihren Mops durch Sylt.',
- * )
- */
-function sprogarray(array $array, array $fields, $fallback_clang_id = 0, $separator = '_')
-{
-    foreach ($fields as $field) {
-        $array[$field] = sprogvalue($array, $field, $fallback_clang_id, $separator);
-    }
-    return $array;
-}
+require_once __DIR__ . '/functions/sprog.php';
 
 $filters = $this->getProperty('filter');
 $filters = \rex_extension::registerPoint(new \rex_extension_point('SPROG_FILTER', $filters));
@@ -107,6 +39,7 @@ if (count($filters) > 0) {
 \rex::setProperty('SPROG_FILTER', $registeredFilters);
 
 if (!rex::isBackend()) {
+    \rex_extension::register('OUTPUT_FILTER', '\Sprog\Extension::replaceAbbreviations', rex_extension::NORMAL);
     \rex_extension::register('OUTPUT_FILTER', '\Sprog\Extension::replaceWildcards', rex_extension::NORMAL);
 }
 
@@ -165,11 +98,43 @@ if (rex::isBackend() && rex::getUser()) {
             }
         }
 
+
+        if (rex::getUser()->isAdmin() || rex::getUser()->hasPerm('sprog[abbreviation]')) {
+            $page = \rex_be_controller::getPageObject('sprog/abbreviation');
+            if ($page !== null) {
+                $clang_id = str_replace('clang', '', rex_be_controller::getCurrentPagePart(3, ''));
+
+                foreach (rex_clang::getAll() as $id => $clang) {
+                    if (rex::getUser()->getComplexPerm('clang')->hasPerm($id)) {
+                        $bePage = new rex_be_page('clang'.$id, $clang->getName());
+                        $bePage->setSubPath(rex_path::addon('sprog', 'pages/abbreviation.php'));
+                        $bePage->setIsActive($id == $clang_id);
+                        $page->addSubpage($bePage);
+                    }
+                }
+            }
+        }
+
         if (rex::getUser()->isAdmin() || rex::getUser()->hasPerm('sprog[wildcard]')) {
             $page = \rex_be_controller::getPageObject('sprog/wildcard');
 
             if (Wildcard::isClangSwitchMode()) {
-                $clang_id = str_replace('clang', '', rex_be_controller::getCurrentPagePart(3));
+                $hrefParams = [];
+                $pidItems = [];
+                if ('edit' === rex_request('func', 'string') && 0 <= rex_request('pid', 'int', 0)) {
+                    $hrefParams['pid'] = rex_request('pid', 'int', 0);
+                    $hrefParams['func'] = 'edit';
+
+                    $sql = rex_sql::factory();
+                    $tempItems = $sql->getArray('SELECT id FROM '.rex::getTable('sprog_wildcard').' WHERE pid = :pid LIMIT 1', ['pid' => $hrefParams['pid']]);
+                    if (isset($tempItems[0]['id'])) {
+                        $tempItems = $sql->getArray('SELECT pid, clang_id FROM '.rex::getTable('sprog_wildcard').' WHERE id = :id', ['id' => $tempItems[0]['id']]);
+                        foreach ($tempItems as $tempItem) {
+                            $pidItems[$tempItem['clang_id']] = $tempItem['pid'];
+                        }
+                    }
+                }
+                $clang_id = str_replace('clang', '', rex_be_controller::getCurrentPagePart(3, ''));
                 $page->setSubPath(rex_path::addon('sprog', 'pages/wildcard.clang_switch.php'));
                 $clangAll = \rex_clang::getAll();
                 $clangBase = $this->getConfig('clang_base');
@@ -181,10 +146,15 @@ if (rex::isBackend() && rex::getUser()) {
                 }
                 foreach ($clangAll as $id => $clang) {
                     if (rex::getUser()->getComplexPerm('clang')->hasPerm($id)) {
-                        $page->addSubpage((new rex_be_page('clang'.$id, $clang->getName()))
-                            ->setSubPath(rex_path::addon('sprog', 'pages/wildcard.clang_switch.php'))
-                            ->setIsActive($id == $clang_id)
-                        );
+                        if (isset($pidItems[$id])) {
+                            $hrefParams['pid'] = $pidItems[$id];
+                        }
+                        $bePage = new rex_be_page('clang'.$id, $clang->getName());
+                        $bePage->setHref(\rex_url::backendPage('sprog/wildcard/clang'.$id, $hrefParams));
+                        $bePage->setSubPath(rex_path::addon('sprog', 'pages/wildcard.clang_switch.php'));
+                        $bePage->setIsActive($id == $clang_id);
+
+                        $page->addSubpage($bePage);
                     }
                 }
             } else {

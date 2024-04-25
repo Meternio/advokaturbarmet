@@ -1,5 +1,5 @@
 package: mediapool
-version: '2.9.1'
+version: '2.11.1'
 author: 'Jan Kristinus'
 supportpage: https://github.com/redaxo/redaxo
 
@@ -19,7 +19,7 @@ page:
 
 blocked_extensions: [php, php3, php4, php5, php6, php7, phar, pht, phtml, hh, pl, asp, aspx, cfm, jsp, jsf, bat, sh, cgi, htaccess, htpasswd]
 
-# optional mime type whitelist. the list is checked after the blocked_extensions check from above has passed.
+# optional mime type allowlist. the list is checked after the blocked_extensions check from above has passed.
 # exmaple:
 #   allowed_mime_types:
 #       gif: [image/gif]
@@ -30,5 +30,5 @@ allowed_doctypes: [bmp, css, doc, docx, eps, gif, gz, jpg, jpeg, mov, mp3, mp4, 
 image_extensions: [bmp, gif, jpeg, jpg, png, svg, tif, tiff, webp]
 
 requires:
-    php: '>=7.1'
-    redaxo: ^5.10.0
+    php: '>=7.3'
+    redaxo: ^5.13.0

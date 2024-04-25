@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the ramsey/collection library
  *
@@ -7,12 +8,23 @@
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license http://opensource.org/licenses/MIT MIT
- * @link https://benramsey.com/projects/ramsey-collection/ Documentation
- * @link https://packagist.org/packages/ramsey/collection Packagist
- * @link https://github.com/ramsey/collection GitHub
  */
 
+declare(strict_types=1);
+
 namespace Ramsey\Collection\Tool;
+
+use DateTimeInterface;
+
+use function get_class;
+use function get_resource_type;
+use function is_array;
+use function is_bool;
+use function is_callable;
+use function is_object;
+use function is_resource;
+use function is_scalar;
+use function var_export;
 
 /**
  * Provides functionality to express a value as string
@@ -20,30 +32,31 @@ namespace Ramsey\Collection\Tool;
 trait ValueToStringTrait
 {
     /**
-     * Return a string with the information of the value
-     * null value: NULL
-     * boolean: TRUE, FALSE
-     * array: Array
-     * scalar: converted-value
-     * resource: (type resource #number)
-     * object with __toString(): result of __toString()
-     * object DateTime: ISO 8601 date
-     * object: (className Object)
-     * anonymous function: same as object
+     * Returns a string representation of the value.
      *
-     * @param mixed $value
-     * @return string
+     * - null value: `'NULL'`
+     * - boolean: `'TRUE'`, `'FALSE'`
+     * - array: `'Array'`
+     * - scalar: converted-value
+     * - resource: `'(type resource #number)'`
+     * - object with `__toString()`: result of `__toString()`
+     * - object DateTime: ISO 8601 date
+     * - object: `'(className Object)'`
+     * - anonymous function: same as object
+     *
+     * @param mixed $value the value to return as a string.
      */
-    protected function toolValueToString($value)
+    // phpcs:ignore SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
+    protected function toolValueToString($value): string
     {
         // null
-        if (is_null($value)) {
+        if ($value === null) {
             return 'NULL';
         }
-        
+
         // boolean constants
         if (is_bool($value)) {
-            return ($value) ? 'TRUE' : 'FALSE';
+            return $value ? 'TRUE' : 'FALSE';
         }
 
         // array
@@ -61,7 +74,12 @@ trait ValueToStringTrait
             return '(' . get_resource_type($value) . ' resource #' . (int) $value . ')';
         }
 
-        // after this line $value is an object since is not null, scalar, array or resource
+        // If we don't know what it is, use var_export().
+        if (!is_object($value)) {
+            return '(' . var_export($value, true) . ')';
+        }
+
+        // From here, $value should be an object.
 
         // __toString() is implemented
         if (is_callable([$value, '__toString'])) {
@@ -69,11 +87,12 @@ trait ValueToStringTrait
         }
 
         // object of type \DateTime
-        if ($value instanceof \DateTimeInterface) {
-            return $value->format("c");
+        if ($value instanceof DateTimeInterface) {
+            return $value->format('c');
         }
 
         // unknown type
+        // phpcs:ignore SlevomatCodingStandard.Classes.ModernClassNameReference.ClassNameReferencedViaFunctionCall
         return '(' . get_class($value) . ' Object)';
     }
 }

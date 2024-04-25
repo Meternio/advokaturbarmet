@@ -1,88 +1,81 @@
-
 #rex-yform .rex-widget-field {
-    padding-top: 0px;
-    margin-top: 0px;
+    padding-top: 0;
+    margin-top: 0;
 }
 
 #rex-yform div.rex-widget {
-    clear:none;
-    float:left;
-    display:block;
-    margin:0px;
-    width:390px;
-    /*margin-left:245px;*/
-    }
-#rex-yform div.rex-widget input.text {
-    padding: 2px;
-    width: 290px;
-    }
-#rex-yform div.rex-widget select{
-    width:335px;
-    }
-div#rex-title h1 span {
-    color:#CBCBCB;
-    font-size:0.5em;
-    }
-
-body#rex-page-yform .yform-manager-searchfield{
-    background:silver;
-    color:white;
-    padding:3px;
-    border-radius:5px;
-    margin:1px;
-    display:inline-block;
-
+    clear: none;
+    float: left;
+    display: block;
+    margin: 0;
+    width: 390px
 }
 
-.rex-yform textarea.yform-textarea-short{
-    height:130px;
+#rex-yform div.rex-widget input.text {
+    padding: 2px;
+    width: 290px
+}
+
+#rex-yform div.rex-widget select {
+    width: 335px
+}
+
+div#rex-title h1 span {
+    color: #CBCBCB;
+    font-size: 0.5em
+}
+
+body#rex-page-yform .yform-manager-searchfield {
+    background: silver;
+    color: white;
+    padding: 3px;
+    border-radius: 5px;
+    margin: 1px;
+    display: inline-block
+}
+
+.rex-yform textarea.yform-textarea-short {
+    height: 130px
 }
 
 .yform-table_field p.rex-button {
-        padding-left: 140px;
+    padding-left: 140px
 }
+
 .yform-table_field p.rex-button a.rex-button {
-        float: left;
-        padding-top: 0;
-        padding-bottom: 0;
-        margin-left: -140px;
+    float: left;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-left: -140px
 }
+
 .yform-table_field p.rex-button span {
-        display: block;
+    display: block
 }
 
 #yform-manager-search-form p.help-block {
-    font-size: 11px;
+    font-size: 11px
 }
 
-
-/*    Piped ***********************************************************************
-*******************************************************************************/
 .rex-navi-piped {
     margin: 0;
     padding-left: 0;
-    list-style: none;
+    list-style: none
 }
+
 .rex-navi-piped > * {
     display: inline;
     padding: 0 5px 0 6px;
-    font-weight: bold;
+    font-weight: bold
 }
+
 .rex-navi-piped > * {
-    background-image: url(../../../redaxo/media/pipe_c2.gif);
-    background-position: 0px 2px;
+    background-position: 0 2px
 }
+
 .rex-navi-piped > *:first-child {
-    background: none;
+    background: none
 }
-
-
-
-
-
-
-/* be-relation 1-n
-*/
 
 .yform-be-relation-wrapper {
     margin: auto;
@@ -92,7 +85,6 @@ body#rex-page-yform .yform-manager-searchfield{
 .yform-be-relation-wrapper > div {
     border: 1px solid #bfe0d8;
     background: #f1fcfa;
-    /*color: #1C94C4;*/
     margin: 0 0 10px 0;
     padding: 20px 15px 15px 25px;
     position: relative
@@ -101,39 +93,39 @@ body#rex-page-yform .yform-manager-searchfield{
 .yform-be-relation-wrapper span.sorthandle {
     cursor: move;
     position: absolute;
-    opacity: .5;
+    opacity: 0.5;
     top: 5px;
     bottom: 5px;
     left: 4px;
     width: 8px;
-    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAB3RJTUUH3wIDBycZ/Cj09AAAAAlwSFlzAAALEgAACxIB0t1+/AAAAARnQU1BAACxjwv8YQUAAAAWSURBVHjaY2DABhoaGupBGMRmYiAEAKo2BAFbROu9AAAAAElFTkSuQmCC)
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAB3RJTUUH3wIDBycZ/Cj09AAAAAlwSFlzAAALEgAACxIB0t1+/AAAAARnQU1BAACxjwv8YQUAAAAWSURBVHjaY2DABhoaGupBGMRmYiAEAKo2BAFbROu9AAAAAElFTkSuQmCC")
 }
 
 .yform-be-relation-wrapper span.sorthandle:hover {
-    opacity: .8
+    opacity: 0.8
 }
 
 div.sortable-ghost {
     border: 1px dashed #CCC;
-    opacity: .4
+    opacity: 0.4
 }
 
 .yform-be-relation-wrapper span.removeadded {
     position: absolute;
     right: 15px;
-    top: 9px;
+    top: 9px
 }
 
 .yform-be-relation-wrapper span.removeadded .btn {
-    cursor: pointer;
+    cursor: pointer
 }
 
 .yform-be-relation-wrapper span.removeadded .btn[disabled] {
-    cursor: default;
+    cursor: default
 }
 
 .yform-be-relation-wrapper span.removeadded .btn .rex-icon {
-    margin: 0 !important;
+    margin: 0 !important
 }
 
 .yform-be-relation-wrapper > div:after, .yform-be-relation-wrapper-wrapper > div:before {
@@ -152,25 +144,25 @@ div.sortable-ghost {
 .yform-be-relation-animate {
     -webkit-transition: opacity 249ms linear, top 149ms ease;
     -moz-transition: opacity 249ms linear, top 149ms ease;
-    transition: opacity 249ms linear, top 149ms ease;
+    transition: opacity 249ms linear, top 149ms ease
 }
 
 .panel.yform-be-relation-hidden-panel {
     background: inherit;
     border: inherit;
-    margin: inherit;
+    margin: inherit
 }
 
-.hide_sorthandle .sorthandle,
-.hide_removeadded .removeadded {
-    display: none;
+.hide_sorthandle .sorthandle, .hide_removeadded .removeadded {
+    display: none
 }
 
 .yform-be-relation-wrapper.hide_sorthandle > div {
-    padding-left: 15px;
+    padding-left: 15px
 }
+
 .yform-be-relation-wrapper.hide_removeadded > div {
-    padding-top: 15px;
+    padding-top: 15px
 }
 
 .formbe_table th.rex-table-action {
@@ -243,3 +235,55 @@ div.sortable-ghost {
     }
 }
 
+.yform-dropdown--on-hover:hover .dropdown-menu {
+    display: block;
+    margin-top: 0
+}
+
+.yform-dropdown .btn {
+    font-size: inherit
+}
+
+.yform-manager-type-validate {
+    color: #aaa
+}
+
+.yform-manager-type-action {
+    background-color: #cfd9d9
+}
+
+.yform-manager-type-default {
+    font-weight: 500
+}
+
+.yform-manager-type-default a {
+    font-weight: 400
+}
+
+body.rex-theme-dark .yform-manager-type-validate {
+    color: rgba(255, 255, 255, 0.45)
+}
+
+body.rex-theme-dark .yform-manager-type-action {
+    background-color: #1b232c
+}
+
+body.rex-theme-dark .yform-be-relation-wrapper > div {
+    border: 1px solid #1b232c;
+    background: #1a3332
+}
+
+@media (prefers-color-scheme: dark) {
+    body.rex-has-theme:not(.rex-theme-light) .yform-manager-type-validate {
+        color: rgba(255, 255, 255, 0.45)
+    }
+
+    body.rex-has-theme:not(.rex-theme-light) .yform-manager-type-action {
+        background-color: #1b232c
+    }
+
+    body.rex-has-theme:not(.rex-theme-light) .yform-be-relation-wrapper > div {
+        border: 1px solid #1b232c;
+        background: #1a3332
+    }
+}

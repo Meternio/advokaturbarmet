@@ -1,69 +1,25 @@
 <?php
 
-/**
- * yform.
- *
- * @author jan.kristinus[at]redaxo[dot]org Jan Kristinus
- * @author <a href="http://www.yakamara.de">www.yakamara.de</a>
- */
 class rex_yform_value_be_table extends rex_yform_value_abstract
 {
     protected $fieldData = [];
-
-    public function preValidateAction()
-    {
-        // bc service for Version < 1.1
-        if ($this->getValue() != '' && json_decode($this->getValue()) == '') {
-            $rows = explode(';', $this->getValue());
-            foreach ($rows as $row_id => $row) {
-                $rows[$row_id] = explode(',', $row);
-            }
-            $this->setValue(json_encode($rows));
-        }
-
-        if ($this->getParam('send') && isset($_POST['FORM'])) {
-            // Cleanup Array
-            $table_array = [];
-
-            $id = $this->getName();
-
-            $columns = preg_split("/(?<=[^\w\"]),|,(?=\{)|(?<=[A-Za-z]),(?=[^ ][\w,])|(?<=,\w),/", $this->getElement('columns'));
-            if (count($columns) == 0) {
-                return;
-            }
-
-            $form_data = rex_post('FORM', 'array');
-
-            if (isset($form_data[$id . '.0'])) {
-                $rowKeys = array_keys((array) $form_data[$id . '.0']);
-
-                // Spalten durchgehen
-                for ($c = 0; $c < count($columns); ++$c) {
-                    foreach ($rowKeys as $r) {
-                        $table_array[$r][$c] = (isset($form_data[$id . '.' . $c][$r])) ? $form_data[$id . '.' . $c][$r] : '';
-                    }
-                }
-            }
-            $this->setValue(json_encode(array_values($table_array)));
-        }
-    }
 
     public static function getColumnsByName($definition)
     {
         $valueFields = [];
         $validateFields = [];
-        $_columns = preg_split ("/(?<=[^\w\"]),|,(?=\{)|(?<=[A-Za-z]),(?=[^ ][\w,])|(?<=,\w),/" , $definition);
+        $_columns = preg_split('/(?<=[^\\w"]),|,(?=\\{)|(?<=[A-Za-z]),(?=[^ ][\\w,])|(?<=,\\w),/', $definition);
 
         if (count($_columns)) {
             foreach ($_columns as $index => $col) {
                 // Use ;; for separating choice columns instead of ,
                 $values = explode('|', trim(trim(str_replace(';;', ',', rex_yform::unhtmlentities($col))), '|'));
-                if (count($values) == 1) {
-                    $values = ['text', 'text_'. $index, $values[0]];
+                if (1 == count($values)) {
+                    $values = ['text', 'text_' . $index, $values[0]];
                 }
 
                 $class = 'rex_yform_value_' . trim($values[0]);
-                if(class_exists($class)) {
+                if (class_exists($class)) {
                     $name = $values[1];
                     $values[1] = '';
 
@@ -74,10 +30,9 @@ class rex_yform_value_be_table extends rex_yform_value_abstract
                         'name' => $name,
                         'label' => $values[2],
                         'class' => $class,
-                        'values' => $values
+                        'values' => $values,
                     ];
-                }
-                elseif (class_exists('rex_yform_validate_' . trim($values[1]))) {
+                } elseif (class_exists('rex_yform_validate_' . trim($values[1]))) {
                     $validateFields[] = [
                         'field' => 'validate',
                         'index' => $index,
@@ -85,7 +40,7 @@ class rex_yform_value_be_table extends rex_yform_value_abstract
                         'name' => $values[2],
                         'msg' => $values[3],
                         'class' => 'rex_yform_validate_' . trim($values[1]),
-                        'values' => $values
+                        'values' => $values,
                     ];
                 }
             }
@@ -95,6 +50,9 @@ class rex_yform_value_be_table extends rex_yform_value_abstract
 
     public function enterObject()
     {
+        if (is_array($this->getValue())) {
+            $this->setValue(json_encode(array_values($this->getValue())));
+        }
         if (!$this->getValue()) {
             $this->setValue(json_encode([]));
         }
@@ -110,18 +68,19 @@ class rex_yform_value_be_table extends rex_yform_value_abstract
 
         $_columns = self::getColumnsByName($this->getElement('columns'));
 
-        if (count($_columns) == 0) {
+        if (0 == count($_columns)) {
             return;
         }
 
         $data = (array) json_decode($this->getValue(), true);
         $objs = [];
         $columnIndex = [];
+        $columns = [];
 
         $this->fieldData = $data;
 
-        $yfparams = \rex_yform::factory()->objparams;
-        $yfparams['this'] = \rex_yform::factory();
+        $yfparams = rex_yform::factory()->objparams;
+        $yfparams['this'] = rex_yform::factory();
 
         /* TODO
          * error class von validierung ans Eingabefeld übergeben
@@ -130,9 +89,9 @@ class rex_yform_value_be_table extends rex_yform_value_abstract
         foreach ($_columns as $name => $col) {
             $field = new $col['class']();
 
-            if ($col['field'] == 'value') {
+            if ('value' == $col['field']) {
                 $field->loadParams($yfparams, $col['values']);
-                $field->setName($this->getName());
+                $field->setName($this->getFieldName() . '][' . $this->getId() . ']');
                 $field->init();
                 $field->setLabel('');
 
@@ -144,13 +103,12 @@ class rex_yform_value_be_table extends rex_yform_value_abstract
                     $rdata = array_values($data[$rowCount]);
                     $obj->setName($col['name'] . $rowCount . $col['index']);
                     $obj->setValue($rdata[$col['index']]);
-                    $objs[]= $obj;
+                    $objs[] = $obj;
                 }
-            }
-            elseif ($col['field'] == 'validate') {
+            } elseif ('validate' == $col['field']) {
                 $field->setObjects($objs);
 
-                foreach($data as $rowCount => $row) {
+                foreach ($data as $rowCount => $row) {
                     $col['values'][2] = $col['name'] . $rowCount . $columnIndex[$col['name']]; // TODO: check in tpl
 
                     $field->loadParams($this->params, $col['values']);
@@ -164,23 +122,30 @@ class rex_yform_value_be_table extends rex_yform_value_abstract
             $data = [];
         }
 
-        $this->params['form_output'][$this->getId()] = $this->parse('value.be_table.tpl.php', compact('columns', 'data'));
+        if ($this->needsOutput() && $this->isViewable()) {
+            if (!$this->isEditable()) {
+                $this->params['form_output'][$this->getId()] = $this->parse(['value.be_table-view.tpl.php', 'value.view.tpl.php'], compact('columns', 'data'));
+            } else {
+                $this->params['form_output'][$this->getId()] = $this->parse('value.be_table.tpl.php', compact('columns', 'data'));
+            }
+        }
 
         if ($this->getParam('send')) {
             $this->setValue(json_encode($this->fieldData));
 
-            if ($this->getElement('no_db') != 1) {
+            if (1 != $this->getElement('no_db')) {
                 $this->params['value_pool']['sql'][$this->getName()] = $this->getValue();
             }
             $this->params['value_pool']['email'][$this->getName()] = $this->getValue();
         }
     }
 
-    public function setFieldData($index, $key, $value) {
+    public function setFieldData($index, $key, $value)
+    {
         $this->fieldData[$index][$key] = $value;
     }
 
-    public function getDefinitions()
+    public function getDefinitions(): array
     {
         return [
             'type' => 'value',

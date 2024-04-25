@@ -7,18 +7,20 @@
  */
 class rex_extension_debug extends rex_extension
 {
-    private static $extensionPoints = [];
-    private static $extensions = [];
-    private static $listeners = [];
+    private static array $extensionPoints = [];
+    private static array $extensions = [];
+    private static array $listeners = [];
 
     public static function registerPoint(rex_extension_point $extensionPoint)
     {
         $coreTimer = rex::getProperty('timer');
-        $absDur = $coreTimer->getFormattedDelta();
+        $absDur = $coreTimer->getDelta();
 
         $timer = new rex_timer();
+        $epStart = microtime(true);
         $res = parent::registerPoint($extensionPoint);
-        $epDur = $timer->getFormattedDelta();
+        $epEnd = microtime(true);
+        $epDur = $timer->getDelta();
 
         $memory = rex_formatter::bytes(memory_get_usage(true), [3]);
 
@@ -38,11 +40,14 @@ class rex_extension_debug extends rex_extension
         $data['listeners'] = self::$listeners[$extensionPoint->getName()] ?? [];
 
         rex_debug_clockwork::getInstance()
-            ->addEvent('EP: '.$extensionPoint->getName(), [
+            ->event('EP: ' . $extensionPoint->getName(), [
                 'subject' => $extensionPoint->getSubject(),
                 'params' => $extensionPoint->getParams(),
                 'result' => $res,
-            ], time(), $data);
+                'start' => $epStart,
+                'end' => $epEnd,
+                'data' => $data,
+            ]);
 
         return $res;
     }
@@ -57,7 +62,7 @@ class rex_extension_debug extends rex_extension
         }
 
         foreach ($extensionPoint as $ep) {
-            self::$listeners[$ep][] = $trace['file'].':'.$trace['line'];
+            self::$listeners[$ep][] = $trace['file'] . ':' . $trace['line'];
 
             self::$extensions[] = [
                 '#' => count(self::$extensions),
