@@ -3,7 +3,7 @@ debug:
     enabled: false
     throw_always_exception: false
 instname: rex20201201093520
-server: 'https://advokaturbarmet.ch/'
+server: 'https://dev.advokaturbarmet:7890'
 servername: 'Advokatur Barmet'
 error_email: luca@nulltype.ch
 fileperm: '0664'
@@ -77,9 +77,9 @@ table_prefix: rex_
 temp_prefix: tmp_
 db:
     1:
-        host: ursprun5.mysql.db.internal
-        login: ursprun5_redaxo
-        password: 'xp6znaEAWNMp?e+HcTSb'
+        host: 'localhost:8888'
+        login: root
+        password: root
         name: ursprun5_redaxo
         persistent: false
         ssl_key: null

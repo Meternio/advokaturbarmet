@@ -4142,3 +4142,27 @@
 2024-04-24 15:12:15 | Warning | explode() expects at least 2 parameters, 1 given | rex:///template/2 | 92
 2024-04-24 15:26:49 | Warning | explode() expects at least 2 parameters, 1 given | rex:///template/2 | 91
 2024-04-24 15:26:49 | Warning | explode() expects at least 2 parameters, 1 given | rex:///template/2 | 92
+2024-04-25 09:58:13 | rex_sql_exception | Could not connect to database | redaxo/src/core/lib/sql/sql.php | 139
+2024-04-25 09:58:14 | rex_sql_exception | Could not connect to database | redaxo/src/core/lib/sql/sql.php | 139
+2024-04-25 09:58:15 | rex_sql_exception | Could not connect to database | redaxo/src/core/lib/sql/sql.php | 139
+2024-04-25 09:58:15 | rex_sql_exception | Could not connect to database | redaxo/src/core/lib/sql/sql.php | 139
+2024-04-25 09:58:15 | rex_sql_exception | Could not connect to database | redaxo/src/core/lib/sql/sql.php | 139
+2024-04-25 09:58:15 | rex_sql_exception | Could not connect to database | redaxo/src/core/lib/sql/sql.php | 139
+2024-04-25 09:58:15 | rex_sql_exception | Could not connect to database | redaxo/src/core/lib/sql/sql.php | 139
+2024-04-25 09:58:15 | rex_sql_exception | Could not connect to database | redaxo/src/core/lib/sql/sql.php | 139
+2024-04-25 09:58:15 | rex_sql_exception | Could not connect to database | redaxo/src/core/lib/sql/sql.php | 139
+2024-04-25 09:58:16 | rex_sql_exception | Could not connect to database | redaxo/src/core/lib/sql/sql.php | 139
+2024-04-25 09:58:16 | rex_sql_exception | Could not connect to database | redaxo/src/core/lib/sql/sql.php | 139
+2024-04-25 09:58:16 | rex_sql_exception | Could not connect to database | redaxo/src/core/lib/sql/sql.php | 139
+2024-04-25 09:58:16 | rex_sql_exception | Could not connect to database | redaxo/src/core/lib/sql/sql.php | 139
+2024-04-25 09:58:16 | rex_sql_exception | Could not connect to database | redaxo/src/core/lib/sql/sql.php | 139
+2024-04-25 09:58:17 | rex_sql_exception | Could not connect to database | redaxo/src/core/lib/sql/sql.php | 139
+2024-04-25 09:58:17 | rex_sql_exception | Could not connect to database | redaxo/src/core/lib/sql/sql.php | 139
+2024-04-25 09:58:17 | rex_sql_exception | Could not connect to database | redaxo/src/core/lib/sql/sql.php | 139
+2024-04-25 09:58:48 | Notice | Undefined variable: SEOLangCode | rex:///template/2 | 88
+2024-04-25 09:58:48 | Warning | explode() expects at least 2 parameters, 1 given | rex:///template/2 | 91
+2024-04-25 09:58:48 | Notice | Trying to access array offset on value of type null | rex:///template/2 | 91
+2024-04-25 09:58:48 | Warning | explode() expects at least 2 parameters, 1 given | rex:///template/2 | 92
+2024-04-25 09:58:48 | Notice | Trying to access array offset on value of type null | rex:///template/2 | 92
+2024-04-25 09:58:48 | Notice | Undefined index: cookieAccepted | rex:///template/5 | 2
+2024-04-25 09:58:48 | Notice | Undefined index: cookieAll | rex:///template/5 | 2

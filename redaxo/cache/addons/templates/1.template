@@ -1,7 +1,0 @@
-<?= /* REX_TEMPLATE[2] */ rex_var_template::getTemplateOutput(2, new rex_timer(), require rex_var_template::getTemplateStream(2, $this)), "\n" ?>
-<?= /* REX_TEMPLATE[3] */ rex_var_template::getTemplateOutput(3, new rex_timer(), require rex_var_template::getTemplateStream(3, $this)), "\n" ?>
-<main class="content<?php echo $contentPadding;?>" data-routing="container">
-    <?= /* REX_ARTICLE[] */ $this->getArticle(-1), "\n" ?>
-</main>
-<?= /* REX_TEMPLATE[5] */ rex_var_template::getTemplateOutput(5, new rex_timer(), require rex_var_template::getTemplateStream(5, $this)), "\n" ?>
-<?= /* REX_TEMPLATE[4] */ rex_var_template::getTemplateOutput(4, new rex_timer(), require rex_var_template::getTemplateStream(4, $this)) ?>
