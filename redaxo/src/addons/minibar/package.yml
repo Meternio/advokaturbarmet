@@ -1,0 +1,10 @@
+package: minibar
+version: '2.2.2'
+author: 'Friends Of REDAXO'
+supportpage: https://github.com/FriendsOfREDAXO/minibar
+
+load: late
+requires:
+    redaxo: ^5.7.0
+    php:
+        version: '>=7.1'

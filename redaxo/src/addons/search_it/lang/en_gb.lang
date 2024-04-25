@@ -1,0 +1,154 @@
+search_it_title = Search it
+search_it_settings = Settings
+search_it_generate = Maintenance
+search_it_readme = Readme
+
+search_it_info = Search AddOn
+search_it_infotext = Search AddOn
+search_it_reindex = Search it: reindex
+
+search_it_settings_mode = Index and Search mode
+search_it_settings_result = Search result
+search_it_settings_addsources = Additional data sources
+search_it_settings_blacklist = Blacklist
+
+search_it_settings_logicalmode = Logical search mode
+search_it_settings_logicalmode_and = Conjunctive search (AND)
+search_it_settings_logicalmode_or = Disjunctive search (OR)
+
+search_it_settings_modi_header = Search modes
+
+search_it_settings_textmode = Text mode
+search_it_settings_textmode_plain = Search in text (plain)
+search_it_settings_textmode_html = Search in HTML source code (HTML)
+search_it_settings_textmode_both = Search in both (HTML and plain)
+
+search_it_settings_title_indexmode = Indexing
+search_it_settings_indexoffline = Index offline articles
+search_it_settings_automaticindex_label = Index and deindex articles automatically (ADD, EDIT, DELETE)
+search_it_settings_reindex_cols_onforms_label = Reindex all columns, if tables are changed through YForm or form
+search_it_settings_index_url_addon_label = Index URL addon (version >=2) URLs
+
+search_it_settings_http_authbasic = HTTP Basic AUTH ( .htaccess protection)
+search_it_settings_http_auth_desc = If the website i s protected through HTTP Basic Auth, you can put a valid login here, in order to allow indexing
+search_it_settings_htaccess_user = Username
+search_it_settings_htaccess_pass = Password
+
+search_it_settings_searchmode = MySQL search mode
+search_it_settings_searchmode_like = LIKE (finds subwords, but is slower)
+search_it_settings_searchmode_match = MATCH AGAINST (finds only complete words, but is faster)
+
+search_it_settings_highlight_header = Appearance of highlighted text
+search_it_settings_surroundtags_start = start tag
+search_it_settings_surroundtags_end = end tag
+
+search_it_settings_limit = Maximum hit count
+search_it_settings_maxteaserchars = Maximum character count for teaser
+search_it_settings_maxhighlightchars = Maximum character count around highlighted texts
+
+search_it_settings_highlight_label = Highlight type
+search_it_settings_highlight_sentence = Starting at the beginning of the sentence, which contains at least one found search term
+search_it_settings_highlight_paragraph = Starting at the beginning of the paragraph, which contains at least one found search term
+search_it_settings_highlight_surroundtext = Every found text is displayed with the surrounding words
+search_it_settings_highlight_surroundtextsingle = For every found search term only one text is displayed with the surrounding words
+search_it_settings_highlight_teaser = Teaser with, if present, highlighted search terms
+search_it_settings_highlight_array = Array with every found text for every search term
+search_it_settings_highlight_sample = Sample result with search term
+search_it_settings_search_highlighter = Search highlighter
+search_it_settings_highlighterclass = If you name a CSS class here, every found searchword will be surrounded by a <span> element with this class, when a search result is clicked and displayed.
+
+search_it_settings_similarwords_label = Similarity search
+search_it_settings_similarwords_none = Deactivate
+search_it_settings_similarwords_soundex = Soundex (general use)
+search_it_settings_similarwords_metaphone = Metaphone (EN)
+search_it_settings_similarwords_cologne = Kölner Phonetik (DE)
+search_it_settings_similarwords_all = All
+search_it_settings_similarwords_permanent = Perform similarity search even if results are found.
+
+search_it_settings_exclude = Exclude words, categories and articles from the search
+search_it_settings_exclude_blacklist = Words (comma-separated)
+search_it_settings_exclude_categories = Categories
+search_it_settings_exclude_articles = Articles
+
+search_it_settings_include = Include database tables
+
+search_it_settings_submitbutton = Save settings
+search_it_settings_saved = Settings saved
+search_it_settings_saved_warning = The search index has to be rebuilt.
+
+search_it_generate_actions_title = Actions
+search_it_generate_full = Generate complete index
+search_it_generate_full_text = Deletes and rebuilds the index table.
+search_it_generate_incremental = Generate index incrementally
+search_it_generate_incremental_text = When having problems with maximum execution time the index can be generated incrementally.
+search_it_generate_incremental_confirm = Start incremental indexing?
+search_it_generate_delete_cache = Clear search cache
+search_it_generate_delete_cache_text = If recreation of the index is not nescessary, the search cache can be deleted exclusively.
+search_it_generate_cache_deleted = Search cache cleared
+search_it_generate_delete_keywords = Truncate keyword index
+search_it_generate_delete_keywords_text = Deletes all keywords collected during the indexing process and with searches. These keywords are nescessary for the fuzzy search and should not be deleted.
+search_it_generate_delete_keywords_confirm = Do you really want to delete all keywords?
+search_it_generate_keywords_deleted = Keywords deleted
+search_it_generate_inprogress = Generating index. There will be a message when the process is complete.
+search_it_generate_done = Index generated
+search_it_generate_error = Error while indexing <br> Details in <a href="/redaxo/index.php?page=system/log">REDAXO SystemLog</a>
+search_it_generate_cancel = Indexing aborted
+search_it_generate_duration = Time:
+search_it_generate_timeleft = Remaining:
+search_it_generate_articles = reindex articles
+search_it_generate_columns = reindex tables
+search_it_generate_urls = reindex url addon urls
+
+search_it_generate_article_excluded = not indexed, article was excluded
+search_it_generate_article_done = indexed
+search_it_generate_article_redirect = not indexed, too many redirects
+search_it_generate_article_http_error = not indexed, HTTP error
+search_it_generate_article_404_error = not indexed, HTTP 404 error
+search_it_generate_article_socket_error = not indexed, Socket error
+search_it_generate_article_id_not_found = not indexed, no article with this ID in this language
+search_it_generate_col_done = ( {0} column(s) indexed )
+search_it_generate_col_error = not indexed, Error
+search_it_generate_col_not_exists = column "{0}" does not exist in table "{1}"
+search_it_generate_table_not_exists = table "{0}" does not exist
+search_it_generate_media_done = indexed
+search_it_generate_media_forbidden_extension = has a forbidden filename extension.
+search_it_generate_media_doesnt_exist = Media doesnt exist
+search_it_generate_media_error_pdf = XPDF-error: Error opening a PDF file
+search_it_generate_media_error_pdf2 = Other PDF Error
+search_it_generate_media_error_output = XPDF-error: Error opening an output file
+search_it_generate_media_error_permissions = XPDF-error: Error related to PDF permissions
+search_it_generate_media_empty = Media is empty or could not be extracted
+search_it_generate_url_excluded = not indexed, url was excluded
+
+search_it_settings_fileext_header = File search
+search_it_settings_fileext_label = Extensions (i.e. 'txt,csv,pdf' <br />(leave empty for any files)
+search_it_settings_file_mediapool = Index media in mediapool
+search_it_settings_additional_folders_label = And / or choose other folders:
+search_it_settings_file_dirdepth_label = Directory depth
+search_it_settings_folders_label = Include following directories
+search_it_settings_folders_dirselect_label = Select Subdirectories of depth %DEPTH%
+
+search_it_settings_show_all = Show all
+search_it_settings_show_none = Hide all
+
+search_it_ellipsis = …
+
+search_it_cat_deleted = All articles are still included in the search index. You have to <a href="index.php?page=search_it/generate">rebuild the search index</a>.
+
+
+
+search_it_test = Test search
+search_it_test_keywords = Search term
+
+search_it_test_legend = Check settinge and test search
+search_it_test_submit = Search
+search_it_test_mode = Searchmode
+search_it_test_notice = Search done.
+search_it_test_hits = Hits:
+
+search_it_test_result = Test search result
+search_it_test_result_object = Test search result object
+search_it_test_mode_all = Search articles, database and media pool
+search_it_test_mode_db = Database only
+search_it_test_mode_media = Only media pool
+search_it_test_mode_article = Only articles

@@ -1,0 +1,56 @@
+<?php if ($this->ctype == '1' || ($this->ctype == '-1')) { 
+require rex_stream::factory('module/14/output', 
+<<<'EOD_B27E761B7D2D20488439B912C35AAAF1435A7D82'
+<?php
+$alignment = /* REX_VALUE[1] */ 'left';
+$text = /* REX_VALUE[id=4 output=html] */ '<p>Administrativuntersuchungen bzw. Untersuchungen sind mitunter in den folgenden Fällen angezeigt: </p>' . "\r\n" . '<ul>' . "\r\n" . '<li>Verdacht auf systematisch regelwidriges Verhalten (allenfalls mit strafrechtlichen Implikationen)</li>' . "\r\n" . '<li>Compliance relevante Verdachtsfälle stehen im Raum</li>' . "\r\n" . '<li>Unregelmässigkeiten bzw. Ungereimtheiten, welche ein Einschreiten im öffentlichen Interesse nötig machen (Administrativuntersuchungen)</li>' . "\r\n" . '<li>Vorwürfe sexueller Belästigung bzw. grenzüberschreitender, persönlichkeitsrechtsverletzender Belästigung (Mobbing) am Arbeitsplatz</li>' . "\r\n" . '</ul>';
+$output = '<div class="image__text with--title component '.$alignment.'">';
+
+$output .= '<div class="col">';
+if(!empty(/* REX_MEDIA[1] */ 'advokatur-barmet-anzeigebild-untersuchungen.jpg')) {
+    $output .= Simplify::getPictureTag(/* REX_MEDIA[1] */ 'advokatur-barmet-anzeigebild-untersuchungen.jpg');
+}
+$output .= '</div>';
+
+// Links
+$alignClass = /* REX_VALUE[5] */ 'label' === 'label' ? ' no-center' : '';
+$output .= '<div class="col'.$alignClass.'">';
+    $output .= '<div class="full__content">';
+        $output .= '<div class="title">' . /* REX_VALUE[2] */ 'Untersuchungen' . '</div>';
+        $output .= '<div class="divider"></div>';
+        $output .= '<div class="full__subtitle">' . /* REX_VALUE[3] */ 'Unabhängige und gründliche Sachverhaltsermittlung' . '</div>';
+
+        $output .= '<div class="text paragraph">';
+            $output .= $text;
+        $output .= '</div>';
+    $output .= '</div>';
+$output .= '</div>';
+
+$output .= '</div>';
+echo $output;
+//dump($output);
+
+?>
+EOD_B27E761B7D2D20488439B912C35AAAF1435A7D82
+);
+require rex_stream::factory('module/2/output', 
+<<<'EOD_B27E761B7D2D20488439B912C35AAAF1435A7D82'
+<?php
+$fileDownload = /* REX_MEDIA[1] */ '';
+
+$output = '<div class="text__full component">';
+    $output .= /* REX_VALUE[id=1 output=html] */ '<p>Wenn in einer Organisation die Wogen hoch gehen, wenn schwerwiegende Vorwürfe im Raum stehen, oder wenn eine neutrale Aussensicht auf einen Konflikt oder eine unübersichtliche Situation nötig ist, ist eine Untersuchung angezeigt.&nbsp;Die interne Untersuchung schafft oft die entscheidende Grundlage, um Krisensituationen in Unternehmen und Organisationen abzuwenden, oder aus solchen rasch herauszufinden. Strukturiertes, rasches und gründliches Vorgehen bei der Ermittlung des Sachverhalts ist dabei entscheidend.&nbsp;<br>Advokatur Barmet verfügt über langjährige Erfahrung in der Durchführung und Begleitung von internen Untersuchungen und Administrativuntersuchungen. Unsere Untersuchungen bringen rasch Licht ins Dunkel und stellen dabei sicher, dass die Rechte der betroffenen Personen im gesamten Prozess gewahrt bleiben. Am Ende steht ein belastbarer Bericht, der einer Organisation ermöglicht, die nötigen rechtlichen und betrieblichen Massnahmen zu ergreifen. Dadurch können sich Unternehmen, staatliche Akteure und Organisationen so schnell als möglich wieder ihren Kernaufgaben widmen im Wissen darum, dass sie die rechtlichen Risiken ausgeschaltet haben und die erforderlichen Massnahmen aufgegleist sind.</p>';
+
+    if(!empty($fileDownload)) {
+        $output .= '<div class="download">';
+            $output .= '<a data-cursor-dynamic href="/media/'.$fileDownload.'" download="download">' . /* REX_VALUE[2] */ '' . '</a>';
+        $output .= '</div>';
+    }
+$output .= '</div>';
+
+echo $output;
+?>
+EOD_B27E761B7D2D20488439B912C35AAAF1435A7D82
+);
+
+ } ?>

@@ -1,0 +1,56 @@
+<?php if ($this->ctype == '1' || ($this->ctype == '-1')) { 
+require rex_stream::factory('module/14/output', 
+<<<'EOD_21B934FA4EEE48A9E98C1EA97944982FA762C56B'
+<?php
+$alignment = /* REX_VALUE[1] */ 'left';
+$text = /* REX_VALUE[id=4 output=html] */ '<p>Advokatur Barmet unterstützt auf folgende Weise:&nbsp;</p>' . "\r\n" . '<ul><li>Intervention: Wenn die Verhandlung in eine Sackgasse gerät, oder zu scheitern droht, hilft eine qualifizierte Aussensicht, die mit analytischem Blick den Verhandlungsprozess durchleuchtet und ermöglicht, scheinbar unverrückbare Positionen aufzubrechen.</li><li>Verhandlungscoaching: Ein Sparringpartner der weiss, wie Verhandlungen gelingen und warum sie scheitern, kann vor und während einer konkreten Verhandlung eine situationsgerechte Strategie entwickeln.</li><li>Ghost Negotiations: Wir simulieren eine konkrete Verhandlung und sorgen für Souveränität vom Anfang bis zum Abschluss einer Verhandlung.<br></li></ul>';
+$output = '<div class="image__text with--title component '.$alignment.'">';
+
+$output .= '<div class="col">';
+if(!empty(/* REX_MEDIA[1] */ 'bildschirmfoto_2021-05-07_um_18.57.34.png')) {
+    $output .= Simplify::getPictureTag(/* REX_MEDIA[1] */ 'bildschirmfoto_2021-05-07_um_18.57.34.png');
+}
+$output .= '</div>';
+
+// Links
+$alignClass = /* REX_VALUE[5] */ 'label' === 'label' ? ' no-center' : '';
+$output .= '<div class="col'.$alignClass.'">';
+    $output .= '<div class="full__content">';
+        $output .= '<div class="title">' . /* REX_VALUE[2] */ 'Verhandlungsführung' . '</div>';
+        $output .= '<div class="divider"></div>';
+        $output .= '<div class="full__subtitle">' . /* REX_VALUE[3] */ 'Strategien für nachhaltige Lösungen' . '</div>';
+
+        $output .= '<div class="text paragraph">';
+            $output .= $text;
+        $output .= '</div>';
+    $output .= '</div>';
+$output .= '</div>';
+
+$output .= '</div>';
+echo $output;
+//dump($output);
+
+?>
+EOD_21B934FA4EEE48A9E98C1EA97944982FA762C56B
+);
+require rex_stream::factory('module/2/output', 
+<<<'EOD_21B934FA4EEE48A9E98C1EA97944982FA762C56B'
+<?php
+$fileDownload = /* REX_MEDIA[1] */ '';
+
+$output = '<div class="text__full component">';
+    $output .= /* REX_VALUE[id=1 output=html] */ '<p>Advokatur Barmet verfügt über grosse Erfahrung und Expertise in Verhandlungstechniken und Verhandlungsanalysen. Auf diese Weise können wir unsere Auftragnehmerinnen und Auftragnehmer auf unterschiedliche Weise vor und während einer Verhandlung unterstützen und so gemeinsam zu optimalen Verhandlungsergebnissen gelangen. Advokatur Barmet strebt nachhaltige Lösungen an, welche die Beziehung zwischen den Verhandlungspartnern ebenso im Fokus hat wie das unmittelbare Verhandlungsziel.</p>';
+
+    if(!empty($fileDownload)) {
+        $output .= '<div class="download">';
+            $output .= '<a data-cursor-dynamic href="/media/'.$fileDownload.'" download="download">' . /* REX_VALUE[2] */ '' . '</a>';
+        $output .= '</div>';
+    }
+$output .= '</div>';
+
+echo $output;
+?>
+EOD_21B934FA4EEE48A9E98C1EA97944982FA762C56B
+);
+
+ } ?>

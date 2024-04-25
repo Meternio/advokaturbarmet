@@ -1,0 +1,16 @@
+name: Footer
+key: null
+active: true
+attributes:
+    ctype:
+        1: 'Spalte 1'
+        2: 'Spalte 2'
+        3: 'Spalte 3'
+        4: 'Spalte 4'
+    modules:
+        1: { 0: '11', all: 0 }
+        2: { 0: '11', all: 0 }
+        3: { 0: '11', all: 0 }
+        4: { 0: '11', all: 0 }
+    categories:
+        all: '1'

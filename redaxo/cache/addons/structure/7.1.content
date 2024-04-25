@@ -1,0 +1,249 @@
+<?php if ($this->ctype == '1' || ($this->ctype == '-1')) { 
+require rex_stream::factory('module/1/output', 
+<<<'EOD_B72D17DAE2104C852761233DF8D05B50A09B4F2C'
+<?php
+$images = explode(',', /* REX_MEDIALIST[1] */ 'advokatur-barmet-slider-1.jpg,advokatur-barmet-slider-2.jpg,advokatur-barmet-slider-3.jpg,advokatur-barmet-slider-4.jpg,advokatur-barmet-slider-5.jpg,advokatur-barmet-slider-6_retouche.jpg,advokatur-barmet-slider-7.jpg,advokatur-barmet-slider-8.jpg,advokatur-barmet-slider-9.jpg');
+if (!empty($images[0])) {
+    $output = '<div class="intro component">';
+    $output .= '<div class="logo"><svg xmlns="http://www.w3.org/2000/svg" width="61.009" height="52.97" viewBox="0 0 61.009 52.97"><g transform="translate(-293.815 -414.926)"><rect width="7.126" height="7.525" transform="translate(293.815 462.313) rotate(-45)" fill="#fff"/><path d="M354.824,453.485c0,9.036-6.7,14.411-18.149,14.411H310.5V465.17c6.543-.233,7.244-.857,7.244-6.543V424.2c0-5.686-.7-6.31-7.244-6.543v-2.727h24.381c12.464,0,18.773,4.207,18.773,12.62,0,8.258-5.608,12.23-17.526,12.619v.313C349.294,440.633,354.824,444.527,354.824,453.485ZM325.848,418.2v20.33h5.3c9.346,0,13.709-3.271,13.709-10.2,0-6.621-4.05-10.126-11.684-10.126Zm20.174,35.521c0-9.036-3.661-11.218-20.174-11.3v15.189c0,5.064,3.115,7.4,8.8,7.4C341.815,465.015,346.022,460.886,346.022,453.72Z" fill="#fff"/></g></svg></div>';
+    $output .= '<div class="intro__title">' . /* REX_VALUE[1] */ 'Advokatur Barmet' . '</div>';
+    foreach ($images as $index => $image) {
+        $imgObj = rex_media::get($image);
+        $lazyData = $index < 3 ? '' : ' data-lazy data-markup=\'' . media_manager_plus_frontend::generatePictureTag($imgObj->getExtension(), $imgObj->getFileName()) . '\'';
+        $hiddenClass = $index > 0 ? ' hidden' : '';
+        $output .= '<div class="item' . $hiddenClass . '"' . $lazyData . '>';
+        if ($index < 3) {
+            $output .= Simplify::getPictureTag($image);
+            //$output .= media_manager_plus_frontend::generatePictureTag($imgObj->getExtension(), $imgObj->getFileName());
+        }
+        $output .= '</div>';
+    }
+    $output .= '</div>';
+
+    echo $output;
+}
+?>
+EOD_B72D17DAE2104C852761233DF8D05B50A09B4F2C
+);
+require rex_stream::factory('module/2/output', 
+<<<'EOD_B72D17DAE2104C852761233DF8D05B50A09B4F2C'
+<?php
+$fileDownload = /* REX_MEDIA[1] */ '';
+
+$output = '<div class="text__full component">';
+    $output .= /* REX_VALUE[id=1 output=html] */ '<p>Als Boutiquekanzlei für spezialisierte Rechtsdienstleistungen im öffentlichen Recht berät Advokatur Barmet Staat, Wirtschaft und Privatpersonen bei rechtlichen, politischen und strategischen Herausforderungen. In enger Zusammenarbeit mit unserer Mandantschaft kreieren wir nachhaltige Strategien, die im Spannungsfeld von Recht und Politik Bestand haben. Weil wir über grosse Erfahrung in öffentlich-rechtlichen Verfahren verfügen, können wir diese effizient führen. Unsere Rechtsgutachten sind klar in Aufbau, Sprache und Konklusion. </p>' . "\r\n" . '<p>Den Erfolg unserer Arbeit führen wir auf eine offene und vertrauensvolle Klientenbeziehung zurück. Wir kommunizieren direkt, klar und ehrlich, sodass unsere Partner aus Wirtschaft und Verwaltung stets auf eine gründliche Chancen- und Risikoanalyse zählen dürfen.</p>' . "\r\n" . '<p> </p>';
+
+    if(!empty($fileDownload)) {
+        $output .= '<div class="download">';
+            $output .= '<a data-cursor-dynamic href="/media/'.$fileDownload.'" download="download">' . /* REX_VALUE[2] */ '' . '</a>';
+        $output .= '</div>';
+    }
+$output .= '</div>';
+
+echo $output;
+?>
+EOD_B72D17DAE2104C852761233DF8D05B50A09B4F2C
+);
+require rex_stream::factory('module/3/output', 
+<<<'EOD_B72D17DAE2104C852761233DF8D05B50A09B4F2C'
+<?php
+$links = rex_var::toArray(/* REX_VALUE[1] */ '[{&quot;REX_MEDIA_1&quot;:&quot;bildschirmfoto_2021-05-07_um_18.57.28.png&quot;,&quot;REX_LINK_1&quot;:&quot;9&quot;,&quot;external&quot;:&quot;&quot;,&quot;title&quot;:&quot;Kompetenzen&quot;,&quot;subtitle&quot;:&quot;Mehr Lesen&quot;},{&quot;REX_MEDIA_1&quot;:&quot;bildschirmfoto_2021-05-07_um_18.57.34.png&quot;,&quot;REX_LINK_1&quot;:&quot;10&quot;,&quot;external&quot;:&quot;&quot;,&quot;title&quot;:&quot;Aktuell&quot;,&quot;subtitle&quot;:&quot;Mehr Lesen&quot;}]');
+
+$output = '<div class="cta__squares component">';
+foreach($links as $link){
+    $image = $link['REX_MEDIA_1'];
+    $internalLink = $link['REX_LINK_1'];
+    $externalLink = $link['external'];
+    $title = $link['title'];
+    $subtitle = $link['subtitle'];
+    $isExternal = !empty($externalLink);
+
+    if(!empty($internalLink) ||!empty($externalLink)) {
+      $output .= $isExternal ? '<a href="" rel="noreferrer" data-cursor-dynamic target="_blank">' : '<a href="'.rex_article::get($internalLink)->getUrl().'" data-cursor-dynamic>';
+    }
+
+    $output .= '<div class="cta">';
+        $output .= '<div class="cta__image">'.Simplify::getPictureTag($image).'</div>';
+        $output .= '<div class="cta__content">';
+            $output .= '<div class="cta__title">'.$title.'</div>';
+            $output .= '<div class="cta__separator"></div>';
+            $output .= '<div class="cta__subtitle">'.$subtitle.'</div>';
+        $output .= '</div>';
+    $output .= '<div class="cta__more"></div>';
+    $output .= '</div>';
+
+    if(!empty($internalLink) ||!empty($externalLink)) {
+        $output .= '</a>';
+    }
+}
+$output .= '</div>';
+echo $output;
+?>
+EOD_B72D17DAE2104C852761233DF8D05B50A09B4F2C
+);
+require rex_stream::factory('module/12/output', 
+<<<'EOD_B72D17DAE2104C852761233DF8D05B50A09B4F2C'
+<?php
+$isBackToTop = !empty(/* REX_VALUE[3] */ '') ? ' scroll__to--top' : '';
+$notSloping = !empty(/* REX_VALUE[4] */ '') ? ' padding' : '';
+$anchor = !empty(/* REX_VALUE[2] */ '') ? ' id="#' . /* REX_VALUE[2] */ '' . '"' : '';
+$cursor = !empty($isBackToTop) ? ' data-cursor-dynamic' : '';
+$output = '<h2 class="subtitle component' . $isBackToTop . $notSloping . '"' . $anchor . $cursor . '>' . /* REX_VALUE[1] */ 'ADVOKATUR' . '</h2>';
+echo $output;
+?>
+EOD_B72D17DAE2104C852761233DF8D05B50A09B4F2C
+);
+require rex_stream::factory('module/4/output', 
+<<<'EOD_B72D17DAE2104C852761233DF8D05B50A09B4F2C'
+<?php
+$images = [/* REX_MEDIA[1] */ 'advokatur-barmet_mood_1.jpg',/* REX_MEDIA[2] */ 'advokatur-barmet_mood_2.jpg',/* REX_MEDIA[3] */ 'advokatur-barmet_mood_3.jpg',/* REX_MEDIA[4] */ 'advokatur-barmet_mood_4.jpg'];
+$url = !empty(/* REX_LINK[1] */ '8') ? rex_article::get(/* REX_LINK[1] */ '8', rex_clang::getCurrentId())->getUrl() : '';
+$title = !empty(/* REX_LINK[1] */ '8') ? rex_article::get(/* REX_LINK[1] */ '8', rex_clang::getCurrentId())->getName() : '';
+
+$output = !empty($url) ? '<a href="'.$url.'" title="'.$title.'" class="component thumb__link">' : '';
+$output .= '<div class="thumbnail__row" data-cursor-dynamic>';
+foreach($images as $image) {
+    $output .= '<div class="thumbnail">';
+
+        $output .= Simplify::getPictureTag($image);
+        //$output .= media_manager_plus_frontend::generatePictureTag($imgObj->getExtension(), $imgObj->getFileName());
+    $output .= '</div>';
+}
+$output .= '</div>';
+$output .= !empty($url) ? '</a>' : '';
+echo $output;
+?>
+EOD_B72D17DAE2104C852761233DF8D05B50A09B4F2C
+);
+require rex_stream::factory('module/12/output', 
+<<<'EOD_B72D17DAE2104C852761233DF8D05B50A09B4F2C'
+<?php
+$isBackToTop = !empty(/* REX_VALUE[3] */ '') ? ' scroll__to--top' : '';
+$notSloping = !empty(/* REX_VALUE[4] */ '') ? ' padding' : '';
+$anchor = !empty(/* REX_VALUE[2] */ '') ? ' id="#' . /* REX_VALUE[2] */ '' . '"' : '';
+$cursor = !empty($isBackToTop) ? ' data-cursor-dynamic' : '';
+$output = '<h2 class="subtitle component' . $isBackToTop . $notSloping . '"' . $anchor . $cursor . '>' . /* REX_VALUE[1] */ 'KOMPETENZEN' . '</h2>';
+echo $output;
+?>
+EOD_B72D17DAE2104C852761233DF8D05B50A09B4F2C
+);
+require rex_stream::factory('module/5/output', 
+<<<'EOD_B72D17DAE2104C852761233DF8D05B50A09B4F2C'
+<?php
+$alignment = /* REX_VALUE[1] */ 'left';
+$text = /* REX_VALUE[id=2 output=html] */ '<p>Als Boutiquekanzlei für spezialisierte Rechtsdienstleistungen im öffentlichen Recht berät Advokatur Barmet Staat, Wirtschaft und Privatpersonen bei rechtlichen, politischen und strategischen Herausforderungen. </p>';
+$links = rex_var::toArray(/* REX_VALUE[3] */ '[{&quot;linkText&quot;:&quot;&quot;,&quot;REX_LINK_3&quot;:&quot;9&quot;,&quot;anchor&quot;:&quot;&quot;,&quot;external&quot;:&quot;&quot;},{&quot;linkText&quot;:&quot;&quot;,&quot;REX_LINK_3&quot;:&quot;9&quot;,&quot;anchor&quot;:&quot;&quot;,&quot;external&quot;:&quot;&quot;}]');
+
+$output = '<div class="image__text component '.$alignment.'">';
+
+    $output .= '<div class="col">';
+        $output .= Simplify::getPictureTag(/* REX_MEDIA[1] */ 'advokatur-barmet-startseite-kompetenzen_einzelbild.jpg');
+    $output .= '</div>';
+
+    // Links
+    $alignClass = /* REX_VALUE[5] */ '' === 'label' ? ' no-center' : '';
+    $output .= '<div class="col'.$alignClass.'">';
+        $output .= '<div class="text paragraph">';
+        $output .= $text;
+        if(!empty($links)) {
+            $output .= '<div class="links">';
+            foreach($links as $link) {
+                $anchorAttribute = !empty($link['anchor']) ? ' data-anchor="#'.$link['anchor'].'"' : '';
+                $isExternal = !empty($link['external']);
+                $linkText = $link['linkText'];
+
+                if($isExternal) {
+                    $output .= '<a href="'.Simplify::formatLink($link['external']).'" data-cursor-dynamic rel="noreferrer" target="_blank">'.$linkText.'</a>';
+                } else {
+                    $output .= !empty($link['REX_LINK_3']) ? '<a href="'.rex_article::get($link['REX_LINK_3'], rex_clang::getCurrentId())->getUrl().'" data-cursor-dynamic>'.$linkText.'</a>' : '';
+                }
+            }
+            $output .= '</div>';
+        }
+        $output .= '</div>';
+    $output .= '</div>';
+
+$output .= '</div>';
+echo $output;
+
+?>
+EOD_B72D17DAE2104C852761233DF8D05B50A09B4F2C
+);
+require rex_stream::factory('module/12/output', 
+<<<'EOD_B72D17DAE2104C852761233DF8D05B50A09B4F2C'
+<?php
+$isBackToTop = !empty(/* REX_VALUE[3] */ '') ? ' scroll__to--top' : '';
+$notSloping = !empty(/* REX_VALUE[4] */ '') ? ' padding' : '';
+$anchor = !empty(/* REX_VALUE[2] */ '') ? ' id="#' . /* REX_VALUE[2] */ '' . '"' : '';
+$cursor = !empty($isBackToTop) ? ' data-cursor-dynamic' : '';
+$output = '<h2 class="subtitle component' . $isBackToTop . $notSloping . '"' . $anchor . $cursor . '>' . /* REX_VALUE[1] */ 'AKTUELL' . '</h2>';
+echo $output;
+?>
+EOD_B72D17DAE2104C852761233DF8D05B50A09B4F2C
+);
+require rex_stream::factory('module/6/output', 
+<<<'EOD_B72D17DAE2104C852761233DF8D05B50A09B4F2C'
+<?php
+$article = rex_article::get(/* REX_LINK[1] */ '10', rex_clang::getCurrentId());
+if(!empty($article)) {
+    $slices = rex_article_slice::getSlicesForArticle($article->getId(), rex_clang::getCurrentId());
+    foreach($slices as $slice) {
+        if($slice->getModuleId() === 8) {
+            $title = $slice->getValue(1);
+            $date = str_replace('.', ' / ', $slice->getValue(2));
+            $mediaList = explode(',', $slice->getMediaList(1));
+
+            $output = '<a href="'.$article->getUrl().'" data-cursor-dynamic>';
+            $output .= '<div class="news__preview component">';
+                $output .= '<div class="col">';
+                    $output .= '<div class="news__meta">';
+                        $output .= '<div class="news__title">'.$title.'</div>';
+                        $output .= '<div class="news__divider"></div>';
+                        $output .= '<div class="news__date">'.$date.'</div>';
+                    $output .= '</div>';
+                    $output .= '<div class="news__more"></div>';
+                $output .= '</div>';
+
+                $output .= '<div class="col">';
+                    if(!empty($mediaList[0])) {
+                        $output .= Simplify::getPictureTag($mediaList[0]);
+                    }
+                $output .= '</div>';
+            $output .= '</div>';
+
+            $output .= '</a>';
+            echo $output;
+            break;
+        }
+    }
+}
+?>
+EOD_B72D17DAE2104C852761233DF8D05B50A09B4F2C
+);
+require rex_stream::factory('module/12/output', 
+<<<'EOD_B72D17DAE2104C852761233DF8D05B50A09B4F2C'
+<?php
+$isBackToTop = !empty(/* REX_VALUE[3] */ 'label') ? ' scroll__to--top' : '';
+$notSloping = !empty(/* REX_VALUE[4] */ '') ? ' padding' : '';
+$anchor = !empty(/* REX_VALUE[2] */ '') ? ' id="#' . /* REX_VALUE[2] */ '' . '"' : '';
+$cursor = !empty($isBackToTop) ? ' data-cursor-dynamic' : '';
+$output = '<h2 class="subtitle component' . $isBackToTop . $notSloping . '"' . $anchor . $cursor . '>' . /* REX_VALUE[1] */ 'Back to Top' . '</h2>';
+echo $output;
+?>
+EOD_B72D17DAE2104C852761233DF8D05B50A09B4F2C
+);
+require rex_stream::factory('module/7/output', 
+<<<'EOD_B72D17DAE2104C852761233DF8D05B50A09B4F2C'
+<?php
+$output = '<div class="contact component">';
+    $output .= '<div class="title">Contact</div>';
+    $output .= '<div class="address__line">' . /* REX_VALUE[1] */ 'UNIVERSITÄTSTRASSE 65' . '<br>' . /* REX_VALUE[2] */ '8006 ZUERICH' . '</div>';
+    $output .= '<div class="address__line">' . /* REX_VALUE[3] */ ' +41 44 201 70 07' . '<br><a data-cursor-dynamic href="mailto:' . /* REX_VALUE[4] */ 'barmet@advokaturbarmet.ch' . '">' . /* REX_VALUE[4] */ 'barmet@advokaturbarmet.ch' . '</a></div>';
+    $output .= !empty(/* REX_VALUE[5] */ 'ADVOKATUR BARMET, UNIVERSITÄTSTRASSE 65, POSTFACH 396, 8042 ZÜRICH') ? '<div class="mailbox">Postadresse: ' . /* REX_VALUE[5] */ 'ADVOKATUR BARMET, UNIVERSITÄTSTRASSE 65, POSTFACH 396, 8042 ZÜRICH' . '</div>' : '';
+$output .= '</div>';
+echo $output;
+?>
+EOD_B72D17DAE2104C852761233DF8D05B50A09B4F2C
+);
+
+ } ?>

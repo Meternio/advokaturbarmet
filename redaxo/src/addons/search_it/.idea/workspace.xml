@@ -1,0 +1,755 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand />
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="b7446738-a2fa-4f0c-8143-c94ec80f99c7" name="Default" comment="Release 6.7.3" />
+    <list id="23b19c26-1971-4374-a498-479843d8a519" name="Die Tabellen sind nicht automatisch im Backup enthalten (mit &quot;tmp_&quot;-Präfix versehen)" comment="" />
+    <list id="d0157a80-12ff-4476-b7c7-0dcc93fb1cad" name="Revert &quot;Die Tabellen sind nicht automatisch im Backup enthalten (mit &quot;tmp_&quot;-Präfix versehen)&quot;" comment="Revert &quot;Die Tabellen sind nicht automatisch im Backup enthalten (mit &quot;tmp_&quot;-Präfix versehen)&quot;&#10;&#10;This reverts commit 8fb02b5f" />
+    <list id="174224c4-1f30-4607-9672-2e3789e97bb2" name="test" comment="test" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings">
+    <execution />
+  </component>
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="Git.Settings">
+    <excluded-from-favorite>
+      <branch-storage>
+        <map>
+          <entry type="REMOTE">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="origin/master" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </excluded-from-favorite>
+    <favorite-branches>
+      <branch-storage>
+        <map>
+          <entry type="REMOTE">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="upstream/master" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </favorite-branches>
+    <option name="PUSH_TAGS">
+      <GitPushTagMode>
+        <option name="argument" value="--tags" />
+        <option name="title" value="All" />
+      </GitPushTagMode>
+    </option>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
+  </component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="hiddenUrls">
+      <set>
+        <option value="https://github.com/FriendsOfREDAXO/search_it.git" />
+      </set>
+    </option>
+  </component>
+  <component name="ProjectId" id="1OmAhVe44tE1kUgLDFQpiEcXzyJ" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="Git.Branch.Popup.ShowAllRemotes" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="js-jscs-nodeInterpreter" value="C:\Program Files\nodejs\node.exe" />
+    <property name="js.eslint.eslintPackage" value="" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../../../../../../picard-2020/shop/source" />
+    <property name="nodejs_interpreter_path" value="C:/Program Files/nodejs/node" />
+    <property name="settings.editor.selected.configurable" value="preferences.sourceCode" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\xampp\htdocs\redaxo\redaxo\src\addons\search_it" />
+      <recent name="D:\xampp\htdocs\redaxo\redaxo\src\addons\search_it\plugins\documentation\docs\de_de" />
+      <recent name="D:\xampp\htdocs\redaxo\redaxo\src\addons\search_it\plugins\autocomplete\assets" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="js.build_tools.gulp">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <gulpfile />
+      <tasks />
+      <arguments />
+      <envs />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b7446738-a2fa-4f0c-8143-c94ec80f99c7" name="Default" comment="" />
+      <changelist id="23b19c26-1971-4374-a498-479843d8a519" name="Die Tabellen sind nicht automatisch im Backup enthalten (mit &quot;tmp_&quot;-Präfix versehen)" comment="" />
+      <changelist id="174224c4-1f30-4607-9672-2e3789e97bb2" name="test" comment="" />
+      <created>1488457616484</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1488457616484</updated>
+      <workItem from="1488457617786" duration="30000" />
+      <workItem from="1489670525098" duration="9106000" />
+      <workItem from="1489916165855" duration="5272000" />
+      <workItem from="1490000887768" duration="72256000" />
+      <workItem from="1490375045826" duration="2648000" />
+      <workItem from="1490526163762" duration="9243000" />
+      <workItem from="1491818975060" duration="2589000" />
+      <workItem from="1496871586155" duration="16000" />
+      <workItem from="1502355242455" duration="4988000" />
+      <workItem from="1502394112150" duration="1849000" />
+      <workItem from="1502436548151" duration="753000" />
+      <workItem from="1502956332197" duration="15487000" />
+      <workItem from="1502986075947" duration="251000" />
+      <workItem from="1504166329303" duration="648000" />
+      <workItem from="1504768974814" duration="6557000" />
+      <workItem from="1504776957881" duration="388000" />
+      <workItem from="1504829059853" duration="2101000" />
+      <workItem from="1504876680716" duration="250000" />
+      <workItem from="1504940186695" duration="664000" />
+      <workItem from="1504960043300" duration="13677000" />
+      <workItem from="1505119228769" duration="10607000" />
+      <workItem from="1505730971546" duration="4705000" />
+      <workItem from="1505807596305" duration="4228000" />
+      <workItem from="1505998649403" duration="697000" />
+      <workItem from="1506120082393" duration="7810000" />
+      <workItem from="1506164363883" duration="13940000" />
+      <workItem from="1506247218670" duration="31028000" />
+      <workItem from="1507122467511" duration="678000" />
+      <workItem from="1507546314625" duration="504000" />
+      <workItem from="1508770388758" duration="8000" />
+      <workItem from="1509029998141" duration="667000" />
+      <workItem from="1515148957083" duration="2376000" />
+      <workItem from="1515170813868" duration="1217000" />
+      <workItem from="1515181806250" duration="2993000" />
+      <workItem from="1515401894931" duration="2855000" />
+      <workItem from="1515758327374" duration="5495000" />
+      <workItem from="1516045886739" duration="31489000" />
+      <workItem from="1516192690217" duration="1643000" />
+      <workItem from="1516354088015" duration="658000" />
+      <workItem from="1516751126527" duration="1652000" />
+      <workItem from="1516965473030" duration="2415000" />
+      <workItem from="1517315917326" duration="2551000" />
+      <workItem from="1517496485109" duration="978000" />
+      <workItem from="1517916269542" duration="563000" />
+      <workItem from="1523718814137" duration="859000" />
+      <workItem from="1523864270156" duration="47000" />
+      <workItem from="1523892340987" duration="6520000" />
+      <workItem from="1529864409129" duration="834000" />
+      <workItem from="1529930904718" duration="11601000" />
+      <workItem from="1534152323082" duration="994000" />
+      <workItem from="1534193117184" duration="1880000" />
+      <workItem from="1538466604484" duration="158000" />
+      <workItem from="1543523992337" duration="5428000" />
+      <workItem from="1543708690188" duration="5448000" />
+      <workItem from="1543827237889" duration="189000" />
+      <workItem from="1544022580567" duration="668000" />
+      <workItem from="1544089710349" duration="2000" />
+      <workItem from="1546436547097" duration="4975000" />
+      <workItem from="1546505419076" duration="1279000" />
+      <workItem from="1546946302539" duration="624000" />
+      <workItem from="1549533215976" duration="6000" />
+      <workItem from="1549887328129" duration="632000" />
+      <workItem from="1549930673464" duration="2523000" />
+      <workItem from="1550225062678" duration="19059000" />
+      <workItem from="1550269623691" duration="3281000" />
+      <workItem from="1550482475286" duration="1248000" />
+      <workItem from="1550564473287" duration="1651000" />
+      <workItem from="1550657137042" duration="24000" />
+      <workItem from="1550748226793" duration="13999000" />
+      <workItem from="1550866307016" duration="28171000" />
+      <workItem from="1551267781575" duration="247000" />
+      <workItem from="1551698363240" duration="10194000" />
+      <workItem from="1552397889620" duration="1180000" />
+      <workItem from="1552828971192" duration="921000" />
+      <workItem from="1552907475062" duration="10638000" />
+      <workItem from="1552928251504" duration="5388000" />
+      <workItem from="1553685914114" duration="926000" />
+      <workItem from="1554370720112" duration="41000" />
+      <workItem from="1554376208459" duration="618000" />
+      <workItem from="1556525774748" duration="1182000" />
+      <workItem from="1557072086672" duration="3544000" />
+      <workItem from="1557135948756" duration="932000" />
+      <workItem from="1557144102869" duration="3587000" />
+      <workItem from="1558078964358" duration="4935000" />
+      <workItem from="1560940611482" duration="996000" />
+      <workItem from="1561244033254" duration="7476000" />
+      <workItem from="1561381017106" duration="5028000" />
+      <workItem from="1561631852183" duration="726000" />
+      <workItem from="1562970274941" duration="3819000" />
+      <workItem from="1563956657947" duration="2029000" />
+      <workItem from="1564041291709" duration="611000" />
+      <workItem from="1564572521015" duration="2256000" />
+      <workItem from="1564668781250" duration="603000" />
+      <workItem from="1564995121049" duration="4445000" />
+      <workItem from="1565181996853" duration="59000" />
+      <workItem from="1565188498552" duration="3838000" />
+      <workItem from="1565253309957" duration="12211000" />
+      <workItem from="1565770986539" duration="2830000" />
+      <workItem from="1565788226367" duration="49000" />
+      <workItem from="1568199172365" duration="3848000" />
+      <workItem from="1568790793300" duration="1624000" />
+      <workItem from="1569240906054" duration="8622000" />
+      <workItem from="1569939120331" duration="1355000" />
+      <workItem from="1570006984613" duration="4101000" />
+      <workItem from="1570032310131" duration="1375000" />
+      <workItem from="1571930407943" duration="659000" />
+      <workItem from="1573043155535" duration="10443000" />
+      <workItem from="1573073281434" duration="4110000" />
+      <workItem from="1573122567558" duration="108000" />
+      <workItem from="1573557118659" duration="5310000" />
+      <workItem from="1576314774075" duration="672000" />
+      <workItem from="1577485784178" duration="870000" />
+      <workItem from="1580858147575" duration="633000" />
+      <workItem from="1580903001464" duration="594000" />
+      <workItem from="1582015813197" duration="3076000" />
+      <workItem from="1582315537795" duration="11279000" />
+      <workItem from="1582358458918" duration="25641000" />
+      <workItem from="1582415017528" duration="818000" />
+      <workItem from="1585136987667" duration="6264000" />
+      <workItem from="1585433064410" duration="1178000" />
+      <workItem from="1585564586909" duration="38587000" />
+      <workItem from="1585913881644" duration="4648000" />
+      <workItem from="1586167089406" duration="617000" />
+      <workItem from="1586265151457" duration="819000" />
+      <workItem from="1586355791358" duration="6060000" />
+      <workItem from="1586823824832" duration="12000" />
+      <workItem from="1586873527674" duration="5740000" />
+      <workItem from="1586945329651" duration="639000" />
+      <workItem from="1586956656092" duration="662000" />
+      <workItem from="1586968107952" duration="957000" />
+      <workItem from="1587807099041" duration="11355000" />
+      <workItem from="1588688892891" duration="6082000" />
+      <workItem from="1594886328331" duration="668000" />
+      <workItem from="1595365117615" duration="1246000" />
+      <workItem from="1596054700446" duration="1615000" />
+      <workItem from="1597143140912" duration="2272000" />
+      <workItem from="1597220226241" duration="628000" />
+      <workItem from="1597240068893" duration="18000" />
+      <workItem from="1597745428506" duration="1764000" />
+      <workItem from="1597835171001" duration="612000" />
+      <workItem from="1600776978998" duration="4686000" />
+      <workItem from="1601034385323" duration="15000" />
+      <workItem from="1602599186540" duration="4020000" />
+    </task>
+    <task id="LOCAL-00043" summary="versuch fix PHP 7.3">
+      <created>1550226551735</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1550226551735</updated>
+    </task>
+    <task id="LOCAL-00044" summary="versuch fix PHP 7.3">
+      <created>1550748302592</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1550748302592</updated>
+    </task>
+    <task id="LOCAL-00045" summary="fix highlighter">
+      <created>1550751814281</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1550751814281</updated>
+    </task>
+    <task id="LOCAL-00046" summary="fix highlighter">
+      <created>1550752713447</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1550752713447</updated>
+    </task>
+    <task id="LOCAL-00047" summary="fix highlighter Vers. 2">
+      <created>1551098702425</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1551098702426</updated>
+    </task>
+    <task id="LOCAL-00048" summary="fix highlighter Vers. 2">
+      <created>1551099758752</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1551099758752</updated>
+    </task>
+    <task id="LOCAL-00049" summary="changelog">
+      <created>1551099920792</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1551099920792</updated>
+    </task>
+    <task id="LOCAL-00050" summary="reindex reworked, release">
+      <created>1551107443081</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1551107443082</updated>
+    </task>
+    <task id="LOCAL-00051" summary="reindex reworked, release">
+      <created>1551108737626</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1551108737626</updated>
+    </task>
+    <task id="LOCAL-00052" summary="reindex reworked, release">
+      <created>1551109562624</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1551109562624</updated>
+    </task>
+    <task id="LOCAL-00053" summary="versionnumbers fixed">
+      <created>1551109934582</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1551109934582</updated>
+    </task>
+    <task id="LOCAL-00054" summary="fix schrittweise Indexierung">
+      <created>1551707226029</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1551707226030</updated>
+    </task>
+    <task id="LOCAL-00055" summary="fix Testsuche">
+      <created>1551710606853</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1551710606853</updated>
+    </task>
+    <task id="LOCAL-00056" summary="Release 6.6.5">
+      <created>1551710852166</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1551710852166</updated>
+    </task>
+    <task id="LOCAL-00057" summary="Release 6.6.5">
+      <created>1552932334822</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1552932334823</updated>
+    </task>
+    <task id="LOCAL-00058" summary="Fix für Docker 2">
+      <created>1552932734009</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1552932734009</updated>
+    </task>
+    <task id="LOCAL-00059" summary="Fix für #202 EP CAT_STATUS deindexiert nicht Kategorie-Startartikel">
+      <created>1558085480531</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1558085480533</updated>
+    </task>
+    <task id="LOCAL-00060" summary="Verbesserte, übersetzte Fehlermeldungen, korrekte Verwendung des jeweiligen Protokolls bei Weiterleitungen">
+      <created>1565344639590</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1565344639591</updated>
+    </task>
+    <task id="LOCAL-00061" summary="Verbesserte, übersetzte Fehlermeldungen, korrekte Verwendung des jeweiligen Protokolls bei Weiterleitungen">
+      <created>1565773213611</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1565773213612</updated>
+    </task>
+    <task id="LOCAL-00062" summary="In Blacklist sind auch offline Kategorien auswählbar #215">
+      <created>1568207061150</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1568207061152</updated>
+    </task>
+    <task id="LOCAL-00063" summary="u.U. nichts indexiert, wenn REX_ARTICLE[] mehrfach verwendet wurde">
+      <created>1569362189675</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1569362189676</updated>
+    </task>
+    <task id="LOCAL-00064" summary="Fehler bei konfigurierten, aber nicht mehr existenten Spalten oder Tabellen #222">
+      <created>1573062675191</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1573062675191</updated>
+    </task>
+    <task id="LOCAL-00065" summary="falsche Übersetzungen entfernt, install.sql -&gt;install.php">
+      <created>1573085401044</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1573085401044</updated>
+    </task>
+    <task id="LOCAL-00066" summary="falsche Übersetzungen entfernt, install.sql -&gt;install.php">
+      <created>1573085792570</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1573085792570</updated>
+    </task>
+    <task id="LOCAL-00067" summary="Artikel bei schrittweiser Indexierung sind verlinkt closes #233">
+      <created>1582318513225</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1582318513226</updated>
+    </task>
+    <task id="LOCAL-00068" summary="mindest REDAXO-Version gesetzt closes #232">
+      <created>1582320036852</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1582320036852</updated>
+    </task>
+    <task id="LOCAL-00069" summary="mindest REDAXO-Version gesetzt closes #232">
+      <created>1582320864712</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1582320864712</updated>
+    </task>
+    <task id="LOCAL-00070" summary="jetzt wirklich: Mindest-PHP-Version gesetzt closes #232">
+      <created>1582326174773</created>
+      <option name="number" value="00070" />
+      <option name="presentableId" value="LOCAL-00070" />
+      <option name="project" value="LOCAL" />
+      <updated>1582326174773</updated>
+    </task>
+    <task id="LOCAL-00071" summary="jetzt wirklich: Mindest-PHP-Version gesetzt closes #232">
+      <created>1582327523035</created>
+      <option name="number" value="00071" />
+      <option name="presentableId" value="LOCAL-00071" />
+      <option name="project" value="LOCAL" />
+      <updated>1582327523035</updated>
+    </task>
+    <task id="LOCAL-00072" summary="jetzt wirklich: Mindest-PHP-Version gesetzt">
+      <created>1582327796679</created>
+      <option name="number" value="00072" />
+      <option name="presentableId" value="LOCAL-00072" />
+      <option name="project" value="LOCAL" />
+      <updated>1582327796679</updated>
+    </task>
+    <task id="LOCAL-00073" summary="Die Tabellen sind nicht automatisch im Backup enthalten (mit &quot;tmp_&quot;-Präfix versehen)">
+      <created>1582366643890</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1582366643890</updated>
+    </task>
+    <task id="LOCAL-00074" summary="Die Tabellen sind nicht automatisch im Backup enthalten (mit &quot;tmp_&quot;-Präfix versehen)">
+      <created>1582367303030</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1582367303030</updated>
+    </task>
+    <task id="LOCAL-00075" summary="Die Tabellen sind nicht automatisch im Backup enthalten (jetzt ohne ooops)">
+      <created>1582378255112</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1582378255112</updated>
+    </task>
+    <task id="LOCAL-00076" summary="Die Tabellen sind nicht automatisch im Backup enthalten (jetzt ohne ooops)">
+      <created>1582379523795</created>
+      <option name="number" value="00076" />
+      <option name="presentableId" value="LOCAL-00076" />
+      <option name="project" value="LOCAL" />
+      <updated>1582379523795</updated>
+    </task>
+    <task id="LOCAL-00077" summary="Die Tabellen sind nicht automatisch im Backup enthalten (jetzt ohne whooops)">
+      <created>1582383385136</created>
+      <option name="number" value="00077" />
+      <option name="presentableId" value="LOCAL-00077" />
+      <option name="project" value="LOCAL" />
+      <updated>1582383385136</updated>
+    </task>
+    <task id="LOCAL-00078" summary="Die Tabellen sind nicht automatisch im Backup enthalten (jetzt auch mit dem richtigen Prefix)">
+      <created>1582394637461</created>
+      <option name="number" value="00078" />
+      <option name="presentableId" value="LOCAL-00078" />
+      <option name="project" value="LOCAL" />
+      <updated>1582394637462</updated>
+    </task>
+    <task id="LOCAL-00079" summary="jetzt mit search_it_getUrlAddOnTableName()">
+      <created>1585839615723</created>
+      <option name="number" value="00079" />
+      <option name="presentableId" value="LOCAL-00079" />
+      <option name="project" value="LOCAL" />
+      <updated>1585839615723</updated>
+    </task>
+    <task id="LOCAL-00080" summary="jetzt mit search_it_getUrlAddOnTableName()">
+      <created>1585863235956</created>
+      <option name="number" value="00080" />
+      <option name="presentableId" value="LOCAL-00080" />
+      <option name="project" value="LOCAL" />
+      <updated>1585863235957</updated>
+    </task>
+    <task id="LOCAL-00081" summary="noch den Kommentar weg">
+      <created>1585866998852</created>
+      <option name="number" value="00081" />
+      <option name="presentableId" value="LOCAL-00081" />
+      <option name="project" value="LOCAL" />
+      <updated>1585866998852</updated>
+    </task>
+    <task id="LOCAL-00082" summary="Ist schon zu spät">
+      <created>1585867977656</created>
+      <option name="number" value="00082" />
+      <option name="presentableId" value="LOCAL-00082" />
+      <option name="project" value="LOCAL" />
+      <updated>1585867977656</updated>
+    </task>
+    <task id="LOCAL-00083" summary="Beim &quot;Davorsetzen&quot; entsteht die umgekehrte Reihenfolge, daher vorher einmal rumdrehen...">
+      <created>1585916053628</created>
+      <option name="number" value="00083" />
+      <option name="presentableId" value="LOCAL-00083" />
+      <option name="project" value="LOCAL" />
+      <updated>1585916053629</updated>
+    </task>
+    <task id="LOCAL-00084" summary="showTables is deprecated --&gt; getTablesAndViews">
+      <created>1585916872813</created>
+      <option name="number" value="00084" />
+      <option name="presentableId" value="LOCAL-00084" />
+      <option name="project" value="LOCAL" />
+      <updated>1585916872813</updated>
+    </task>
+    <task id="LOCAL-00085" summary="release">
+      <created>1587913718157</created>
+      <option name="number" value="00085" />
+      <option name="presentableId" value="LOCAL-00085" />
+      <option name="project" value="LOCAL" />
+      <updated>1587913718157</updated>
+    </task>
+    <task id="LOCAL-00086" summary="Fix stats plugin - kein tmp Präfix nutzen">
+      <created>1588371803838</created>
+      <option name="number" value="00086" />
+      <option name="presentableId" value="LOCAL-00086" />
+      <option name="project" value="LOCAL" />
+      <updated>1588371803838</updated>
+    </task>
+    <task id="LOCAL-00087" summary="Fix stats plugin 2">
+      <created>1588689859261</created>
+      <option name="number" value="00087" />
+      <option name="presentableId" value="LOCAL-00087" />
+      <option name="project" value="LOCAL" />
+      <updated>1588689859261</updated>
+    </task>
+    <task id="LOCAL-00088" summary="Fix syslog error messages">
+      <created>1600804334982</created>
+      <option name="number" value="00088" />
+      <option name="presentableId" value="LOCAL-00088" />
+      <option name="project" value="LOCAL" />
+      <updated>1600804334982</updated>
+    </task>
+    <task id="LOCAL-00089" summary="changelog">
+      <created>1600805281260</created>
+      <option name="number" value="00089" />
+      <option name="presentableId" value="LOCAL-00089" />
+      <option name="project" value="LOCAL" />
+      <updated>1600805281260</updated>
+    </task>
+    <task id="LOCAL-00090" summary="Add index on column &quot;hash&quot; in table rex_tmp_search_it_cache">
+      <created>1602600701381</created>
+      <option name="number" value="00090" />
+      <option name="presentableId" value="LOCAL-00090" />
+      <option name="project" value="LOCAL" />
+      <updated>1602600701381</updated>
+    </task>
+    <task id="LOCAL-00091" summary="Release 6.7.3">
+      <created>1602605256690</created>
+      <option name="number" value="00091" />
+      <option name="presentableId" value="LOCAL-00091" />
+      <option name="project" value="LOCAL" />
+      <updated>1602605256691</updated>
+    </task>
+    <option name="localTasksCounter" value="92" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="1">
+          <value>
+            <State>
+              <option name="SHOW_ONLY_AFFECTED_CHANGES" value="true" />
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="HEAD" />
+                      </list>
+                    </value>
+                  </entry>
+                  <entry key="structure">
+                    <value>
+                      <list>
+                        <option value="dir:D:/xampp/htdocs/redaxo/redaxo/src/addons/search_it/plugins/documentation" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="OPEN_GENERIC_TABS">
+      <map>
+        <entry key="1" value="TOOL_WINDOW" />
+      </map>
+    </option>
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="origin/master" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="master" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="HEAD" />
+                </option>
+              </RecentGroup>
+            </list>
+          </value>
+        </entry>
+        <entry key="User">
+          <value>
+            <list />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_NEW_TODO" value="false" />
+    <MESSAGE value="Fix für #202 EP CAT_STATUS deindexiert nicht Kategorie-Startartikel" />
+    <MESSAGE value="Verbesserte, übersetzte Fehlermeldungen, korrekte Verwendung des jeweiligen Protokolls bei Weiterleitungen" />
+    <MESSAGE value="In Blacklist sind auch offline Kategorien auswählbar #215" />
+    <MESSAGE value="u.U. nichts indexiert, wenn REX_ARTICLE[] mehrfach verwendet wurde" />
+    <MESSAGE value="Fehler bei konfigurierten, aber nicht mehr existenten Spalten oder Tabellen #222" />
+    <MESSAGE value="falsche Übersetzungen entfernt, install.sql -&gt;install.php" />
+    <MESSAGE value="Artikel bei schrittweiser Indexierung sind verlinkt closes #233" />
+    <MESSAGE value="mindest REDAXO-Version gesetzt closes #232" />
+    <MESSAGE value="jetzt wirklich: Mindest-PHP-Version gesetzt closes #232" />
+    <MESSAGE value="jetzt wirklich: Mindest-PHP-Version gesetzt" />
+    <MESSAGE value="Die Tabellen sind nicht automatisch im Backup enthalten (mit &quot;tmp_&quot;-Präfix versehen)" />
+    <MESSAGE value="Die Tabellen sind nicht automatisch im Backup enthalten (jetzt ohne whooops)" />
+    <MESSAGE value="Die Tabellen sind nicht automatisch im Backup enthalten (jetzt auch mit dem richtigen Prefix)" />
+    <MESSAGE value="jetzt mit search_it_getUrlAddOnTableName()" />
+    <MESSAGE value="noch den Kommentar weg" />
+    <MESSAGE value="Ist schon zu spät" />
+    <MESSAGE value="Beim &quot;Davorsetzen&quot; entsteht die umgekehrte Reihenfolge, daher vorher einmal rumdrehen..." />
+    <MESSAGE value="showTables is deprecated --&gt; getTablesAndViews" />
+    <MESSAGE value="release" />
+    <MESSAGE value="Fix stats plugin - kein tmp Präfix nutzen" />
+    <MESSAGE value="Fix stats plugin 2" />
+    <MESSAGE value="Fix syslog error messages" />
+    <MESSAGE value="changelog" />
+    <MESSAGE value="Add index on column &quot;hash&quot; in table rex_tmp_search_it_cache" />
+    <MESSAGE value="Release 6.7.3" />
+    <option name="LAST_COMMIT_MESSAGE" value="Release 6.7.3" />
+    <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="470" y="24" key="CommitChangelistDialog2" timestamp="1602605255829">
+      <screen x="0" y="0" width="1646" height="886" />
+    </state>
+    <state x="470" y="24" key="CommitChangelistDialog2/0.0.1646.886@0.0.1646.886" timestamp="1602605255829" />
+    <state x="548" y="89" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1600805280309" />
+    <state x="80" y="79" width="1488" height="729" key="DiffContextDialog" timestamp="1602605453244">
+      <screen x="0" y="0" width="1646" height="886" />
+    </state>
+    <state x="80" y="79" width="1488" height="729" key="DiffContextDialog/0.0.1646.886@0.0.1646.886" timestamp="1602605453244" />
+    <state x="93" y="93" width="1735" height="855" key="DiffContextDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1597753470261" />
+    <state x="652" y="157" key="RollbackChangesDialog" timestamp="1602600683028">
+      <screen x="0" y="0" width="1646" height="886" />
+    </state>
+    <state x="652" y="157" key="RollbackChangesDialog/0.0.1646.886@0.0.1646.886" timestamp="1602600683028" />
+    <state x="474" y="204" key="Vcs.Push.Dialog.v2" timestamp="1602605389386">
+      <screen x="0" y="0" width="1646" height="886" />
+    </state>
+    <state x="474" y="204" key="Vcs.Push.Dialog.v2/0.0.1646.886@0.0.1646.886" timestamp="1602605389386" />
+    <state x="553" y="240" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1600805284238" />
+    <state x="93" y="93" width="1735" height="855" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1600804904796">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="93" y="93" width="1735" height="855" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1600804904796" />
+    <state x="524" y="162" width="1031" height="592" key="find.popup" timestamp="1602605137718">
+      <screen x="0" y="0" width="1646" height="886" />
+    </state>
+    <state x="524" y="162" width="1031" height="592" key="find.popup/0.0.1646.886@0.0.1646.886" timestamp="1602605137718" />
+    <state x="611" y="190" width="1202" height="592" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1600777555513" />
+  </component>
+</project>

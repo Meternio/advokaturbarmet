@@ -1,0 +1,58 @@
+@mixin for-tablet-landscape {
+    @media (max-width: $breakpoint-tablet-landscape) {
+        @content;
+    }
+}
+
+@mixin for-tablet-portrait {
+    @media (max-width: $breakpoint-tablet-portrait) {
+        @content;
+    }
+}
+
+@mixin for-phone {
+    @media (max-width: $breakpoint-phone) {
+        @content;
+    }
+}
+
+@mixin for-hover {
+    @media (hover: hover) {
+        @content;
+    }
+}
+
+@mixin phone-only {
+    display: none !important;
+
+    @include for-phone {
+        @content;
+    }
+}
+
+@mixin no-phone {
+    @include for-phone {
+        display: none;
+    }
+}
+
+@mixin removeScrollbars {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+    }
+}
+
+// Base fontsize
+$html-font-size: 16px;
+
+@function stripUnit($value) {
+    @return $value / ($value * 0 + 1);
+}
+// Rem converter use as follow: font-size: rem(16px) or font-size: rem(16)
+@function rem($pxValue) {
+    @return #{stripUnit($pxValue) / stripUnit($html-font-size)}rem;
+}

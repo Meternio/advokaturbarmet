@@ -1,0 +1,46 @@
+.redactor-styles {
+    font-family: inherit;
+    line-height: inherit;
+}
+
+.redactor-box.redactor-styles-on .redactor-toolbar {
+    display: flex !important;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    flex-grow: 1;
+    padding: 0 4px;
+    background-color: #fafafa;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.075);
+    background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.075) 1.19%, #fafafa 1.19%, #fafafa 50%, rgba(0, 0, 0, 0.075) 50%, rgba(0, 0, 0, 0.075) 51.19%, #fafafa 51.19%, #fafafa 100%);
+    background-size: 84px 84px;
+}
+
+.redactor-toolbar a {
+    margin: 0 4px 0 0;
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.redactor-toolbar a.re-button {
+    margin-top: 4px;
+    margin-bottom: 4px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.redactor-toolbar a.re-button.re-separator {
+    display: inline-block;
+    align-self: stretch;
+    width: 1px;
+    min-width: 1px;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0.075);
+    opacity: 1;
+}
+
+.redactor-air a.re-button.re-separator {
+    display: none;
+}
+

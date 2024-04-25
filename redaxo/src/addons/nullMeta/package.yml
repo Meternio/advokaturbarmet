@@ -1,0 +1,20 @@
+package: nullMeta
+version: '0.0.1'
+author: Nulltype
+page:
+  title: 'SEO Basis und Meta'
+  icon: rex-icon fa-google # Icon von Font Awesome
+  perm: admin
+  pjax: false
+  prio: 1
+  subpages:
+    main:
+      title: 'SEO Basis und Metadaten'
+      icon: rex-icon fa-google
+default_config:
+  key: 'value'
+  key2: false
+requires:
+  redaxo: '^5.1'
+  php:
+    version: '^7.1'

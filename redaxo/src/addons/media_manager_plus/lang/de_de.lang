@@ -1,0 +1,41 @@
+#subpage types
+media_manager_plus_singletypes = Typen
+
+
+#subpage groups
+media_manager_plus_groups = Gruppen
+media_manager_plus_groups_norowsmessage = Es wurden keine Gruppen gefunden
+
+media_manager_plus_groups_action_edit = Gruppe bearbeiten
+media_manager_plus_groups_action_delete = Gruppe löschen
+media_manager_plus_groups_action_delete_success = Gruppe erfolgreich gelöscht
+
+media_manager_plus_groups_column_name = Name
+media_manager_plus_groups_column_functions = Funktionen
+
+media_manager_plus_groups_formcaption_add = Gruppe hinzufügen
+media_manager_plus_groups_formcaption_edit = Gruppe editieren
+
+media_manager_plus_groups_label_name = Name
+
+
+#subpage breakpoints
+media_manager_plus_breakpoints = Breakpoints
+media_manager_plus_breakpoints_norowsmessage = Es wurden keine Breakpoints gefunden
+
+media_manager_plus_breakpoints_column_name = Name
+media_manager_plus_breakpoints_column_mediaquery = Mediaquery
+
+media_manager_plus_breakpoints_formcaption_add = Breakpoint hinzufügen
+media_manager_plus_breakpoints_formcaption_edit = Breakpoint editieren
+
+media_manager_plus_breakpoints_label_name = Name
+media_manager_plus_breakpoints_label_mediaquery = Mediaquery
+
+media_manager_plus_readme = Media Manager Plus Hilfe
+
+#permissions
+perm_general_media_manager_plus[] = Rechte für Media Manager Plus-Addon
+perm_general_media_manager_plus[singletypes] = Rechte für die Seite 'Typen' des Media Manager Plus-Addons
+perm_general_media_manager_plus[groups] = Rechte für die Seite 'Gruppen' des Media Manager Plus-Addons
+perm_general_media_manager_plus[breakpoints] = Rechte für die Seite 'Breakpoints' des Media Manager Plus-Addons

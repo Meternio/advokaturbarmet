@@ -1,0 +1,21 @@
+package: media_manager_plus
+version: '2.1.2'
+author: Friends Of REDAXO
+supportpage: github.com/FriendsOfREDAXO/media_manager_plus
+
+pages:
+    media_manager/singletypes:
+        title: 'translate:singletypes'
+        perm: media_manager_plus[singletypes]
+    media_manager/groups:
+        title: 'translate:groups'
+        perm: media_manager_plus[groups]
+    media_manager/breakpoints:
+        title: 'translate:breakpoints'
+        perm: media_manager_plus[breakpoints]
+    media_manager/help:
+        title: 'translate:readme'
+        perm: media_manager_plus[readme]
+
+requires:
+    redaxo: '>=5.1.0'

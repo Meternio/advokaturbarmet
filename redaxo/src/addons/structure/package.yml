@@ -1,0 +1,28 @@
+package: structure
+version: '2.11.2'
+author: Markus Staab
+supportpage: https://github.com/redaxo/redaxo
+
+page:
+    title: translate:structure
+    perm: structure/hasStructurePerm
+    block: system
+    prio: 10
+    pjax: true
+    icon: rex-icon rex-icon-open-category
+
+pages:
+    linkmap:
+        title: translate:linkmap
+        main: true
+        block: system
+        popup: true
+        hidden: true
+        perm: structure/hasStructurePerm
+        pjax: true
+
+system_plugins: [content]
+
+requires:
+    php: '>=7.1'
+    redaxo: ^5.11.0

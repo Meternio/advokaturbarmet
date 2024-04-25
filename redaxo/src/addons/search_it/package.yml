@@ -1,0 +1,35 @@
+package: search_it
+version: '6.7.3'
+author: Friends Of REDAXO
+supportpage: https://github.com/FriendsOfREDAXO/search_it
+
+
+page:
+    title: 'translate:title'
+    perm: search_it[]
+    pjax: false
+    icon: rex-icon fa-search
+    subpages:
+        generate: { title: 'translate:generate', perm: search_it[generate], icon: rex-icon fa-tasks }
+        settings:
+            title: 'translate:settings'
+            perm: search_it[settings]
+            icon: rex-icon fa-wrench
+            subpages:
+                         mode: { title: 'translate:settings_mode' }
+                         result: { title: 'translate:settings_result' }
+                         addsources: { title: 'translate:settings_addsources' }
+                         blacklist: { title: 'translate:settings_blacklist' }
+        test: { title: 'translate:test', icon: rex-icon fa-flask }
+requires:
+    redaxo: '^5.5.0'
+    php: '^7'
+
+system_plugins:
+    - documentation
+
+plugins:
+    - plaintext
+    - stats
+
+

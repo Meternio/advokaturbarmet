@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="BRANCH:marcohanke_1.0.5" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </select>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="f226d62c-a724-43d3-b9a3-16ff274891d0" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings">
+    <execution />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
+  </component>
+  <component name="ProjectId" id="1gOmvSZ9Zi0UeRTdWKlb4ryVpUU" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SvnConfiguration">
+    <configuration>$USER_HOME$/.subversion</configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="f226d62c-a724-43d3-b9a3-16ff274891d0" name="Default Changelist" comment="" />
+      <created>1597994242931</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1597994242931</updated>
+      <workItem from="1597994243981" duration="10000" />
+      <workItem from="1598595615403" duration="11537000" />
+    </task>
+    <task id="LOCAL-00001" summary="update package.yml (yform dependency)">
+      <created>1598596779713</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1598596779713</updated>
+    </task>
+    <task id="LOCAL-00002" summary="add page Documentation (alexplusde)">
+      <created>1598597213895</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1598597213895</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Update package.yml (yform dependency)">
+      <created>1598607306613</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1598607306613</updated>
+    </task>
+    <task id="LOCAL-00004" summary="delete duplicated settings page">
+      <created>1598616646297</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1598616646297</updated>
+    </task>
+    <task id="LOCAL-00005" summary="comment unused fields">
+      <created>1598617374708</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1598617374708</updated>
+    </task>
+    <task id="LOCAL-00006" summary="change &quot;timer1/2&quot; Label">
+      <created>1598621006510</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1598621006510</updated>
+    </task>
+    <task id="LOCAL-00007" summary="merge Verbesserte debug-log-Ausgabe #24 (DanielWeitenauer)">
+      <created>1598621382103</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1598621382104</updated>
+    </task>
+    <task id="LOCAL-00008" summary="version bump">
+      <created>1598621777573</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1598621777573</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="marcohanke_1.0.5" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+    <MESSAGE value="update package.yml (yform dependency)" />
+    <MESSAGE value="add page Documentation (alexplusde)" />
+    <MESSAGE value="Update package.yml (yform dependency)" />
+    <MESSAGE value="delete duplicated settings page" />
+    <MESSAGE value="comment unused fields" />
+    <MESSAGE value="change Timer Wording" />
+    <MESSAGE value="change &quot;timer1/2&quot; Label" />
+    <MESSAGE value="merge Verbesserte debug-log-Ausgabe #24 (DanielWeitenauer)" />
+    <MESSAGE value="version bump" />
+    <option name="LAST_COMMIT_MESSAGE" value="version bump" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="1164" y="23" width="981" height="780" key="CommitChangelistDialog2" timestamp="1598621777474">
+      <screen x="0" y="23" width="3440" height="1367" />
+    </state>
+    <state x="1164" y="23" width="981" height="780" key="CommitChangelistDialog2/0.23.3440.1367/3440.0.1792.1120@0.23.3440.1367" timestamp="1598621777474" />
+    <state x="104" y="123" width="2094" height="1167" key="DiffContextDialog" timestamp="1598621315817">
+      <screen x="0" y="23" width="3440" height="1367" />
+    </state>
+    <state x="104" y="123" width="2094" height="1167" key="DiffContextDialog/0.23.3440.1367/3440.0.1792.1120@0.23.3440.1367" timestamp="1598621315817" />
+    <state x="915" y="580" key="Github.CreatePullRequestDialog" timestamp="1598621907179">
+      <screen x="0" y="23" width="3440" height="1367" />
+    </state>
+    <state x="915" y="580" key="Github.CreatePullRequestDialog/0.23.3440.1367/3440.0.1792.1120@0.23.3440.1367" timestamp="1598621907179" />
+    <state x="807" y="416" key="RollbackChangesDialog" timestamp="1598619646594">
+      <screen x="0" y="23" width="3440" height="1367" />
+    </state>
+    <state x="807" y="416" key="RollbackChangesDialog/0.23.3440.1367/3440.0.1792.1120@0.23.3440.1367" timestamp="1598619646594" />
+    <state x="747" y="446" key="Vcs.Push.Dialog.v2" timestamp="1598621789809">
+      <screen x="0" y="23" width="3440" height="1367" />
+    </state>
+    <state x="747" y="446" key="Vcs.Push.Dialog.v2/0.23.3440.1367/3440.0.1792.1120@0.23.3440.1367" timestamp="1598621789809" />
+    <state x="960" y="627" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1598597910826">
+      <screen x="0" y="23" width="3440" height="1367" />
+    </state>
+    <state x="960" y="627" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.3440.1367/3440.0.1792.1120@0.23.3440.1367" timestamp="1598597910826" />
+    <state x="833" y="426" key="git4idea.branch.GitSmartOperationDialog" timestamp="1598597898450">
+      <screen x="0" y="23" width="3440" height="1367" />
+    </state>
+    <state x="833" y="426" key="git4idea.branch.GitSmartOperationDialog/0.23.3440.1367/3440.0.1792.1120@0.23.3440.1367" timestamp="1598597898450" />
+    <state x="815" y="357" width="670" height="676" key="search.everywhere.popup" timestamp="1598616140611">
+      <screen x="0" y="23" width="3440" height="1367" />
+    </state>
+    <state x="815" y="357" width="670" height="676" key="search.everywhere.popup/0.23.3440.1367/3440.0.1792.1120@0.23.3440.1367" timestamp="1598616140611" />
+  </component>
+</project>

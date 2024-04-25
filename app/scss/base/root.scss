@@ -1,0 +1,15 @@
+:root {
+    --example-variable: 10px;
+    
+    @include for-tablet-landscape {
+    
+    }
+    
+    @include for-tablet-portrait {
+    
+    }
+    
+    @include for-phone {
+    
+    }
+}

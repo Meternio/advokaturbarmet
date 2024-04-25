@@ -1,0 +1,28 @@
+.offgrid {
+    display: flex;
+    width: 100%;
+    background: green;
+}
+
+.component {
+    display: flex;
+    background: blue;
+    max-width: $grid-width-desktop;
+    min-width: $grid-width-desktop;
+    margin: auto;
+
+    @include for-tablet-landscape {
+        max-width: $grid-width-tablet-landscape;
+        min-width: $grid-width-tablet-landscape;
+    }
+
+    @include for-tablet-portrait {
+        max-width: $grid-width-tablet-portrait;
+        min-width: $grid-width-tablet-portrait;
+    }
+
+    @include for-phone {
+        max-width: $grid-width-phone;
+        min-width: $grid-width-phone;
+    }
+}

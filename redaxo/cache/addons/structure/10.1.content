@@ -1,0 +1,1924 @@
+<?php if ($this->ctype == '1' || ($this->ctype == '-1')) { 
+require rex_stream::factory('module/12/output', 
+<<<'EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057'
+<?php
+$isBackToTop = !empty(/* REX_VALUE[3] */ 'label') ? ' scroll__to--top' : '';
+$notSloping = !empty(/* REX_VALUE[4] */ 'label') ? ' padding' : '';
+$anchor = !empty(/* REX_VALUE[2] */ '') ? ' id="#' . /* REX_VALUE[2] */ '' . '"' : '';
+$cursor = !empty($isBackToTop) ? ' data-cursor-dynamic' : '';
+$output = '<h2 class="subtitle component' . $isBackToTop . $notSloping . '"' . $anchor . $cursor . '>' . /* REX_VALUE[1] */ 'AKTUELL' . '</h2>';
+echo $output;
+?>
+EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057
+);
+require rex_stream::factory('module/8/output', 
+<<<'EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057'
+<?php
+$images = !empty(/* REX_MEDIALIST[1] */ 'bildschirmfoto_2021-05-07_um_18.57.28.png') ? explode(',', /* REX_MEDIALIST[1] */ 'bildschirmfoto_2021-05-07_um_18.57.28.png') : null;
+$output = '<div class="blog__post component closed">';
+$output .= '<div class="preview">';
+$output .= '<div class="col">';
+$output .= '<div class="preview__content">';
+$output .= '<div class="preview__title">' . /* REX_VALUE[1] */ 'Das A und O bei Referenzauskünften' . '</div>';
+$output .= '<div class="preview__divider"></div>';
+if(!empty(/* REX_VALUE[2] */ '13.02.2024')) {
+    $date = str_replace('.', ' / ', /* REX_VALUE[2] */ '13.02.2024');
+    $output .= '<div class="preview__date">DATE: ' . $date . '</div>';
+}
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$output .= '<div class="media__wrapper">';
+if (count($images) > 1 && !empty($images[0])) {
+    $output .= '<div class="swiper-container">';
+    $output .= '<div class="swiper-wrapper">';
+    foreach ($images as $image) {
+        $output .= '<div class="swiper-slide">';
+        //$output .= '<img src="'.$image.'"'>
+        $output .= Simplify::getPictureTag($image);
+        $output .= '</div>';
+    }
+    $output .= '</div>';
+    $output .= '<div class="swiper-pagination"></div>';
+    $output .= '</div>';
+} else {
+    if(!empty($images) && !empty($images[0])) {
+        $image = $images[0];
+        $output .= Simplify::getPictureTag($image);
+    }
+}
+$output .= '</div>';
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="blog__content">';
+$output .= '<div class="col">';
+$output .= '<div class="content__title">' . /* REX_VALUE[3] */ 'Das A und O bei Referenzauskünften' . '</div>';
+$output .= '<div class="content__text">' . /* REX_VALUE[id=4 output=html] */ '<p>Das Einholen von Referenzauskünften stellt eine wichtige Möglichkeit des Erkenntnisgewinns bei Bewerbungsverfahren dar. Die vorgesetzten Personen sind aber weder beim Einholen noch beim Erteilen völlig frei. Einerseits ist die Wahrheitspflicht zu beachten und anderseits darf bei der Referenzauskunft das Arbeitszeugnis vertieft, aber nicht erweitert werden.</p>' . '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$titleOutput = false;
+foreach ($images as $image) {
+    if (!empty($image)) {
+        $imageCredit = rex_media::get($image)->getValue('med_credits');
+    }
+
+    if (!empty($imageCredit)) {
+        if (!$titleOutput) {
+            $output .= '<div class="image__credit">Image Credits</div>';
+            $titleOutput = true;
+        }
+
+        $creditURL = rex_media::get($image)->getValue('med_credits_link');
+        $creditString = !empty($creditURL) ? '<a href="' . Simplify::formatLink($creditURL) . '" title="Credits: ' . $imageCredit . '">@' . $imageCredit . '</a>' : '@' . $imageCredit;
+        $output .= '<div class="image__credit">' . $creditString . '</div>';
+    }
+}
+
+$output .= !empty(/* REX_VALUE[id=5 output=html] */ '<p>Wer also eine Referenzauskunft erteilt, muss sich streng an das Skript (Arbeitszeugnis) halten.</p>') ? '<div class="content__text">' . /* REX_VALUE[id=5 output=html] */ '<p>Wer also eine Referenzauskunft erteilt, muss sich streng an das Skript (Arbeitszeugnis) halten.</p>' . '</div>' : '';
+
+$moreLink = /* REX_VALUE[7] */ 'Personalrechtsblog.ch';
+$moreURL = /* REX_VALUE[6] */ 'https://personalrechtsblog.ch/2024/02/13/das-a-und-o-bei-referenzauskuenften/';
+
+if (!empty($moreLink) && !empty($moreURL)) {
+    $output .= '<div class="content__link" data-cursor-dynamic><span>READ MORE:</span><a href="' . Simplify::formatLink($moreURL) . '" target="_blank" title="' . $moreLink . '">' . $moreLink . '</a></div>';
+}
+
+$output .= '</div>';
+$output .= '</div>';
+$output .= '<div class="blog__more" data-cursor-dynamic></div>';
+$output .= '</div>';
+echo $output;
+?>
+EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057
+);
+require rex_stream::factory('module/8/output', 
+<<<'EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057'
+<?php
+$images = !empty(/* REX_MEDIALIST[1] */ 'advokatur-barmet-anzeigebild-untersuchungen_1.jpg') ? explode(',', /* REX_MEDIALIST[1] */ 'advokatur-barmet-anzeigebild-untersuchungen_1.jpg') : null;
+$output = '<div class="blog__post component closed">';
+$output .= '<div class="preview">';
+$output .= '<div class="col">';
+$output .= '<div class="preview__content">';
+$output .= '<div class="preview__title">' . /* REX_VALUE[1] */ 'Neubeurteilung gemäss Gemeindegesetz – Risiken und Nebenwirkungen' . '</div>';
+$output .= '<div class="preview__divider"></div>';
+if(!empty(/* REX_VALUE[2] */ '18.01.2024')) {
+    $date = str_replace('.', ' / ', /* REX_VALUE[2] */ '18.01.2024');
+    $output .= '<div class="preview__date">DATE: ' . $date . '</div>';
+}
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$output .= '<div class="media__wrapper">';
+if (count($images) > 1 && !empty($images[0])) {
+    $output .= '<div class="swiper-container">';
+    $output .= '<div class="swiper-wrapper">';
+    foreach ($images as $image) {
+        $output .= '<div class="swiper-slide">';
+        //$output .= '<img src="'.$image.'"'>
+        $output .= Simplify::getPictureTag($image);
+        $output .= '</div>';
+    }
+    $output .= '</div>';
+    $output .= '<div class="swiper-pagination"></div>';
+    $output .= '</div>';
+} else {
+    if(!empty($images) && !empty($images[0])) {
+        $image = $images[0];
+        $output .= Simplify::getPictureTag($image);
+    }
+}
+$output .= '</div>';
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="blog__content">';
+$output .= '<div class="col">';
+$output .= '<div class="content__title">' . /* REX_VALUE[3] */ 'Neubeurteilung gemäss Gemeindegesetz – Risiken und Nebenwirkungen' . '</div>';
+$output .= '<div class="content__text">' . /* REX_VALUE[id=4 output=html] */ '<p>In einem aktuellen Entscheid&nbsp;hatte das Verwaltungsgericht in einer personalrechtlichen Angelegenheit unter anderem zu beurteilen, ob bei einem Neubeurteilungsverfahren gemäss Gemeindegesetz die aufschiebende Wirkung entzogen werden kann.</p>' . '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$titleOutput = false;
+foreach ($images as $image) {
+    if (!empty($image)) {
+        $imageCredit = rex_media::get($image)->getValue('med_credits');
+    }
+
+    if (!empty($imageCredit)) {
+        if (!$titleOutput) {
+            $output .= '<div class="image__credit">Image Credits</div>';
+            $titleOutput = true;
+        }
+
+        $creditURL = rex_media::get($image)->getValue('med_credits_link');
+        $creditString = !empty($creditURL) ? '<a href="' . Simplify::formatLink($creditURL) . '" title="Credits: ' . $imageCredit . '">@' . $imageCredit . '</a>' : '@' . $imageCredit;
+        $output .= '<div class="image__credit">' . $creditString . '</div>';
+    }
+}
+
+$output .= !empty(/* REX_VALUE[id=5 output=html] */ '<p>Es kam zum Schluss, dass das Gemeindegesetz eine <em>lex specialis</em> enthalte, die einem Entzug der aufschiebenden Wirkung entgegenstehe, weshalb die Kündigungsfrist nach Eröffnung des Neubeurteilungsentscheids neu zu laufen beginne.</p>') ? '<div class="content__text">' . /* REX_VALUE[id=5 output=html] */ '<p>Es kam zum Schluss, dass das Gemeindegesetz eine <em>lex specialis</em> enthalte, die einem Entzug der aufschiebenden Wirkung entgegenstehe, weshalb die Kündigungsfrist nach Eröffnung des Neubeurteilungsentscheids neu zu laufen beginne.</p>' . '</div>' : '';
+
+$moreLink = /* REX_VALUE[7] */ 'Personalrechtsblog.ch';
+$moreURL = /* REX_VALUE[6] */ 'https://personalrechtsblog.ch/2024/01/18/neubeurteilung-gemaess-gemeindegesetz-risiken-und-nebenwirkungen/';
+
+if (!empty($moreLink) && !empty($moreURL)) {
+    $output .= '<div class="content__link" data-cursor-dynamic><span>READ MORE:</span><a href="' . Simplify::formatLink($moreURL) . '" target="_blank" title="' . $moreLink . '">' . $moreLink . '</a></div>';
+}
+
+$output .= '</div>';
+$output .= '</div>';
+$output .= '<div class="blog__more" data-cursor-dynamic></div>';
+$output .= '</div>';
+echo $output;
+?>
+EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057
+);
+require rex_stream::factory('module/8/output', 
+<<<'EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057'
+<?php
+$images = !empty(/* REX_MEDIALIST[1] */ 'leawaser_advokaturbarmet_402.jpg') ? explode(',', /* REX_MEDIALIST[1] */ 'leawaser_advokaturbarmet_402.jpg') : null;
+$output = '<div class="blog__post component closed">';
+$output .= '<div class="preview">';
+$output .= '<div class="col">';
+$output .= '<div class="preview__content">';
+$output .= '<div class="preview__title">' . /* REX_VALUE[1] */ 'Einstellung im Amt als vorsorgliche Massnahme' . '</div>';
+$output .= '<div class="preview__divider"></div>';
+if(!empty(/* REX_VALUE[2] */ '05.12.2023')) {
+    $date = str_replace('.', ' / ', /* REX_VALUE[2] */ '05.12.2023');
+    $output .= '<div class="preview__date">DATE: ' . $date . '</div>';
+}
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$output .= '<div class="media__wrapper">';
+if (count($images) > 1 && !empty($images[0])) {
+    $output .= '<div class="swiper-container">';
+    $output .= '<div class="swiper-wrapper">';
+    foreach ($images as $image) {
+        $output .= '<div class="swiper-slide">';
+        //$output .= '<img src="'.$image.'"'>
+        $output .= Simplify::getPictureTag($image);
+        $output .= '</div>';
+    }
+    $output .= '</div>';
+    $output .= '<div class="swiper-pagination"></div>';
+    $output .= '</div>';
+} else {
+    if(!empty($images) && !empty($images[0])) {
+        $image = $images[0];
+        $output .= Simplify::getPictureTag($image);
+    }
+}
+$output .= '</div>';
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="blog__content">';
+$output .= '<div class="col">';
+$output .= '<div class="content__title">' . /* REX_VALUE[3] */ 'Einstellung im Amt als vorsorgliche Massnahme' . '</div>';
+$output .= '<div class="content__text">' . /* REX_VALUE[id=4 output=html] */ '<p>In einem neuen Entscheid setzte sich das Verwaltungsgericht Zürich vertieft mit der Einstellung im Amt auseinander. Eine Einstellung im Amt ist der Verzicht auf die Arbeitsleistung bei weiterhin bestehender (i.d.R. voller) Besoldung und ist jederzeit möglich, unter anderem wenn zwingende öffentliche Interessen oder eine Administrativuntersuchung dies erfordern.</p>' . '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$titleOutput = false;
+foreach ($images as $image) {
+    if (!empty($image)) {
+        $imageCredit = rex_media::get($image)->getValue('med_credits');
+    }
+
+    if (!empty($imageCredit)) {
+        if (!$titleOutput) {
+            $output .= '<div class="image__credit">Image Credits</div>';
+            $titleOutput = true;
+        }
+
+        $creditURL = rex_media::get($image)->getValue('med_credits_link');
+        $creditString = !empty($creditURL) ? '<a href="' . Simplify::formatLink($creditURL) . '" title="Credits: ' . $imageCredit . '">@' . $imageCredit . '</a>' : '@' . $imageCredit;
+        $output .= '<div class="image__credit">' . $creditString . '</div>';
+    }
+}
+
+$output .= !empty(/* REX_VALUE[id=5 output=html] */ '<p>Im Rahmen der Fürsorgepflicht muss die Arbeitgeberin die berechtigten Interessen der angestellten Person berücksichtigen und darf eine Einstellung im Amt nur anordnen, wenn das öffentliche Interesse an der vorübergehenden Entfernung der Betroffenen vom Arbeitsplatz die entgegenstehenden privaten Interessen überwiegt. Zudem muss die mit der Einstellung im Amt verbundene Aussenwirkung und die damit einhergehende Gefahr einer öffentlichen Vorverurteilung beachtet werden.</p>') ? '<div class="content__text">' . /* REX_VALUE[id=5 output=html] */ '<p>Im Rahmen der Fürsorgepflicht muss die Arbeitgeberin die berechtigten Interessen der angestellten Person berücksichtigen und darf eine Einstellung im Amt nur anordnen, wenn das öffentliche Interesse an der vorübergehenden Entfernung der Betroffenen vom Arbeitsplatz die entgegenstehenden privaten Interessen überwiegt. Zudem muss die mit der Einstellung im Amt verbundene Aussenwirkung und die damit einhergehende Gefahr einer öffentlichen Vorverurteilung beachtet werden.</p>' . '</div>' : '';
+
+$moreLink = /* REX_VALUE[7] */ 'PERSONALRECHTSBLOG.CH';
+$moreURL = /* REX_VALUE[6] */ 'https://personalrechtsblog.ch/2023/12/05/einstellung-im-amt-als-vorsorgliche-massnahme/';
+
+if (!empty($moreLink) && !empty($moreURL)) {
+    $output .= '<div class="content__link" data-cursor-dynamic><span>READ MORE:</span><a href="' . Simplify::formatLink($moreURL) . '" target="_blank" title="' . $moreLink . '">' . $moreLink . '</a></div>';
+}
+
+$output .= '</div>';
+$output .= '</div>';
+$output .= '<div class="blog__more" data-cursor-dynamic></div>';
+$output .= '</div>';
+echo $output;
+?>
+EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057
+);
+require rex_stream::factory('module/8/output', 
+<<<'EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057'
+<?php
+$images = !empty(/* REX_MEDIALIST[1] */ 'advokatur-barmet-slider-9_1.jpg') ? explode(',', /* REX_MEDIALIST[1] */ 'advokatur-barmet-slider-9_1.jpg') : null;
+$output = '<div class="blog__post component closed">';
+$output .= '<div class="preview">';
+$output .= '<div class="col">';
+$output .= '<div class="preview__content">';
+$output .= '<div class="preview__title">' . /* REX_VALUE[1] */ 'Die Arbeitslosenkasse im personalrechtlichen Rechtsmittelverfahren' . '</div>';
+$output .= '<div class="preview__divider"></div>';
+if(!empty(/* REX_VALUE[2] */ '02.11.2023')) {
+    $date = str_replace('.', ' / ', /* REX_VALUE[2] */ '02.11.2023');
+    $output .= '<div class="preview__date">DATE: ' . $date . '</div>';
+}
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$output .= '<div class="media__wrapper">';
+if (count($images) > 1 && !empty($images[0])) {
+    $output .= '<div class="swiper-container">';
+    $output .= '<div class="swiper-wrapper">';
+    foreach ($images as $image) {
+        $output .= '<div class="swiper-slide">';
+        //$output .= '<img src="'.$image.'"'>
+        $output .= Simplify::getPictureTag($image);
+        $output .= '</div>';
+    }
+    $output .= '</div>';
+    $output .= '<div class="swiper-pagination"></div>';
+    $output .= '</div>';
+} else {
+    if(!empty($images) && !empty($images[0])) {
+        $image = $images[0];
+        $output .= Simplify::getPictureTag($image);
+    }
+}
+$output .= '</div>';
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="blog__content">';
+$output .= '<div class="col">';
+$output .= '<div class="content__title">' . /* REX_VALUE[3] */ 'Die Arbeitslosenkasse im personalrechtlichen Rechtsmittelverfahren' . '</div>';
+$output .= '<div class="content__text">' . /* REX_VALUE[id=4 output=html] */ '<p>In einem neuen Entscheid setzte sich das Verwaltungsgericht Zürich vertieft mit der Einstellung im Amt auseinander. Eine Einstellung im Amt ist der Verzicht auf die Arbeitsleistung bei weiterhin bestehender (i.d.R. voller) Besoldung und ist jederzeit möglich, unter anderem wenn zwingende öffentliche Interessen oder eine Administrativuntersuchung dies erfordern.</p>' . '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$titleOutput = false;
+foreach ($images as $image) {
+    if (!empty($image)) {
+        $imageCredit = rex_media::get($image)->getValue('med_credits');
+    }
+
+    if (!empty($imageCredit)) {
+        if (!$titleOutput) {
+            $output .= '<div class="image__credit">Image Credits</div>';
+            $titleOutput = true;
+        }
+
+        $creditURL = rex_media::get($image)->getValue('med_credits_link');
+        $creditString = !empty($creditURL) ? '<a href="' . Simplify::formatLink($creditURL) . '" title="Credits: ' . $imageCredit . '">@' . $imageCredit . '</a>' : '@' . $imageCredit;
+        $output .= '<div class="image__credit">' . $creditString . '</div>';
+    }
+}
+
+$output .= !empty(/* REX_VALUE[id=5 output=html] */ '<p>Es verneint einen direkten Übergang der prozessualen Stellung im Verfahren und kommt zum Schluss, dass es für den Prozess- bzw. Verfahrenseintritt einer Erklärung gegenüber der Arbeitnehmerin bedürfe. Bis dahin führe diese das Verfahren in sogenannter Prozessstandschaft weiter.</p>') ? '<div class="content__text">' . /* REX_VALUE[id=5 output=html] */ '<p>Es verneint einen direkten Übergang der prozessualen Stellung im Verfahren und kommt zum Schluss, dass es für den Prozess- bzw. Verfahrenseintritt einer Erklärung gegenüber der Arbeitnehmerin bedürfe. Bis dahin führe diese das Verfahren in sogenannter Prozessstandschaft weiter.</p>' . '</div>' : '';
+
+$moreLink = /* REX_VALUE[7] */ 'PERSONALRECHTSBLOG.CH';
+$moreURL = /* REX_VALUE[6] */ 'https://personalrechtsblog.ch/2023/11/02/die-arbeitslosenkasse-im-personalrechtlichen-rechtsmittelverfahren/';
+
+if (!empty($moreLink) && !empty($moreURL)) {
+    $output .= '<div class="content__link" data-cursor-dynamic><span>READ MORE:</span><a href="' . Simplify::formatLink($moreURL) . '" target="_blank" title="' . $moreLink . '">' . $moreLink . '</a></div>';
+}
+
+$output .= '</div>';
+$output .= '</div>';
+$output .= '<div class="blog__more" data-cursor-dynamic></div>';
+$output .= '</div>';
+echo $output;
+?>
+EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057
+);
+require rex_stream::factory('module/8/output', 
+<<<'EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057'
+<?php
+$images = !empty(/* REX_MEDIALIST[1] */ 'advokatur-barmet-slider-8.jpg') ? explode(',', /* REX_MEDIALIST[1] */ 'advokatur-barmet-slider-8.jpg') : null;
+$output = '<div class="blog__post component closed">';
+$output .= '<div class="preview">';
+$output .= '<div class="col">';
+$output .= '<div class="preview__content">';
+$output .= '<div class="preview__title">' . /* REX_VALUE[1] */ 'Mehr Konturenschärfe für Fürsorgepflicht bei Alterskündigung' . '</div>';
+$output .= '<div class="preview__divider"></div>';
+if(!empty(/* REX_VALUE[2] */ '28.09.2023')) {
+    $date = str_replace('.', ' / ', /* REX_VALUE[2] */ '28.09.2023');
+    $output .= '<div class="preview__date">DATE: ' . $date . '</div>';
+}
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$output .= '<div class="media__wrapper">';
+if (count($images) > 1 && !empty($images[0])) {
+    $output .= '<div class="swiper-container">';
+    $output .= '<div class="swiper-wrapper">';
+    foreach ($images as $image) {
+        $output .= '<div class="swiper-slide">';
+        //$output .= '<img src="'.$image.'"'>
+        $output .= Simplify::getPictureTag($image);
+        $output .= '</div>';
+    }
+    $output .= '</div>';
+    $output .= '<div class="swiper-pagination"></div>';
+    $output .= '</div>';
+} else {
+    if(!empty($images) && !empty($images[0])) {
+        $image = $images[0];
+        $output .= Simplify::getPictureTag($image);
+    }
+}
+$output .= '</div>';
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="blog__content">';
+$output .= '<div class="col">';
+$output .= '<div class="content__title">' . /* REX_VALUE[3] */ 'Mehr Konturenschärfe für Fürsorgepflicht bei Alterskündigung' . '</div>';
+$output .= '<div class="content__text">' . /* REX_VALUE[id=4 output=html] */ '<p>Im Entscheid AN210039‑L vom 16. August 2022 hatte das Arbeitsgericht Zürich die Kündigung eines langjährigen Kochs zu beurteilen, dessen Arbeitsverhältnis nach rund 30 Jahren im Alter von 64 Jahren aufgelöst wurde.</p>' . '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$titleOutput = false;
+foreach ($images as $image) {
+    if (!empty($image)) {
+        $imageCredit = rex_media::get($image)->getValue('med_credits');
+    }
+
+    if (!empty($imageCredit)) {
+        if (!$titleOutput) {
+            $output .= '<div class="image__credit">Image Credits</div>';
+            $titleOutput = true;
+        }
+
+        $creditURL = rex_media::get($image)->getValue('med_credits_link');
+        $creditString = !empty($creditURL) ? '<a href="' . Simplify::formatLink($creditURL) . '" title="Credits: ' . $imageCredit . '">@' . $imageCredit . '</a>' : '@' . $imageCredit;
+        $output .= '<div class="image__credit">' . $creditString . '</div>';
+    }
+}
+
+$output .= !empty(/* REX_VALUE[id=5 output=html] */ '<p><br></p>' . "\r\n" . '<p><br></p>' . "\r\n" . '<p>Die Kündigung erfolgte während einer längeren, mindestens teilweisen Arbeitsunfähigkeit und rund elf Monate vor der Pensionierung des Kochs.</p>') ? '<div class="content__text">' . /* REX_VALUE[id=5 output=html] */ '<p><br></p>' . "\r\n" . '<p><br></p>' . "\r\n" . '<p>Die Kündigung erfolgte während einer längeren, mindestens teilweisen Arbeitsunfähigkeit und rund elf Monate vor der Pensionierung des Kochs.</p>' . '</div>' : '';
+
+$moreLink = /* REX_VALUE[7] */ 'PERSONALRECHTSBLOG.CH';
+$moreURL = /* REX_VALUE[6] */ 'https://personalrechtsblog.ch/2023/09/28/mehr-konturenschaerfe-fuer-fuersorgepflicht-bei-alterskuendigung/';
+
+if (!empty($moreLink) && !empty($moreURL)) {
+    $output .= '<div class="content__link" data-cursor-dynamic><span>READ MORE:</span><a href="' . Simplify::formatLink($moreURL) . '" target="_blank" title="' . $moreLink . '">' . $moreLink . '</a></div>';
+}
+
+$output .= '</div>';
+$output .= '</div>';
+$output .= '<div class="blog__more" data-cursor-dynamic></div>';
+$output .= '</div>';
+echo $output;
+?>
+EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057
+);
+require rex_stream::factory('module/8/output', 
+<<<'EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057'
+<?php
+$images = !empty(/* REX_MEDIALIST[1] */ 'advokatur-barmet_mood_3.jpg') ? explode(',', /* REX_MEDIALIST[1] */ 'advokatur-barmet_mood_3.jpg') : null;
+$output = '<div class="blog__post component closed">';
+$output .= '<div class="preview">';
+$output .= '<div class="col">';
+$output .= '<div class="preview__content">';
+$output .= '<div class="preview__title">' . /* REX_VALUE[1] */ 'Probezeitkündigung im öffentlichen Recht' . '</div>';
+$output .= '<div class="preview__divider"></div>';
+if(!empty(/* REX_VALUE[2] */ '31.08.2023')) {
+    $date = str_replace('.', ' / ', /* REX_VALUE[2] */ '31.08.2023');
+    $output .= '<div class="preview__date">DATE: ' . $date . '</div>';
+}
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$output .= '<div class="media__wrapper">';
+if (count($images) > 1 && !empty($images[0])) {
+    $output .= '<div class="swiper-container">';
+    $output .= '<div class="swiper-wrapper">';
+    foreach ($images as $image) {
+        $output .= '<div class="swiper-slide">';
+        //$output .= '<img src="'.$image.'"'>
+        $output .= Simplify::getPictureTag($image);
+        $output .= '</div>';
+    }
+    $output .= '</div>';
+    $output .= '<div class="swiper-pagination"></div>';
+    $output .= '</div>';
+} else {
+    if(!empty($images) && !empty($images[0])) {
+        $image = $images[0];
+        $output .= Simplify::getPictureTag($image);
+    }
+}
+$output .= '</div>';
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="blog__content">';
+$output .= '<div class="col">';
+$output .= '<div class="content__title">' . /* REX_VALUE[3] */ 'Probezeitkündigung im öffentlichen Recht – Risiko für Nasenentscheide' . '</div>';
+$output .= '<div class="content__text">' . /* REX_VALUE[id=4 output=html] */ '<p>Die Voraussetzungen für Kündigungen bei öffentlich-rechtlichen Anstellungsverhältnissen sind während der Probezeit bekanntlich tiefer als danach.&nbsp;</p>' . '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$titleOutput = false;
+foreach ($images as $image) {
+    if (!empty($image)) {
+        $imageCredit = rex_media::get($image)->getValue('med_credits');
+    }
+
+    if (!empty($imageCredit)) {
+        if (!$titleOutput) {
+            $output .= '<div class="image__credit">Image Credits</div>';
+            $titleOutput = true;
+        }
+
+        $creditURL = rex_media::get($image)->getValue('med_credits_link');
+        $creditString = !empty($creditURL) ? '<a href="' . Simplify::formatLink($creditURL) . '" title="Credits: ' . $imageCredit . '">@' . $imageCredit . '</a>' : '@' . $imageCredit;
+        $output .= '<div class="image__credit">' . $creditString . '</div>';
+    }
+}
+
+$output .= !empty(/* REX_VALUE[id=5 output=html] */ '<p><br></p>' . "\r\n" . '<p>Ein Urteil des Bundesverwaltungsgerichts vom 2. August 2023 zeigt nun in eindrücklich deutlichen Worten wie tief die Voraussetzungen tatsächlich sind. Damit unterscheidet sich die Probezeitkündigung im öffentlichen Recht im Grunde kaum von derjenigen im Privatrecht.</p>') ? '<div class="content__text">' . /* REX_VALUE[id=5 output=html] */ '<p><br></p>' . "\r\n" . '<p>Ein Urteil des Bundesverwaltungsgerichts vom 2. August 2023 zeigt nun in eindrücklich deutlichen Worten wie tief die Voraussetzungen tatsächlich sind. Damit unterscheidet sich die Probezeitkündigung im öffentlichen Recht im Grunde kaum von derjenigen im Privatrecht.</p>' . '</div>' : '';
+
+$moreLink = /* REX_VALUE[7] */ 'PERSONALRECHTSBLOG.CH';
+$moreURL = /* REX_VALUE[6] */ 'https://personalrechtsblog.ch/2023/08/31/probezeitkuendigung-im-oeffentlichen-recht-risiko-fuer-nasenentscheide/';
+
+if (!empty($moreLink) && !empty($moreURL)) {
+    $output .= '<div class="content__link" data-cursor-dynamic><span>READ MORE:</span><a href="' . Simplify::formatLink($moreURL) . '" target="_blank" title="' . $moreLink . '">' . $moreLink . '</a></div>';
+}
+
+$output .= '</div>';
+$output .= '</div>';
+$output .= '<div class="blog__more" data-cursor-dynamic></div>';
+$output .= '</div>';
+echo $output;
+?>
+EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057
+);
+require rex_stream::factory('module/8/output', 
+<<<'EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057'
+<?php
+$images = !empty(/* REX_MEDIALIST[1] */ 'leawaser_advokaturbarmet_402.jpg') ? explode(',', /* REX_MEDIALIST[1] */ 'leawaser_advokaturbarmet_402.jpg') : null;
+$output = '<div class="blog__post component closed">';
+$output .= '<div class="preview">';
+$output .= '<div class="col">';
+$output .= '<div class="preview__content">';
+$output .= '<div class="preview__title">' . /* REX_VALUE[1] */ 'Mobbing im Sinne der Rechtsprechung' . '</div>';
+$output .= '<div class="preview__divider"></div>';
+if(!empty(/* REX_VALUE[2] */ '10.07.2023')) {
+    $date = str_replace('.', ' / ', /* REX_VALUE[2] */ '10.07.2023');
+    $output .= '<div class="preview__date">DATE: ' . $date . '</div>';
+}
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$output .= '<div class="media__wrapper">';
+if (count($images) > 1 && !empty($images[0])) {
+    $output .= '<div class="swiper-container">';
+    $output .= '<div class="swiper-wrapper">';
+    foreach ($images as $image) {
+        $output .= '<div class="swiper-slide">';
+        //$output .= '<img src="'.$image.'"'>
+        $output .= Simplify::getPictureTag($image);
+        $output .= '</div>';
+    }
+    $output .= '</div>';
+    $output .= '<div class="swiper-pagination"></div>';
+    $output .= '</div>';
+} else {
+    if(!empty($images) && !empty($images[0])) {
+        $image = $images[0];
+        $output .= Simplify::getPictureTag($image);
+    }
+}
+$output .= '</div>';
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="blog__content">';
+$output .= '<div class="col">';
+$output .= '<div class="content__title">' . /* REX_VALUE[3] */ 'Mobbing im Sinne der Rechtsprechung' . '</div>';
+$output .= '<div class="content__text">' . /* REX_VALUE[id=4 output=html] */ '<p>Gemäss bundesgerichtlicher Rechtsprechung verlangt das Vorliegen von Mobbing ein systematisches, feindliches, über einen längeren Zeitraum anhaltendes Verhalten, mit dem eine Person an ihrem Arbeitsplatz isoliert, ausgegrenzt oder gar von diesem entfernt werden soll. Auch bei wiederholten Vorfällen, welche die Persönlichkeit der Person verletzten, liegt kein Mobbing vor, sofern nicht die notwendige Dauer und Intensität erreicht ist.<br></p>' . '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$titleOutput = false;
+foreach ($images as $image) {
+    if (!empty($image)) {
+        $imageCredit = rex_media::get($image)->getValue('med_credits');
+    }
+
+    if (!empty($imageCredit)) {
+        if (!$titleOutput) {
+            $output .= '<div class="image__credit">Image Credits</div>';
+            $titleOutput = true;
+        }
+
+        $creditURL = rex_media::get($image)->getValue('med_credits_link');
+        $creditString = !empty($creditURL) ? '<a href="' . Simplify::formatLink($creditURL) . '" title="Credits: ' . $imageCredit . '">@' . $imageCredit . '</a>' : '@' . $imageCredit;
+        $output .= '<div class="image__credit">' . $creditString . '</div>';
+    }
+}
+
+$output .= !empty(/* REX_VALUE[id=5 output=html] */ '<p><br></p>' . "\r\n" . '<p>Gemäss bundesgerichtlicher Rechtsprechung verlangt das Vorliegen von Mobbing ein systematisches, feindliches, über einen längeren Zeitraum anhaltendes Verhalten, mit dem eine Person an ihrem Arbeitsplatz isoliert, ausgegrenzt oder gar von diesem entfernt werden soll. Auch bei wiederholten Vorfällen, welche die Persönlichkeit der Person verletzten, liegt kein Mobbing vor, sofern nicht die notwendige Dauer und Intensität erreicht ist.</p>') ? '<div class="content__text">' . /* REX_VALUE[id=5 output=html] */ '<p><br></p>' . "\r\n" . '<p>Gemäss bundesgerichtlicher Rechtsprechung verlangt das Vorliegen von Mobbing ein systematisches, feindliches, über einen längeren Zeitraum anhaltendes Verhalten, mit dem eine Person an ihrem Arbeitsplatz isoliert, ausgegrenzt oder gar von diesem entfernt werden soll. Auch bei wiederholten Vorfällen, welche die Persönlichkeit der Person verletzten, liegt kein Mobbing vor, sofern nicht die notwendige Dauer und Intensität erreicht ist.</p>' . '</div>' : '';
+
+$moreLink = /* REX_VALUE[7] */ 'PERSONALRECHTSBLOG.CH';
+$moreURL = /* REX_VALUE[6] */ 'https://personalrechtsblog.ch/2023/07/10/mobbing-im-sinne-der-rechtsprechung/';
+
+if (!empty($moreLink) && !empty($moreURL)) {
+    $output .= '<div class="content__link" data-cursor-dynamic><span>READ MORE:</span><a href="' . Simplify::formatLink($moreURL) . '" target="_blank" title="' . $moreLink . '">' . $moreLink . '</a></div>';
+}
+
+$output .= '</div>';
+$output .= '</div>';
+$output .= '<div class="blog__more" data-cursor-dynamic></div>';
+$output .= '</div>';
+echo $output;
+?>
+EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057
+);
+require rex_stream::factory('module/8/output', 
+<<<'EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057'
+<?php
+$images = !empty(/* REX_MEDIALIST[1] */ 'advokatur-barmet-anzeigebild-untersuchungen_1.jpg') ? explode(',', /* REX_MEDIALIST[1] */ 'advokatur-barmet-anzeigebild-untersuchungen_1.jpg') : null;
+$output = '<div class="blog__post component closed">';
+$output .= '<div class="preview">';
+$output .= '<div class="col">';
+$output .= '<div class="preview__content">';
+$output .= '<div class="preview__title">' . /* REX_VALUE[1] */ 'Wissenswertes zur Probezeit' . '</div>';
+$output .= '<div class="preview__divider"></div>';
+if(!empty(/* REX_VALUE[2] */ '27.04.2023')) {
+    $date = str_replace('.', ' / ', /* REX_VALUE[2] */ '27.04.2023');
+    $output .= '<div class="preview__date">DATE: ' . $date . '</div>';
+}
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$output .= '<div class="media__wrapper">';
+if (count($images) > 1 && !empty($images[0])) {
+    $output .= '<div class="swiper-container">';
+    $output .= '<div class="swiper-wrapper">';
+    foreach ($images as $image) {
+        $output .= '<div class="swiper-slide">';
+        //$output .= '<img src="'.$image.'"'>
+        $output .= Simplify::getPictureTag($image);
+        $output .= '</div>';
+    }
+    $output .= '</div>';
+    $output .= '<div class="swiper-pagination"></div>';
+    $output .= '</div>';
+} else {
+    if(!empty($images) && !empty($images[0])) {
+        $image = $images[0];
+        $output .= Simplify::getPictureTag($image);
+    }
+}
+$output .= '</div>';
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="blog__content">';
+$output .= '<div class="col">';
+$output .= '<div class="content__title">' . /* REX_VALUE[3] */ 'Wissenswertes zur Probezeit' . '</div>';
+$output .= '<div class="content__text">' . /* REX_VALUE[id=4 output=html] */ '<p>Grundsätzlich beginnt jedes neue Arbeitsverhältnis mit einer Probezeit. Die Probezeit ist eine beschränkte Zeitdauer, während der ein Kennenlernen stattfinden und die Zusammenarbeit ausprobiert werden kann und während der noch nicht alle Rechte und Pflichten des «normalen» Arbeitsverhältnisses zum Tragen kommen.&nbsp;</p>' . '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$titleOutput = false;
+foreach ($images as $image) {
+    if (!empty($image)) {
+        $imageCredit = rex_media::get($image)->getValue('med_credits');
+    }
+
+    if (!empty($imageCredit)) {
+        if (!$titleOutput) {
+            $output .= '<div class="image__credit">Image Credits</div>';
+            $titleOutput = true;
+        }
+
+        $creditURL = rex_media::get($image)->getValue('med_credits_link');
+        $creditString = !empty($creditURL) ? '<a href="' . Simplify::formatLink($creditURL) . '" title="Credits: ' . $imageCredit . '">@' . $imageCredit . '</a>' : '@' . $imageCredit;
+        $output .= '<div class="image__credit">' . $creditString . '</div>';
+    }
+}
+
+$output .= !empty(/* REX_VALUE[id=5 output=html] */ '<p><br></p>' . "\r\n" . '<p>Die Vertragsparteien sollen in dieser Zeit abschätzen können, ob sie die gegenseitigen Erwartungen erfüllen. Die Probezeit beinhaltet einige Spezialitäten, deren genauere Betrachtung sich lohnt.</p>') ? '<div class="content__text">' . /* REX_VALUE[id=5 output=html] */ '<p><br></p>' . "\r\n" . '<p>Die Vertragsparteien sollen in dieser Zeit abschätzen können, ob sie die gegenseitigen Erwartungen erfüllen. Die Probezeit beinhaltet einige Spezialitäten, deren genauere Betrachtung sich lohnt.</p>' . '</div>' : '';
+
+$moreLink = /* REX_VALUE[7] */ 'PERSONALRECHTSBLOG.CH';
+$moreURL = /* REX_VALUE[6] */ 'https://personalrechtsblog.ch/2023/04/27/wissenswertes-zur-probezeit/';
+
+if (!empty($moreLink) && !empty($moreURL)) {
+    $output .= '<div class="content__link" data-cursor-dynamic><span>READ MORE:</span><a href="' . Simplify::formatLink($moreURL) . '" target="_blank" title="' . $moreLink . '">' . $moreLink . '</a></div>';
+}
+
+$output .= '</div>';
+$output .= '</div>';
+$output .= '<div class="blog__more" data-cursor-dynamic></div>';
+$output .= '</div>';
+echo $output;
+?>
+EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057
+);
+require rex_stream::factory('module/8/output', 
+<<<'EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057'
+<?php
+$images = !empty(/* REX_MEDIALIST[1] */ 'advokatur-barmet-slider-9.jpg') ? explode(',', /* REX_MEDIALIST[1] */ 'advokatur-barmet-slider-9.jpg') : null;
+$output = '<div class="blog__post component closed">';
+$output .= '<div class="preview">';
+$output .= '<div class="col">';
+$output .= '<div class="preview__content">';
+$output .= '<div class="preview__title">' . /* REX_VALUE[1] */ 'Kündigung bei Krankheit oder Unfall' . '</div>';
+$output .= '<div class="preview__divider"></div>';
+if(!empty(/* REX_VALUE[2] */ '02.02.2023')) {
+    $date = str_replace('.', ' / ', /* REX_VALUE[2] */ '02.02.2023');
+    $output .= '<div class="preview__date">DATE: ' . $date . '</div>';
+}
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$output .= '<div class="media__wrapper">';
+if (count($images) > 1 && !empty($images[0])) {
+    $output .= '<div class="swiper-container">';
+    $output .= '<div class="swiper-wrapper">';
+    foreach ($images as $image) {
+        $output .= '<div class="swiper-slide">';
+        //$output .= '<img src="'.$image.'"'>
+        $output .= Simplify::getPictureTag($image);
+        $output .= '</div>';
+    }
+    $output .= '</div>';
+    $output .= '<div class="swiper-pagination"></div>';
+    $output .= '</div>';
+} else {
+    if(!empty($images) && !empty($images[0])) {
+        $image = $images[0];
+        $output .= Simplify::getPictureTag($image);
+    }
+}
+$output .= '</div>';
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="blog__content">';
+$output .= '<div class="col">';
+$output .= '<div class="content__title">' . /* REX_VALUE[3] */ 'Kündigung bei Krankheit oder Unfall' . '</div>';
+$output .= '<div class="content__text">' . /* REX_VALUE[id=4 output=html] */ '<p>Eine längere Arbeitsunfähigkeit von Arbeitnehmenden, sei es wegen Krankheit oder wegen Unfall, ist meist mit grossen Herausforderungen für die Arbeitgebenden verbunden. Nicht selten wird deshalb früher oder später über eine Kündigung nachgedacht.&nbsp;</p>' . '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$titleOutput = false;
+foreach ($images as $image) {
+    if (!empty($image)) {
+        $imageCredit = rex_media::get($image)->getValue('med_credits');
+    }
+
+    if (!empty($imageCredit)) {
+        if (!$titleOutput) {
+            $output .= '<div class="image__credit">Image Credits</div>';
+            $titleOutput = true;
+        }
+
+        $creditURL = rex_media::get($image)->getValue('med_credits_link');
+        $creditString = !empty($creditURL) ? '<a href="' . Simplify::formatLink($creditURL) . '" title="Credits: ' . $imageCredit . '">@' . $imageCredit . '</a>' : '@' . $imageCredit;
+        $output .= '<div class="image__credit">' . $creditString . '</div>';
+    }
+}
+
+$output .= !empty(/* REX_VALUE[id=5 output=html] */ '<p>Sowohl im privaten Arbeitsrecht als auch im öffentlichen Personalrecht kann wegen längerer Arbeitsunfähigkeit gekündigt werden. Die Kündigung wegen Arbeitsunfähigkeit ist aber auch im Privatrecht nicht ohne Tücken, weshalb sich eine genauere Betrachtung lohnt.</p>') ? '<div class="content__text">' . /* REX_VALUE[id=5 output=html] */ '<p>Sowohl im privaten Arbeitsrecht als auch im öffentlichen Personalrecht kann wegen längerer Arbeitsunfähigkeit gekündigt werden. Die Kündigung wegen Arbeitsunfähigkeit ist aber auch im Privatrecht nicht ohne Tücken, weshalb sich eine genauere Betrachtung lohnt.</p>' . '</div>' : '';
+
+$moreLink = /* REX_VALUE[7] */ 'PERSONALRECHTSBLOG.CH';
+$moreURL = /* REX_VALUE[6] */ 'https://personalrechtsblog.ch/2023/02/02/kuendigung-bei-krankheit-oder-unfall/';
+
+if (!empty($moreLink) && !empty($moreURL)) {
+    $output .= '<div class="content__link" data-cursor-dynamic><span>READ MORE:</span><a href="' . Simplify::formatLink($moreURL) . '" target="_blank" title="' . $moreLink . '">' . $moreLink . '</a></div>';
+}
+
+$output .= '</div>';
+$output .= '</div>';
+$output .= '<div class="blog__more" data-cursor-dynamic></div>';
+$output .= '</div>';
+echo $output;
+?>
+EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057
+);
+require rex_stream::factory('module/8/output', 
+<<<'EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057'
+<?php
+$images = !empty(/* REX_MEDIALIST[1] */ 'link-test-1.png') ? explode(',', /* REX_MEDIALIST[1] */ 'link-test-1.png') : null;
+$output = '<div class="blog__post component closed">';
+$output .= '<div class="preview">';
+$output .= '<div class="col">';
+$output .= '<div class="preview__content">';
+$output .= '<div class="preview__title">' . /* REX_VALUE[1] */ 'Fristlose Kündigung eines Testverweigerers' . '</div>';
+$output .= '<div class="preview__divider"></div>';
+if(!empty(/* REX_VALUE[2] */ '11.01.2023')) {
+    $date = str_replace('.', ' / ', /* REX_VALUE[2] */ '11.01.2023');
+    $output .= '<div class="preview__date">DATE: ' . $date . '</div>';
+}
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$output .= '<div class="media__wrapper">';
+if (count($images) > 1 && !empty($images[0])) {
+    $output .= '<div class="swiper-container">';
+    $output .= '<div class="swiper-wrapper">';
+    foreach ($images as $image) {
+        $output .= '<div class="swiper-slide">';
+        //$output .= '<img src="'.$image.'"'>
+        $output .= Simplify::getPictureTag($image);
+        $output .= '</div>';
+    }
+    $output .= '</div>';
+    $output .= '<div class="swiper-pagination"></div>';
+    $output .= '</div>';
+} else {
+    if(!empty($images) && !empty($images[0])) {
+        $image = $images[0];
+        $output .= Simplify::getPictureTag($image);
+    }
+}
+$output .= '</div>';
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="blog__content">';
+$output .= '<div class="col">';
+$output .= '<div class="content__title">' . /* REX_VALUE[3] */ 'Fristlose Kündigung eines Testverweigerers' . '</div>';
+$output .= '<div class="content__text">' . /* REX_VALUE[id=4 output=html] */ '<p>Die fristlose Kündigung eines Schulhortmitarbeiters ist gerechtfertigt, wenn dieser durch die Weigerung, einen gesetzlich vorgeschriebenen Covid-Test zu machen, bewirkt, dass ihn seine Arbeitgeberin im Betrieb nicht mehr einsetzen darf.&nbsp;</p>' . '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$titleOutput = false;
+foreach ($images as $image) {
+    if (!empty($image)) {
+        $imageCredit = rex_media::get($image)->getValue('med_credits');
+    }
+
+    if (!empty($imageCredit)) {
+        if (!$titleOutput) {
+            $output .= '<div class="image__credit">Image Credits</div>';
+            $titleOutput = true;
+        }
+
+        $creditURL = rex_media::get($image)->getValue('med_credits_link');
+        $creditString = !empty($creditURL) ? '<a href="' . Simplify::formatLink($creditURL) . '" title="Credits: ' . $imageCredit . '">@' . $imageCredit . '</a>' : '@' . $imageCredit;
+        $output .= '<div class="image__credit">' . $creditString . '</div>';
+    }
+}
+
+$output .= !empty(/* REX_VALUE[id=5 output=html] */ '<p>Zu diesem Schluss kommt das Verwaltungsgericht des Kantons Zürich in einem bisher unveröffentlichten Urteil. Ich diskutiere den Entscheid im neusten Blogbeitrag.</p>') ? '<div class="content__text">' . /* REX_VALUE[id=5 output=html] */ '<p>Zu diesem Schluss kommt das Verwaltungsgericht des Kantons Zürich in einem bisher unveröffentlichten Urteil. Ich diskutiere den Entscheid im neusten Blogbeitrag.</p>' . '</div>' : '';
+
+$moreLink = /* REX_VALUE[7] */ 'PERSONALRECHTSBLOG.CH';
+$moreURL = /* REX_VALUE[6] */ 'https://personalrechtsblog.ch/2023/01/11/fristlose-kuendigung-eines-testverweigerers/';
+
+if (!empty($moreLink) && !empty($moreURL)) {
+    $output .= '<div class="content__link" data-cursor-dynamic><span>READ MORE:</span><a href="' . Simplify::formatLink($moreURL) . '" target="_blank" title="' . $moreLink . '">' . $moreLink . '</a></div>';
+}
+
+$output .= '</div>';
+$output .= '</div>';
+$output .= '<div class="blog__more" data-cursor-dynamic></div>';
+$output .= '</div>';
+echo $output;
+?>
+EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057
+);
+require rex_stream::factory('module/8/output', 
+<<<'EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057'
+<?php
+$images = !empty(/* REX_MEDIALIST[1] */ 'lp-test-3.jpg') ? explode(',', /* REX_MEDIALIST[1] */ 'lp-test-3.jpg') : null;
+$output = '<div class="blog__post component closed">';
+$output .= '<div class="preview">';
+$output .= '<div class="col">';
+$output .= '<div class="preview__content">';
+$output .= '<div class="preview__title">' . /* REX_VALUE[1] */ 'Fristlose Kündigung wegen sexueller Belästigung' . '</div>';
+$output .= '<div class="preview__divider"></div>';
+if(!empty(/* REX_VALUE[2] */ '21.11.2022')) {
+    $date = str_replace('.', ' / ', /* REX_VALUE[2] */ '21.11.2022');
+    $output .= '<div class="preview__date">DATE: ' . $date . '</div>';
+}
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$output .= '<div class="media__wrapper">';
+if (count($images) > 1 && !empty($images[0])) {
+    $output .= '<div class="swiper-container">';
+    $output .= '<div class="swiper-wrapper">';
+    foreach ($images as $image) {
+        $output .= '<div class="swiper-slide">';
+        //$output .= '<img src="'.$image.'"'>
+        $output .= Simplify::getPictureTag($image);
+        $output .= '</div>';
+    }
+    $output .= '</div>';
+    $output .= '<div class="swiper-pagination"></div>';
+    $output .= '</div>';
+} else {
+    if(!empty($images) && !empty($images[0])) {
+        $image = $images[0];
+        $output .= Simplify::getPictureTag($image);
+    }
+}
+$output .= '</div>';
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="blog__content">';
+$output .= '<div class="col">';
+$output .= '<div class="content__title">' . /* REX_VALUE[3] */ 'Fristlose Kündigung wegen sexueller Belästigung' . '</div>';
+$output .= '<div class="content__text">' . /* REX_VALUE[id=4 output=html] */ '<p>Ein Schlag auf das Gesäss und das Festhalten am Hosenbund sind als sexuelle Belästigung zu qualifizieren und rechtfertigen eine fristlose Kündigung. Zu diesem Schluss kommt das Bundesverwaltungsgericht in einem neueren Entscheid.&nbsp;</p>' . '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$titleOutput = false;
+foreach ($images as $image) {
+    if (!empty($image)) {
+        $imageCredit = rex_media::get($image)->getValue('med_credits');
+    }
+
+    if (!empty($imageCredit)) {
+        if (!$titleOutput) {
+            $output .= '<div class="image__credit">Image Credits</div>';
+            $titleOutput = true;
+        }
+
+        $creditURL = rex_media::get($image)->getValue('med_credits_link');
+        $creditString = !empty($creditURL) ? '<a href="' . Simplify::formatLink($creditURL) . '" title="Credits: ' . $imageCredit . '">@' . $imageCredit . '</a>' : '@' . $imageCredit;
+        $output .= '<div class="image__credit">' . $creditString . '</div>';
+    }
+}
+
+$output .= !empty(/* REX_VALUE[id=5 output=html] */ '<p>Michael Oberdorfer diskutiert den Entscheid im neusten Blogbeitrag auf unserem Personalrechtsblog und macht wichtige Hinweise für die Praxis.</p>') ? '<div class="content__text">' . /* REX_VALUE[id=5 output=html] */ '<p>Michael Oberdorfer diskutiert den Entscheid im neusten Blogbeitrag auf unserem Personalrechtsblog und macht wichtige Hinweise für die Praxis.</p>' . '</div>' : '';
+
+$moreLink = /* REX_VALUE[7] */ 'PERSONALRECHTSBLOG.CH';
+$moreURL = /* REX_VALUE[6] */ 'https://personalrechtsblog.ch/2022/11/21/fristlose-kuendigung-wegen-sexueller-belaestigung/';
+
+if (!empty($moreLink) && !empty($moreURL)) {
+    $output .= '<div class="content__link" data-cursor-dynamic><span>READ MORE:</span><a href="' . Simplify::formatLink($moreURL) . '" target="_blank" title="' . $moreLink . '">' . $moreLink . '</a></div>';
+}
+
+$output .= '</div>';
+$output .= '</div>';
+$output .= '<div class="blog__more" data-cursor-dynamic></div>';
+$output .= '</div>';
+echo $output;
+?>
+EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057
+);
+require rex_stream::factory('module/8/output', 
+<<<'EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057'
+<?php
+$images = !empty(/* REX_MEDIALIST[1] */ 'bild-mit-text-test-1.png') ? explode(',', /* REX_MEDIALIST[1] */ 'bild-mit-text-test-1.png') : null;
+$output = '<div class="blog__post component closed">';
+$output .= '<div class="preview">';
+$output .= '<div class="col">';
+$output .= '<div class="preview__content">';
+$output .= '<div class="preview__title">' . /* REX_VALUE[1] */ 'Änderungen im Personalrecht des Kantons Zürich' . '</div>';
+$output .= '<div class="preview__divider"></div>';
+if(!empty(/* REX_VALUE[2] */ '24.10.2022')) {
+    $date = str_replace('.', ' / ', /* REX_VALUE[2] */ '24.10.2022');
+    $output .= '<div class="preview__date">DATE: ' . $date . '</div>';
+}
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$output .= '<div class="media__wrapper">';
+if (count($images) > 1 && !empty($images[0])) {
+    $output .= '<div class="swiper-container">';
+    $output .= '<div class="swiper-wrapper">';
+    foreach ($images as $image) {
+        $output .= '<div class="swiper-slide">';
+        //$output .= '<img src="'.$image.'"'>
+        $output .= Simplify::getPictureTag($image);
+        $output .= '</div>';
+    }
+    $output .= '</div>';
+    $output .= '<div class="swiper-pagination"></div>';
+    $output .= '</div>';
+} else {
+    if(!empty($images) && !empty($images[0])) {
+        $image = $images[0];
+        $output .= Simplify::getPictureTag($image);
+    }
+}
+$output .= '</div>';
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="blog__content">';
+$output .= '<div class="col">';
+$output .= '<div class="content__title">' . /* REX_VALUE[3] */ 'Änderungen im Personalrecht des Kantons Zürich' . '</div>';
+$output .= '<div class="content__text">' . /* REX_VALUE[id=4 output=html] */ '<p>Per 1. Oktober (bzw. 1. September) sind Änderungen in der Personalgesetzgebung des Kantons Zürich in Kraft getreten.&nbsp;</p>' . '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$titleOutput = false;
+foreach ($images as $image) {
+    if (!empty($image)) {
+        $imageCredit = rex_media::get($image)->getValue('med_credits');
+    }
+
+    if (!empty($imageCredit)) {
+        if (!$titleOutput) {
+            $output .= '<div class="image__credit">Image Credits</div>';
+            $titleOutput = true;
+        }
+
+        $creditURL = rex_media::get($image)->getValue('med_credits_link');
+        $creditString = !empty($creditURL) ? '<a href="' . Simplify::formatLink($creditURL) . '" title="Credits: ' . $imageCredit . '">@' . $imageCredit . '</a>' : '@' . $imageCredit;
+        $output .= '<div class="image__credit">' . $creditString . '</div>';
+    }
+}
+
+$output .= !empty(/* REX_VALUE[id=5 output=html] */ '<p>Diese betreffen hauptsächlich die formellen Voraussetzungen der Kündigung wegen mangelnder Leistung bzw. unbefriedigenden Verhaltens, das Abfindungs- und das Rückstufungsregime, und damit drei für Mitarbeitende bedeutende Institute.</p>') ? '<div class="content__text">' . /* REX_VALUE[id=5 output=html] */ '<p>Diese betreffen hauptsächlich die formellen Voraussetzungen der Kündigung wegen mangelnder Leistung bzw. unbefriedigenden Verhaltens, das Abfindungs- und das Rückstufungsregime, und damit drei für Mitarbeitende bedeutende Institute.</p>' . '</div>' : '';
+
+$moreLink = /* REX_VALUE[7] */ 'PERSONALRECHTSBLOG.CH';
+$moreURL = /* REX_VALUE[6] */ 'https://personalrechtsblog.ch/2022/10/24/aenderungen-im-personalrecht-des-kantons-zuerich/';
+
+if (!empty($moreLink) && !empty($moreURL)) {
+    $output .= '<div class="content__link" data-cursor-dynamic><span>READ MORE:</span><a href="' . Simplify::formatLink($moreURL) . '" target="_blank" title="' . $moreLink . '">' . $moreLink . '</a></div>';
+}
+
+$output .= '</div>';
+$output .= '</div>';
+$output .= '<div class="blog__more" data-cursor-dynamic></div>';
+$output .= '</div>';
+echo $output;
+?>
+EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057
+);
+require rex_stream::factory('module/8/output', 
+<<<'EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057'
+<?php
+$images = !empty(/* REX_MEDIALIST[1] */ 'advokatur-barmet-slider-backup_2.jpg') ? explode(',', /* REX_MEDIALIST[1] */ 'advokatur-barmet-slider-backup_2.jpg') : null;
+$output = '<div class="blog__post component closed">';
+$output .= '<div class="preview">';
+$output .= '<div class="col">';
+$output .= '<div class="preview__content">';
+$output .= '<div class="preview__title">' . /* REX_VALUE[1] */ 'Freiwilligenarbeit oder faktisches Arbeitsverhältnis?' . '</div>';
+$output .= '<div class="preview__divider"></div>';
+if(!empty(/* REX_VALUE[2] */ '22.08.2022')) {
+    $date = str_replace('.', ' / ', /* REX_VALUE[2] */ '22.08.2022');
+    $output .= '<div class="preview__date">DATE: ' . $date . '</div>';
+}
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$output .= '<div class="media__wrapper">';
+if (count($images) > 1 && !empty($images[0])) {
+    $output .= '<div class="swiper-container">';
+    $output .= '<div class="swiper-wrapper">';
+    foreach ($images as $image) {
+        $output .= '<div class="swiper-slide">';
+        //$output .= '<img src="'.$image.'"'>
+        $output .= Simplify::getPictureTag($image);
+        $output .= '</div>';
+    }
+    $output .= '</div>';
+    $output .= '<div class="swiper-pagination"></div>';
+    $output .= '</div>';
+} else {
+    if(!empty($images) && !empty($images[0])) {
+        $image = $images[0];
+        $output .= Simplify::getPictureTag($image);
+    }
+}
+$output .= '</div>';
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="blog__content">';
+$output .= '<div class="col">';
+$output .= '<div class="content__title">' . /* REX_VALUE[3] */ 'Freiwilligenarbeit oder faktisches Arbeitsverhältnis?' . '</div>';
+$output .= '<div class="content__text">' . /* REX_VALUE[id=4 output=html] */ '<p>Leitet ein Fussballtrainer jeden Abend Trainings und ist er am Wochenende auch an den Spielen anwesend, handelt es sich dabei um eine Leistung, die in diesem Umfang nur gegen Lohn zu erwarten ist, auch wenn kein Arbeitsvertrag vorliegt (sog. faktisches Arbeitsverhältnis).&nbsp;</p>' . '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$titleOutput = false;
+foreach ($images as $image) {
+    if (!empty($image)) {
+        $imageCredit = rex_media::get($image)->getValue('med_credits');
+    }
+
+    if (!empty($imageCredit)) {
+        if (!$titleOutput) {
+            $output .= '<div class="image__credit">Image Credits</div>';
+            $titleOutput = true;
+        }
+
+        $creditURL = rex_media::get($image)->getValue('med_credits_link');
+        $creditString = !empty($creditURL) ? '<a href="' . Simplify::formatLink($creditURL) . '" title="Credits: ' . $imageCredit . '">@' . $imageCredit . '</a>' : '@' . $imageCredit;
+        $output .= '<div class="image__credit">' . $creditString . '</div>';
+    }
+}
+
+$output .= !empty(/* REX_VALUE[id=5 output=html] */ '<p>Dies geht aus einem Entscheid des Arbeitsgerichts Zürich hervor, den Michael Oberdorfer im neusten Blogbeitrag diskutiert.</p>') ? '<div class="content__text">' . /* REX_VALUE[id=5 output=html] */ '<p>Dies geht aus einem Entscheid des Arbeitsgerichts Zürich hervor, den Michael Oberdorfer im neusten Blogbeitrag diskutiert.</p>' . '</div>' : '';
+
+$moreLink = /* REX_VALUE[7] */ 'Personalrechtsblog.ch';
+$moreURL = /* REX_VALUE[6] */ 'https://personalrechtsblog.ch/2022/08/22/freiwilligenarbeit-oder-faktisches-arbeitsverhaeltnis/';
+
+if (!empty($moreLink) && !empty($moreURL)) {
+    $output .= '<div class="content__link" data-cursor-dynamic><span>READ MORE:</span><a href="' . Simplify::formatLink($moreURL) . '" target="_blank" title="' . $moreLink . '">' . $moreLink . '</a></div>';
+}
+
+$output .= '</div>';
+$output .= '</div>';
+$output .= '<div class="blog__more" data-cursor-dynamic></div>';
+$output .= '</div>';
+echo $output;
+?>
+EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057
+);
+require rex_stream::factory('module/8/output', 
+<<<'EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057'
+<?php
+$images = !empty(/* REX_MEDIALIST[1] */ 'advokatur-barmet-startseite-doppelbild-1.jpg') ? explode(',', /* REX_MEDIALIST[1] */ 'advokatur-barmet-startseite-doppelbild-1.jpg') : null;
+$output = '<div class="blog__post component closed">';
+$output .= '<div class="preview">';
+$output .= '<div class="col">';
+$output .= '<div class="preview__content">';
+$output .= '<div class="preview__title">' . /* REX_VALUE[1] */ 'Die Krux mit der Sperrfrist' . '</div>';
+$output .= '<div class="preview__divider"></div>';
+if(!empty(/* REX_VALUE[2] */ '21.06.2022')) {
+    $date = str_replace('.', ' / ', /* REX_VALUE[2] */ '21.06.2022');
+    $output .= '<div class="preview__date">DATE: ' . $date . '</div>';
+}
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$output .= '<div class="media__wrapper">';
+if (count($images) > 1 && !empty($images[0])) {
+    $output .= '<div class="swiper-container">';
+    $output .= '<div class="swiper-wrapper">';
+    foreach ($images as $image) {
+        $output .= '<div class="swiper-slide">';
+        //$output .= '<img src="'.$image.'"'>
+        $output .= Simplify::getPictureTag($image);
+        $output .= '</div>';
+    }
+    $output .= '</div>';
+    $output .= '<div class="swiper-pagination"></div>';
+    $output .= '</div>';
+} else {
+    if(!empty($images) && !empty($images[0])) {
+        $image = $images[0];
+        $output .= Simplify::getPictureTag($image);
+    }
+}
+$output .= '</div>';
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="blog__content">';
+$output .= '<div class="col">';
+$output .= '<div class="content__title">' . /* REX_VALUE[3] */ 'Die Krux mit der Sperrfrist' . '</div>';
+$output .= '<div class="content__text">' . /* REX_VALUE[id=4 output=html] */ '<p>Die Kündigungsfreiheit der Arbeitgeberin im privaten Arbeitsrecht gilt nicht uneingeschränkt. Einerseits dürfen Kündigungen nicht missbräuchlich sein (Art. 336 OR) und anderseits dürfen sie nicht zur Unzeit – während einer sogenannten Sperrfrist – erfolgen.</p>' . '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$titleOutput = false;
+foreach ($images as $image) {
+    if (!empty($image)) {
+        $imageCredit = rex_media::get($image)->getValue('med_credits');
+    }
+
+    if (!empty($imageCredit)) {
+        if (!$titleOutput) {
+            $output .= '<div class="image__credit">Image Credits</div>';
+            $titleOutput = true;
+        }
+
+        $creditURL = rex_media::get($image)->getValue('med_credits_link');
+        $creditString = !empty($creditURL) ? '<a href="' . Simplify::formatLink($creditURL) . '" title="Credits: ' . $imageCredit . '">@' . $imageCredit . '</a>' : '@' . $imageCredit;
+        $output .= '<div class="image__credit">' . $creditString . '</div>';
+    }
+}
+
+$output .= !empty(/* REX_VALUE[id=5 output=html] */ '<p>Was es im Zusammenhang mit Kündigungen zur Unzeit speziell zu beachten gilt, soll in diesem Beitrag näher ausgeführt werden. In aller Regel (sofern ein Verweis auf das OR besteht) sind die Bestimmungen zur Kündigung zur Unzeit mit den entsprechenden Ausführungen auch im öffentlichen Personalrecht anwendbar.</p>') ? '<div class="content__text">' . /* REX_VALUE[id=5 output=html] */ '<p>Was es im Zusammenhang mit Kündigungen zur Unzeit speziell zu beachten gilt, soll in diesem Beitrag näher ausgeführt werden. In aller Regel (sofern ein Verweis auf das OR besteht) sind die Bestimmungen zur Kündigung zur Unzeit mit den entsprechenden Ausführungen auch im öffentlichen Personalrecht anwendbar.</p>' . '</div>' : '';
+
+$moreLink = /* REX_VALUE[7] */ 'Personalrechtsblog.ch';
+$moreURL = /* REX_VALUE[6] */ 'https://personalrechtsblog.ch/2022/06/21/die-krux-mit-der-sperrfrist/';
+
+if (!empty($moreLink) && !empty($moreURL)) {
+    $output .= '<div class="content__link" data-cursor-dynamic><span>READ MORE:</span><a href="' . Simplify::formatLink($moreURL) . '" target="_blank" title="' . $moreLink . '">' . $moreLink . '</a></div>';
+}
+
+$output .= '</div>';
+$output .= '</div>';
+$output .= '<div class="blog__more" data-cursor-dynamic></div>';
+$output .= '</div>';
+echo $output;
+?>
+EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057
+);
+require rex_stream::factory('module/8/output', 
+<<<'EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057'
+<?php
+$images = !empty(/* REX_MEDIALIST[1] */ 'advokatur-barmet-anzeigebild-untersuchungen.jpg') ? explode(',', /* REX_MEDIALIST[1] */ 'advokatur-barmet-anzeigebild-untersuchungen.jpg') : null;
+$output = '<div class="blog__post component closed">';
+$output .= '<div class="preview">';
+$output .= '<div class="col">';
+$output .= '<div class="preview__content">';
+$output .= '<div class="preview__title">' . /* REX_VALUE[1] */ 'Freistellung als Verletzung der Persönlichkeit' . '</div>';
+$output .= '<div class="preview__divider"></div>';
+if(!empty(/* REX_VALUE[2] */ '14.03.2022')) {
+    $date = str_replace('.', ' / ', /* REX_VALUE[2] */ '14.03.2022');
+    $output .= '<div class="preview__date">DATE: ' . $date . '</div>';
+}
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$output .= '<div class="media__wrapper">';
+if (count($images) > 1 && !empty($images[0])) {
+    $output .= '<div class="swiper-container">';
+    $output .= '<div class="swiper-wrapper">';
+    foreach ($images as $image) {
+        $output .= '<div class="swiper-slide">';
+        //$output .= '<img src="'.$image.'"'>
+        $output .= Simplify::getPictureTag($image);
+        $output .= '</div>';
+    }
+    $output .= '</div>';
+    $output .= '<div class="swiper-pagination"></div>';
+    $output .= '</div>';
+} else {
+    if(!empty($images) && !empty($images[0])) {
+        $image = $images[0];
+        $output .= Simplify::getPictureTag($image);
+    }
+}
+$output .= '</div>';
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="blog__content">';
+$output .= '<div class="col">';
+$output .= '<div class="content__title">' . /* REX_VALUE[3] */ 'Freistellung als Verletzung der Persönlichkeit' . '</div>';
+$output .= '<div class="content__text">' . /* REX_VALUE[id=4 output=html] */ '<p>Sowohl eine Einstellung im Amt, als auch eine Freistellung können einen Eingriff in die Persönlichkeitsrechte der Betroffenen darstellen. Dies insbesondere deshalb, weil im Grundsatz allen Arbeitnehmenden ein Beschäftigungsanspruch zugesprochen wird.&nbsp;</p>' . '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$titleOutput = false;
+foreach ($images as $image) {
+    if (!empty($image)) {
+        $imageCredit = rex_media::get($image)->getValue('med_credits');
+    }
+
+    if (!empty($imageCredit)) {
+        if (!$titleOutput) {
+            $output .= '<div class="image__credit">Image Credits</div>';
+            $titleOutput = true;
+        }
+
+        $creditURL = rex_media::get($image)->getValue('med_credits_link');
+        $creditString = !empty($creditURL) ? '<a href="' . Simplify::formatLink($creditURL) . '" title="Credits: ' . $imageCredit . '">@' . $imageCredit . '</a>' : '@' . $imageCredit;
+        $output .= '<div class="image__credit">' . $creditString . '</div>';
+    }
+}
+
+$output .= !empty(/* REX_VALUE[id=5 output=html] */ '<p>Dies geht aus einem älteren – aber nicht minder aktuellen – Entscheid des Verwaltungsgerichts Zürich hervor, den Michael Oberdorfer im neusten Blogbeitrag diskutiert.</p>') ? '<div class="content__text">' . /* REX_VALUE[id=5 output=html] */ '<p>Dies geht aus einem älteren – aber nicht minder aktuellen – Entscheid des Verwaltungsgerichts Zürich hervor, den Michael Oberdorfer im neusten Blogbeitrag diskutiert.</p>' . '</div>' : '';
+
+$moreLink = /* REX_VALUE[7] */ 'Personalrechtsblog.ch';
+$moreURL = /* REX_VALUE[6] */ 'https://personalrechtsblog.ch/2022/03/14/freistellung-als-verletzung-der-persoenlichkeit/';
+
+if (!empty($moreLink) && !empty($moreURL)) {
+    $output .= '<div class="content__link" data-cursor-dynamic><span>READ MORE:</span><a href="' . Simplify::formatLink($moreURL) . '" target="_blank" title="' . $moreLink . '">' . $moreLink . '</a></div>';
+}
+
+$output .= '</div>';
+$output .= '</div>';
+$output .= '<div class="blog__more" data-cursor-dynamic></div>';
+$output .= '</div>';
+echo $output;
+?>
+EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057
+);
+require rex_stream::factory('module/8/output', 
+<<<'EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057'
+<?php
+$images = !empty(/* REX_MEDIALIST[1] */ 'advokatur-barmet-slider-6_retouche.jpg') ? explode(',', /* REX_MEDIALIST[1] */ 'advokatur-barmet-slider-6_retouche.jpg') : null;
+$output = '<div class="blog__post component closed">';
+$output .= '<div class="preview">';
+$output .= '<div class="col">';
+$output .= '<div class="preview__content">';
+$output .= '<div class="preview__title">' . /* REX_VALUE[1] */ 'Datenschutz und Palliative Care' . '</div>';
+$output .= '<div class="preview__divider"></div>';
+if(!empty(/* REX_VALUE[2] */ '28.01.2022')) {
+    $date = str_replace('.', ' / ', /* REX_VALUE[2] */ '28.01.2022');
+    $output .= '<div class="preview__date">DATE: ' . $date . '</div>';
+}
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$output .= '<div class="media__wrapper">';
+if (count($images) > 1 && !empty($images[0])) {
+    $output .= '<div class="swiper-container">';
+    $output .= '<div class="swiper-wrapper">';
+    foreach ($images as $image) {
+        $output .= '<div class="swiper-slide">';
+        //$output .= '<img src="'.$image.'"'>
+        $output .= Simplify::getPictureTag($image);
+        $output .= '</div>';
+    }
+    $output .= '</div>';
+    $output .= '<div class="swiper-pagination"></div>';
+    $output .= '</div>';
+} else {
+    if(!empty($images) && !empty($images[0])) {
+        $image = $images[0];
+        $output .= Simplify::getPictureTag($image);
+    }
+}
+$output .= '</div>';
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="blog__content">';
+$output .= '<div class="col">';
+$output .= '<div class="content__title">' . /* REX_VALUE[3] */ 'Weiterbildung des Verbands spezialisierter Palliative Care Leistungserbringer ' . '</div>';
+$output .= '<div class="content__text">' . /* REX_VALUE[id=4 output=html] */ '<p>Mirjam Barmet referiert zu Fragen des Datenschutzes im Bereich der Palliative Care an einer&nbsp;Weiterbildungsveranstaltung des&nbsp;Verbands spezialisierter Palliative Care Leistungserbringer SPaC&nbsp;am 3. März 2022.&nbsp;</p>' . '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$titleOutput = false;
+foreach ($images as $image) {
+    if (!empty($image)) {
+        $imageCredit = rex_media::get($image)->getValue('med_credits');
+    }
+
+    if (!empty($imageCredit)) {
+        if (!$titleOutput) {
+            $output .= '<div class="image__credit">Image Credits</div>';
+            $titleOutput = true;
+        }
+
+        $creditURL = rex_media::get($image)->getValue('med_credits_link');
+        $creditString = !empty($creditURL) ? '<a href="' . Simplify::formatLink($creditURL) . '" title="Credits: ' . $imageCredit . '">@' . $imageCredit . '</a>' : '@' . $imageCredit;
+        $output .= '<div class="image__credit">' . $creditString . '</div>';
+    }
+}
+
+$output .= !empty(/* REX_VALUE[id=5 output=html] */ '') ? '<div class="content__text">' . /* REX_VALUE[id=5 output=html] */ '' . '</div>' : '';
+
+$moreLink = /* REX_VALUE[7] */ 'www.spac.ch';
+$moreURL = /* REX_VALUE[6] */ 'www.spac.ch';
+
+if (!empty($moreLink) && !empty($moreURL)) {
+    $output .= '<div class="content__link" data-cursor-dynamic><span>READ MORE:</span><a href="' . Simplify::formatLink($moreURL) . '" target="_blank" title="' . $moreLink . '">' . $moreLink . '</a></div>';
+}
+
+$output .= '</div>';
+$output .= '</div>';
+$output .= '<div class="blog__more" data-cursor-dynamic></div>';
+$output .= '</div>';
+echo $output;
+?>
+EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057
+);
+require rex_stream::factory('module/8/output', 
+<<<'EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057'
+<?php
+$images = !empty(/* REX_MEDIALIST[1] */ 'advokatur-barmet-portrait.jpg') ? explode(',', /* REX_MEDIALIST[1] */ 'advokatur-barmet-portrait.jpg') : null;
+$output = '<div class="blog__post component closed">';
+$output .= '<div class="preview">';
+$output .= '<div class="col">';
+$output .= '<div class="preview__content">';
+$output .= '<div class="preview__title">' . /* REX_VALUE[1] */ 'Mobbing in öffentlich-rechtlichen Arbeitsverhältnissen' . '</div>';
+$output .= '<div class="preview__divider"></div>';
+if(!empty(/* REX_VALUE[2] */ '29.11.2021')) {
+    $date = str_replace('.', ' / ', /* REX_VALUE[2] */ '29.11.2021');
+    $output .= '<div class="preview__date">DATE: ' . $date . '</div>';
+}
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$output .= '<div class="media__wrapper">';
+if (count($images) > 1 && !empty($images[0])) {
+    $output .= '<div class="swiper-container">';
+    $output .= '<div class="swiper-wrapper">';
+    foreach ($images as $image) {
+        $output .= '<div class="swiper-slide">';
+        //$output .= '<img src="'.$image.'"'>
+        $output .= Simplify::getPictureTag($image);
+        $output .= '</div>';
+    }
+    $output .= '</div>';
+    $output .= '<div class="swiper-pagination"></div>';
+    $output .= '</div>';
+} else {
+    if(!empty($images) && !empty($images[0])) {
+        $image = $images[0];
+        $output .= Simplify::getPictureTag($image);
+    }
+}
+$output .= '</div>';
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="blog__content">';
+$output .= '<div class="col">';
+$output .= '<div class="content__title">' . /* REX_VALUE[3] */ 'Podcast-Gespräch mit der Fachstelle Mobbing und Belästigung ' . '</div>';
+$output .= '<div class="content__text">' . /* REX_VALUE[id=4 output=html] */ '<p>Als Gast in der Podcast-Serie der Fachstelle Mobbing und Belästigung spricht Mirjam Barmet über ihre Erfahrungen mit dem Thema Mobbing, die sie aus&nbsp;zahlreichen&nbsp;internen Untersuchungen sowie der&nbsp;Beratung von&nbsp;Arbeitgeberinnen und Arbeitnehmern gewonnen hat.</p>' . '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$titleOutput = false;
+foreach ($images as $image) {
+    if (!empty($image)) {
+        $imageCredit = rex_media::get($image)->getValue('med_credits');
+    }
+
+    if (!empty($imageCredit)) {
+        if (!$titleOutput) {
+            $output .= '<div class="image__credit">Image Credits</div>';
+            $titleOutput = true;
+        }
+
+        $creditURL = rex_media::get($image)->getValue('med_credits_link');
+        $creditString = !empty($creditURL) ? '<a href="' . Simplify::formatLink($creditURL) . '" title="Credits: ' . $imageCredit . '">@' . $imageCredit . '</a>' : '@' . $imageCredit;
+        $output .= '<div class="image__credit">' . $creditString . '</div>';
+    }
+}
+
+$output .= !empty(/* REX_VALUE[id=5 output=html] */ '<p>Im Gespräch mit der Expertin Claudia Stam&nbsp;berichtet sie von untätigen Führungspersonen, Täter-Opfer-Rhetorik und mangelnder Sensibilität gegenüber der Thematik.</p>') ? '<div class="content__text">' . /* REX_VALUE[id=5 output=html] */ '<p>Im Gespräch mit der Expertin Claudia Stam&nbsp;berichtet sie von untätigen Führungspersonen, Täter-Opfer-Rhetorik und mangelnder Sensibilität gegenüber der Thematik.</p>' . '</div>' : '';
+
+$moreLink = /* REX_VALUE[7] */ 'Podcast Mobbing im öffentlichen Recht';
+$moreURL = /* REX_VALUE[6] */ 'https://spotify.link/a/key_live_pfaVQo61xda7Zq1zC1ca3igayxarnljw?product=open&amp;%24full_url=https%3A%2F%2Fopen.spotify.com%2Fepisode%2F0zoPeJELmGczRaplLPNJGs%3Fsi%3DRxVFLInjQmGBxWqkRAAx8A%26utm_source%3Dwhatsapp&amp;%24fallback_url=https%3A%2F%2Fopen.spotify.com%2Fepisode%2F0zoPeJELmGczRaplLPNJGs%3Fsi%3DRxVFLInjQmGBxWqkRAAx8A%26utm_source%3Dwhatsapp%26nd%3D1&amp;%7Echannel=whatsapp&amp;feature=organic  ';
+
+if (!empty($moreLink) && !empty($moreURL)) {
+    $output .= '<div class="content__link" data-cursor-dynamic><span>READ MORE:</span><a href="' . Simplify::formatLink($moreURL) . '" target="_blank" title="' . $moreLink . '">' . $moreLink . '</a></div>';
+}
+
+$output .= '</div>';
+$output .= '</div>';
+$output .= '<div class="blog__more" data-cursor-dynamic></div>';
+$output .= '</div>';
+echo $output;
+?>
+EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057
+);
+require rex_stream::factory('module/8/output', 
+<<<'EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057'
+<?php
+$images = !empty(/* REX_MEDIALIST[1] */ 'advokatur-barmet-slider-5.jpg') ? explode(',', /* REX_MEDIALIST[1] */ 'advokatur-barmet-slider-5.jpg') : null;
+$output = '<div class="blog__post component closed">';
+$output .= '<div class="preview">';
+$output .= '<div class="col">';
+$output .= '<div class="preview__content">';
+$output .= '<div class="preview__title">' . /* REX_VALUE[1] */ 'We Are Hiring!' . '</div>';
+$output .= '<div class="preview__divider"></div>';
+if(!empty(/* REX_VALUE[2] */ '19.11.2021')) {
+    $date = str_replace('.', ' / ', /* REX_VALUE[2] */ '19.11.2021');
+    $output .= '<div class="preview__date">DATE: ' . $date . '</div>';
+}
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$output .= '<div class="media__wrapper">';
+if (count($images) > 1 && !empty($images[0])) {
+    $output .= '<div class="swiper-container">';
+    $output .= '<div class="swiper-wrapper">';
+    foreach ($images as $image) {
+        $output .= '<div class="swiper-slide">';
+        //$output .= '<img src="'.$image.'"'>
+        $output .= Simplify::getPictureTag($image);
+        $output .= '</div>';
+    }
+    $output .= '</div>';
+    $output .= '<div class="swiper-pagination"></div>';
+    $output .= '</div>';
+} else {
+    if(!empty($images) && !empty($images[0])) {
+        $image = $images[0];
+        $output .= Simplify::getPictureTag($image);
+    }
+}
+$output .= '</div>';
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="blog__content">';
+$output .= '<div class="col">';
+$output .= '<div class="content__title">' . /* REX_VALUE[3] */ 'Rechtsanwält*in mit Schwerpunkt öffentliches Recht, 30-50%<br />' . "\r\n" . '' . '</div>';
+$output .= '<div class="content__text">' . /* REX_VALUE[id=4 output=html] */ '<p>Ab 1. Januar 2022 oder nach Vereinbarung</p>' . "\r\n" . '<p>Wir suchen Verstärkung, die mit Engagement und Leidenschaft berät und sich mit Freude juristisch komplexen Fällen widmet und dabei stets auf Unterstützung und fachlichen Austausch im humorvollen Team zählen kann. Dabei wenden wir uns explizit an Personen, die eine beruflich herausfordernde Tätigkeit mit anderen Engagements (etwa familiären) zu vereinen suchen. Advokatur Barmet ist eine auf öffentliches Recht spezialisierte kleine Anwaltskanzlei. Unsere&nbsp;Klient*innen schätzen unsere messerscharfe Analyse, unsere aufrichtige und unkomplizierte Kommunikation und unseren kühlen Kopf in hektischen Zeiten. Wir sind stolz auf langjährige, vertrauensvolle Mandatsbeziehungen.</p>' . "\r\n\r\n" . '<p>Bei Interesse freuen wir uns über Ihre elektronische Bewerbung an&nbsp;kontakt@advokaturbarmet.ch</p>' . '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$titleOutput = false;
+foreach ($images as $image) {
+    if (!empty($image)) {
+        $imageCredit = rex_media::get($image)->getValue('med_credits');
+    }
+
+    if (!empty($imageCredit)) {
+        if (!$titleOutput) {
+            $output .= '<div class="image__credit">Image Credits</div>';
+            $titleOutput = true;
+        }
+
+        $creditURL = rex_media::get($image)->getValue('med_credits_link');
+        $creditString = !empty($creditURL) ? '<a href="' . Simplify::formatLink($creditURL) . '" title="Credits: ' . $imageCredit . '">@' . $imageCredit . '</a>' : '@' . $imageCredit;
+        $output .= '<div class="image__credit">' . $creditString . '</div>';
+    }
+}
+
+$output .= !empty(/* REX_VALUE[id=5 output=html] */ '<p>Sie bringen mit</p>' . "\r\n" . '<p>- Abschluss in Rechtswissenschaften und Schweizer&nbsp;Anwaltspatent<br>-&nbsp;Grosser juristischer Sachverstand<br>-&nbsp;Solide Berufserfahrung im öffentlichen Recht<br>-&nbsp;Erfahrung im und/oder grosses Interesse an Personal- bzw. Arbeitsrecht<br>-&nbsp;Hohes Mass an Eigenverantwortung<br>-&nbsp;Unkomplizierte, pragmatische Arbeitsweise<br>-&nbsp;Reflektierte, eigene Meinung</p>' . "\r\n" . '<p>Sie erwarten</p>' . "\r\n" . '<p>- Juristisch und strategisch spannende Mandate<br>-&nbsp;Gute, vertrauensvolle Mandantenbeziehung<br>-&nbsp;Viel Gestaltungsspielraum<br>-&nbsp;Grosse zeitliche und örtliche Flexibilität in der&nbsp;Arbeitsgestaltung<br>-&nbsp;Wertschätzendes und förderndes Arbeitsumfeld<br>-&nbsp;Zeitgemässe und faire Entlöhnung</p>') ? '<div class="content__text">' . /* REX_VALUE[id=5 output=html] */ '<p>Sie bringen mit</p>' . "\r\n" . '<p>- Abschluss in Rechtswissenschaften und Schweizer&nbsp;Anwaltspatent<br>-&nbsp;Grosser juristischer Sachverstand<br>-&nbsp;Solide Berufserfahrung im öffentlichen Recht<br>-&nbsp;Erfahrung im und/oder grosses Interesse an Personal- bzw. Arbeitsrecht<br>-&nbsp;Hohes Mass an Eigenverantwortung<br>-&nbsp;Unkomplizierte, pragmatische Arbeitsweise<br>-&nbsp;Reflektierte, eigene Meinung</p>' . "\r\n" . '<p>Sie erwarten</p>' . "\r\n" . '<p>- Juristisch und strategisch spannende Mandate<br>-&nbsp;Gute, vertrauensvolle Mandantenbeziehung<br>-&nbsp;Viel Gestaltungsspielraum<br>-&nbsp;Grosse zeitliche und örtliche Flexibilität in der&nbsp;Arbeitsgestaltung<br>-&nbsp;Wertschätzendes und förderndes Arbeitsumfeld<br>-&nbsp;Zeitgemässe und faire Entlöhnung</p>' . '</div>' : '';
+
+$moreLink = /* REX_VALUE[7] */ '';
+$moreURL = /* REX_VALUE[6] */ '';
+
+if (!empty($moreLink) && !empty($moreURL)) {
+    $output .= '<div class="content__link" data-cursor-dynamic><span>READ MORE:</span><a href="' . Simplify::formatLink($moreURL) . '" target="_blank" title="' . $moreLink . '">' . $moreLink . '</a></div>';
+}
+
+$output .= '</div>';
+$output .= '</div>';
+$output .= '<div class="blog__more" data-cursor-dynamic></div>';
+$output .= '</div>';
+echo $output;
+?>
+EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057
+);
+require rex_stream::factory('module/8/output', 
+<<<'EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057'
+<?php
+$images = !empty(/* REX_MEDIALIST[1] */ 'advokatur-barmet-slider-9.jpg') ? explode(',', /* REX_MEDIALIST[1] */ 'advokatur-barmet-slider-9.jpg') : null;
+$output = '<div class="blog__post component closed">';
+$output .= '<div class="preview">';
+$output .= '<div class="col">';
+$output .= '<div class="preview__content">';
+$output .= '<div class="preview__title">' . /* REX_VALUE[1] */ 'Lohnverzicht beim Feierabendbier ' . '</div>';
+$output .= '<div class="preview__divider"></div>';
+if(!empty(/* REX_VALUE[2] */ '06.10.2021')) {
+    $date = str_replace('.', ' / ', /* REX_VALUE[2] */ '06.10.2021');
+    $output .= '<div class="preview__date">DATE: ' . $date . '</div>';
+}
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$output .= '<div class="media__wrapper">';
+if (count($images) > 1 && !empty($images[0])) {
+    $output .= '<div class="swiper-container">';
+    $output .= '<div class="swiper-wrapper">';
+    foreach ($images as $image) {
+        $output .= '<div class="swiper-slide">';
+        //$output .= '<img src="'.$image.'"'>
+        $output .= Simplify::getPictureTag($image);
+        $output .= '</div>';
+    }
+    $output .= '</div>';
+    $output .= '<div class="swiper-pagination"></div>';
+    $output .= '</div>';
+} else {
+    if(!empty($images) && !empty($images[0])) {
+        $image = $images[0];
+        $output .= Simplify::getPictureTag($image);
+    }
+}
+$output .= '</div>';
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="blog__content">';
+$output .= '<div class="col">';
+$output .= '<div class="content__title">' . /* REX_VALUE[3] */ 'Lohnverzicht beim Feierabendbier – ein Plädoyer für die Schriftlichkeit' . '</div>';
+$output .= '<div class="content__text">' . /* REX_VALUE[id=4 output=html] */ '<p>Auch vor Gericht und unter Juristinnen und Juristen gibt es immer wieder Fälle, bei denen man sich die Frage stellt, ob es sich tatsächlich so zugetragen hat.&nbsp;</p>' . '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$titleOutput = false;
+foreach ($images as $image) {
+    if (!empty($image)) {
+        $imageCredit = rex_media::get($image)->getValue('med_credits');
+    }
+
+    if (!empty($imageCredit)) {
+        if (!$titleOutput) {
+            $output .= '<div class="image__credit">Image Credits</div>';
+            $titleOutput = true;
+        }
+
+        $creditURL = rex_media::get($image)->getValue('med_credits_link');
+        $creditString = !empty($creditURL) ? '<a href="' . Simplify::formatLink($creditURL) . '" title="Credits: ' . $imageCredit . '">@' . $imageCredit . '</a>' : '@' . $imageCredit;
+        $output .= '<div class="image__credit">' . $creditString . '</div>';
+    }
+}
+
+$output .= !empty(/* REX_VALUE[id=5 output=html] */ '<p>In aller Regel sind solche Fälle aber äusserst lehrreich, weil besonders einprägsam. Etwa wie derjenige Fall, den das Arbeitsgericht Zürich kurz vor Jahresende 2020 zu beurteilen hatte.</p>') ? '<div class="content__text">' . /* REX_VALUE[id=5 output=html] */ '<p>In aller Regel sind solche Fälle aber äusserst lehrreich, weil besonders einprägsam. Etwa wie derjenige Fall, den das Arbeitsgericht Zürich kurz vor Jahresende 2020 zu beurteilen hatte.</p>' . '</div>' : '';
+
+$moreLink = /* REX_VALUE[7] */ 'personalrechtsblog.ch';
+$moreURL = /* REX_VALUE[6] */ 'https://personalrechtsblog.ch/2021/10/06/lohnverzicht-beim-feierabendbier-ein-plaedoyer-fuer-die-schriftlichkeit/';
+
+if (!empty($moreLink) && !empty($moreURL)) {
+    $output .= '<div class="content__link" data-cursor-dynamic><span>READ MORE:</span><a href="' . Simplify::formatLink($moreURL) . '" target="_blank" title="' . $moreLink . '">' . $moreLink . '</a></div>';
+}
+
+$output .= '</div>';
+$output .= '</div>';
+$output .= '<div class="blog__more" data-cursor-dynamic></div>';
+$output .= '</div>';
+echo $output;
+?>
+EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057
+);
+require rex_stream::factory('module/8/output', 
+<<<'EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057'
+<?php
+$images = !empty(/* REX_MEDIALIST[1] */ 'advokatur-barmet-slider-4.jpg') ? explode(',', /* REX_MEDIALIST[1] */ 'advokatur-barmet-slider-4.jpg') : null;
+$output = '<div class="blog__post component closed">';
+$output .= '<div class="preview">';
+$output .= '<div class="col">';
+$output .= '<div class="preview__content">';
+$output .= '<div class="preview__title">' . /* REX_VALUE[1] */ 'Rechtsprechungsübersicht Behördenentscheide' . '</div>';
+$output .= '<div class="preview__divider"></div>';
+if(!empty(/* REX_VALUE[2] */ '07.09.2021')) {
+    $date = str_replace('.', ' / ', /* REX_VALUE[2] */ '07.09.2021');
+    $output .= '<div class="preview__date">DATE: ' . $date . '</div>';
+}
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$output .= '<div class="media__wrapper">';
+if (count($images) > 1 && !empty($images[0])) {
+    $output .= '<div class="swiper-container">';
+    $output .= '<div class="swiper-wrapper">';
+    foreach ($images as $image) {
+        $output .= '<div class="swiper-slide">';
+        //$output .= '<img src="'.$image.'"'>
+        $output .= Simplify::getPictureTag($image);
+        $output .= '</div>';
+    }
+    $output .= '</div>';
+    $output .= '<div class="swiper-pagination"></div>';
+    $output .= '</div>';
+} else {
+    if(!empty($images) && !empty($images[0])) {
+        $image = $images[0];
+        $output .= Simplify::getPictureTag($image);
+    }
+}
+$output .= '</div>';
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="blog__content">';
+$output .= '<div class="col">';
+$output .= '<div class="content__title">' . /* REX_VALUE[3] */ 'Rechtsprechungsübersicht Behördenentscheide' . '</div>';
+$output .= '<div class="content__text">' . /* REX_VALUE[id=4 output=html] */ '<p>Im letzten Beitrag der Behördenserie stellt Mirjam Barmet&nbsp;vier wegweisende Entscheide des Verwaltungsgerichts Zürich vor, und erörtert anhand der Entscheidbesprechungen wichtige praktische Themen.&nbsp;</p>' . '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$titleOutput = false;
+foreach ($images as $image) {
+    if (!empty($image)) {
+        $imageCredit = rex_media::get($image)->getValue('med_credits');
+    }
+
+    if (!empty($imageCredit)) {
+        if (!$titleOutput) {
+            $output .= '<div class="image__credit">Image Credits</div>';
+            $titleOutput = true;
+        }
+
+        $creditURL = rex_media::get($image)->getValue('med_credits_link');
+        $creditString = !empty($creditURL) ? '<a href="' . Simplify::formatLink($creditURL) . '" title="Credits: ' . $imageCredit . '">@' . $imageCredit . '</a>' : '@' . $imageCredit;
+        $output .= '<div class="image__credit">' . $creditString . '</div>';
+    }
+}
+
+$output .= !empty(/* REX_VALUE[id=5 output=html] */ '<p>Die Entscheide zeigen, dass es auch in Zukunft schwierig sein wird, vorauszusehen, wie die Gerichte mit der Frage der Anwendbarkeit des Personalrechts auf die Behörden umgehen werden, da sich hierzu keine widerspruchsfreie Praxis erkennen lässt.</p>') ? '<div class="content__text">' . /* REX_VALUE[id=5 output=html] */ '<p>Die Entscheide zeigen, dass es auch in Zukunft schwierig sein wird, vorauszusehen, wie die Gerichte mit der Frage der Anwendbarkeit des Personalrechts auf die Behörden umgehen werden, da sich hierzu keine widerspruchsfreie Praxis erkennen lässt.</p>' . '</div>' : '';
+
+$moreLink = /* REX_VALUE[7] */ 'personalrechtsblog.ch';
+$moreURL = /* REX_VALUE[6] */ 'https://personalrechtsblog.ch/2021/09/07/rechtsprechungsuebersicht-behoerdenentscheide/';
+
+if (!empty($moreLink) && !empty($moreURL)) {
+    $output .= '<div class="content__link" data-cursor-dynamic><span>READ MORE:</span><a href="' . Simplify::formatLink($moreURL) . '" target="_blank" title="' . $moreLink . '">' . $moreLink . '</a></div>';
+}
+
+$output .= '</div>';
+$output .= '</div>';
+$output .= '<div class="blog__more" data-cursor-dynamic></div>';
+$output .= '</div>';
+echo $output;
+?>
+EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057
+);
+require rex_stream::factory('module/8/output', 
+<<<'EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057'
+<?php
+$images = !empty(/* REX_MEDIALIST[1] */ 'advokatur-barmet-slider-8.jpg') ? explode(',', /* REX_MEDIALIST[1] */ 'advokatur-barmet-slider-8.jpg') : null;
+$output = '<div class="blog__post component closed">';
+$output .= '<div class="preview">';
+$output .= '<div class="col">';
+$output .= '<div class="preview__content">';
+$output .= '<div class="preview__title">' . /* REX_VALUE[1] */ 'Knatsch in der Behörde' . '</div>';
+$output .= '<div class="preview__divider"></div>';
+if(!empty(/* REX_VALUE[2] */ '22.06.2021')) {
+    $date = str_replace('.', ' / ', /* REX_VALUE[2] */ '22.06.2021');
+    $output .= '<div class="preview__date">DATE: ' . $date . '</div>';
+}
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$output .= '<div class="media__wrapper">';
+if (count($images) > 1 && !empty($images[0])) {
+    $output .= '<div class="swiper-container">';
+    $output .= '<div class="swiper-wrapper">';
+    foreach ($images as $image) {
+        $output .= '<div class="swiper-slide">';
+        //$output .= '<img src="'.$image.'"'>
+        $output .= Simplify::getPictureTag($image);
+        $output .= '</div>';
+    }
+    $output .= '</div>';
+    $output .= '<div class="swiper-pagination"></div>';
+    $output .= '</div>';
+} else {
+    if(!empty($images) && !empty($images[0])) {
+        $image = $images[0];
+        $output .= Simplify::getPictureTag($image);
+    }
+}
+$output .= '</div>';
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="blog__content">';
+$output .= '<div class="col">';
+$output .= '<div class="content__title">' . /* REX_VALUE[3] */ 'Knatsch in der Behörde' . '</div>';
+$output .= '<div class="content__text">' . /* REX_VALUE[id=4 output=html] */ '<p>Wenn es in der Behörde zu Spannungen kommt, werden die Unterschiede zu einem normalen Anstellungsverhältnis offenbar. Dennoch gibt es Möglichkeiten, Spannungen in der Behörde zu beseitigen oder gegen renitente Behördenmitglieder etwas zu unternehmen. Richtschnur muss dabei die Gewährleistung bzw. Wiederherstellung der Funktionsfähigkeit der Behörde, das heisst die Erfüllung des Mandats der Behördenmitglieder, sein.</p>' . '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$titleOutput = false;
+foreach ($images as $image) {
+    if (!empty($image)) {
+        $imageCredit = rex_media::get($image)->getValue('med_credits');
+    }
+
+    if (!empty($imageCredit)) {
+        if (!$titleOutput) {
+            $output .= '<div class="image__credit">Image Credits</div>';
+            $titleOutput = true;
+        }
+
+        $creditURL = rex_media::get($image)->getValue('med_credits_link');
+        $creditString = !empty($creditURL) ? '<a href="' . Simplify::formatLink($creditURL) . '" title="Credits: ' . $imageCredit . '">@' . $imageCredit . '</a>' : '@' . $imageCredit;
+        $output .= '<div class="image__credit">' . $creditString . '</div>';
+    }
+}
+
+$output .= !empty(/* REX_VALUE[id=5 output=html] */ '<p>Im dritten Teil der Behördenserie des personalrechtsblog.ch&nbsp;widmet sich Mirjam Barmet einem beliebten Thema aus unserer Berufspraxis. Wenn es innerhalb einer Behörde kracht oder die Behörde nicht mehr funktionsfähig ist, dann sind die rechtlichen Möglichkeiten beschränkt. Umso wichtiger sind Konfliktlösungsstrategien, um so schnell wie möglich zu einem geordneten Behördenalltag zurückzufinden.</p>') ? '<div class="content__text">' . /* REX_VALUE[id=5 output=html] */ '<p>Im dritten Teil der Behördenserie des personalrechtsblog.ch&nbsp;widmet sich Mirjam Barmet einem beliebten Thema aus unserer Berufspraxis. Wenn es innerhalb einer Behörde kracht oder die Behörde nicht mehr funktionsfähig ist, dann sind die rechtlichen Möglichkeiten beschränkt. Umso wichtiger sind Konfliktlösungsstrategien, um so schnell wie möglich zu einem geordneten Behördenalltag zurückzufinden.</p>' . '</div>' : '';
+
+$moreLink = /* REX_VALUE[7] */ 'personalrechtsblog.ch';
+$moreURL = /* REX_VALUE[6] */ 'https://personalrechtsblog.ch/2021/06/22/knatsch-in-der-behoerde/';
+
+if (!empty($moreLink) && !empty($moreURL)) {
+    $output .= '<div class="content__link" data-cursor-dynamic><span>READ MORE:</span><a href="' . Simplify::formatLink($moreURL) . '" target="_blank" title="' . $moreLink . '">' . $moreLink . '</a></div>';
+}
+
+$output .= '</div>';
+$output .= '</div>';
+$output .= '<div class="blog__more" data-cursor-dynamic></div>';
+$output .= '</div>';
+echo $output;
+?>
+EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057
+);
+require rex_stream::factory('module/8/output', 
+<<<'EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057'
+<?php
+$images = !empty(/* REX_MEDIALIST[1] */ 'leawaser_advokaturbarmet_039.jpg') ? explode(',', /* REX_MEDIALIST[1] */ 'leawaser_advokaturbarmet_039.jpg') : null;
+$output = '<div class="blog__post component closed">';
+$output .= '<div class="preview">';
+$output .= '<div class="col">';
+$output .= '<div class="preview__content">';
+$output .= '<div class="preview__title">' . /* REX_VALUE[1] */ 'Mirjam Barmet ist Referentin an der Weiterbildungsveranstaltung des Verbands Psychotherapeutinnen und Psychotherapeuten Zentralschweiz (VPZ)' . '</div>';
+$output .= '<div class="preview__divider"></div>';
+if(!empty(/* REX_VALUE[2] */ '05.06.2021')) {
+    $date = str_replace('.', ' / ', /* REX_VALUE[2] */ '05.06.2021');
+    $output .= '<div class="preview__date">DATE: ' . $date . '</div>';
+}
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$output .= '<div class="media__wrapper">';
+if (count($images) > 1 && !empty($images[0])) {
+    $output .= '<div class="swiper-container">';
+    $output .= '<div class="swiper-wrapper">';
+    foreach ($images as $image) {
+        $output .= '<div class="swiper-slide">';
+        //$output .= '<img src="'.$image.'"'>
+        $output .= Simplify::getPictureTag($image);
+        $output .= '</div>';
+    }
+    $output .= '</div>';
+    $output .= '<div class="swiper-pagination"></div>';
+    $output .= '</div>';
+} else {
+    if(!empty($images) && !empty($images[0])) {
+        $image = $images[0];
+        $output .= Simplify::getPictureTag($image);
+    }
+}
+$output .= '</div>';
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="blog__content">';
+$output .= '<div class="col">';
+$output .= '<div class="content__title">' . /* REX_VALUE[3] */ 'Rechtliche Aspekte in der Psychotherapie – Mirjam Barmet ist Referentin an der Weiterbildungsveranstaltung des VPZ' . '</div>';
+$output .= '<div class="content__text">' . /* REX_VALUE[id=4 output=html] */ '<p>Am 6. November 2021&nbsp;findet in Luzern eine ganztägige Weiterbildungsveranstaltung zu&nbsp;rechtlichen Brennpunkten im Berufsalltag der Psychotherapeutinnen und Psychotherapeuten statt.&nbsp;</p>' . "\r\n" . '<p>Die Veranstaltung wird organisiert und durchgeführt vom&nbsp;<a href="https://www.verband-vpz.ch/" target="_blank">Verband der Psychotherapeutinnen und Psychotherapeuten der Zentralschweizer Kantone LU, ZG, NW, OW, SZ, UR (VPZ)</a>.</p>' . '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$titleOutput = false;
+foreach ($images as $image) {
+    if (!empty($image)) {
+        $imageCredit = rex_media::get($image)->getValue('med_credits');
+    }
+
+    if (!empty($imageCredit)) {
+        if (!$titleOutput) {
+            $output .= '<div class="image__credit">Image Credits</div>';
+            $titleOutput = true;
+        }
+
+        $creditURL = rex_media::get($image)->getValue('med_credits_link');
+        $creditString = !empty($creditURL) ? '<a href="' . Simplify::formatLink($creditURL) . '" title="Credits: ' . $imageCredit . '">@' . $imageCredit . '</a>' : '@' . $imageCredit;
+        $output .= '<div class="image__credit">' . $creditString . '</div>';
+    }
+}
+
+$output .= !empty(/* REX_VALUE[id=5 output=html] */ '<p>Zusammen mit Dr. med. Claus Damas bestreitet Mirjam Barmet diese interdisziplinäre Weiterbildung, in der sie sich in ihrem interaktiven Tagungsprogramm den häufigsten Fragestellungen, Institutionen und Begrifflichkeiten, welche Therapeuten und Therapeutinnen in diesem Zusammenhang beschäftigen, widmen.</p>') ? '<div class="content__text">' . /* REX_VALUE[id=5 output=html] */ '<p>Zusammen mit Dr. med. Claus Damas bestreitet Mirjam Barmet diese interdisziplinäre Weiterbildung, in der sie sich in ihrem interaktiven Tagungsprogramm den häufigsten Fragestellungen, Institutionen und Begrifflichkeiten, welche Therapeuten und Therapeutinnen in diesem Zusammenhang beschäftigen, widmen.</p>' . '</div>' : '';
+
+$moreLink = /* REX_VALUE[7] */ '';
+$moreURL = /* REX_VALUE[6] */ '';
+
+if (!empty($moreLink) && !empty($moreURL)) {
+    $output .= '<div class="content__link" data-cursor-dynamic><span>READ MORE:</span><a href="' . Simplify::formatLink($moreURL) . '" target="_blank" title="' . $moreLink . '">' . $moreLink . '</a></div>';
+}
+
+$output .= '</div>';
+$output .= '</div>';
+$output .= '<div class="blog__more" data-cursor-dynamic></div>';
+$output .= '</div>';
+echo $output;
+?>
+EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057
+);
+require rex_stream::factory('module/8/output', 
+<<<'EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057'
+<?php
+$images = !empty(/* REX_MEDIALIST[1] */ 'lp-test-3.jpg') ? explode(',', /* REX_MEDIALIST[1] */ 'lp-test-3.jpg') : null;
+$output = '<div class="blog__post component closed">';
+$output .= '<div class="preview">';
+$output .= '<div class="col">';
+$output .= '<div class="preview__content">';
+$output .= '<div class="preview__title">' . /* REX_VALUE[1] */ 'Friendly reminder: Betreuungsurlaub per 1. Juli 2021' . '</div>';
+$output .= '<div class="preview__divider"></div>';
+if(!empty(/* REX_VALUE[2] */ '04.05.2021')) {
+    $date = str_replace('.', ' / ', /* REX_VALUE[2] */ '04.05.2021');
+    $output .= '<div class="preview__date">DATE: ' . $date . '</div>';
+}
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$output .= '<div class="media__wrapper">';
+if (count($images) > 1 && !empty($images[0])) {
+    $output .= '<div class="swiper-container">';
+    $output .= '<div class="swiper-wrapper">';
+    foreach ($images as $image) {
+        $output .= '<div class="swiper-slide">';
+        //$output .= '<img src="'.$image.'"'>
+        $output .= Simplify::getPictureTag($image);
+        $output .= '</div>';
+    }
+    $output .= '</div>';
+    $output .= '<div class="swiper-pagination"></div>';
+    $output .= '</div>';
+} else {
+    if(!empty($images) && !empty($images[0])) {
+        $image = $images[0];
+        $output .= Simplify::getPictureTag($image);
+    }
+}
+$output .= '</div>';
+$output .= '</div>';
+$output .= '</div>';
+
+$output .= '<div class="blog__content">';
+$output .= '<div class="col">';
+$output .= '<div class="content__title">' . /* REX_VALUE[3] */ 'Friendly reminder: Betreuungsurlaub per 1. Juli 2021' . '</div>';
+$output .= '<div class="content__text">' . /* REX_VALUE[id=4 output=html] */ '<p>Im Herbst 2020 hat der Bundesrat beschlossen, dass das Bundesgesetz über die Verbesserung der Vereinbarkeit von Erwerbstätigkeit und Angehörigenbetreuung in zwei Etappen in Kraft gesetzt wird. In der ersten Etappe wurden per 1. Januar 2021 unter anderem die Lohnfortzahlung bei kurzen Arbeitsabwesenheiten und der besoldete Vaterschaftsurlaub geregelt.&nbsp;</p>' . '</div>';
+$output .= '</div>';
+
+$output .= '<div class="col">';
+$titleOutput = false;
+foreach ($images as $image) {
+    if (!empty($image)) {
+        $imageCredit = rex_media::get($image)->getValue('med_credits');
+    }
+
+    if (!empty($imageCredit)) {
+        if (!$titleOutput) {
+            $output .= '<div class="image__credit">Image Credits</div>';
+            $titleOutput = true;
+        }
+
+        $creditURL = rex_media::get($image)->getValue('med_credits_link');
+        $creditString = !empty($creditURL) ? '<a href="' . Simplify::formatLink($creditURL) . '" title="Credits: ' . $imageCredit . '">@' . $imageCredit . '</a>' : '@' . $imageCredit;
+        $output .= '<div class="image__credit">' . $creditString . '</div>';
+    }
+}
+
+$output .= !empty(/* REX_VALUE[id=5 output=html] */ '<p>In der zweiten Etappe wird nun per 1. Juli 2021 der bezahlte 14-wöchige Urlaub für die Betreuung von schwer kranken oder verunfallten Kindern in Kraft gesetzt, welcher rein vom Umfang her eine deutlich grössere Entlastung für die Mitarbeitenden aber auch eine deutlich grössere Herausforderung für die betroffenen Arbeitgeberinnen darstellt.&nbsp;</p>') ? '<div class="content__text">' . /* REX_VALUE[id=5 output=html] */ '<p>In der zweiten Etappe wird nun per 1. Juli 2021 der bezahlte 14-wöchige Urlaub für die Betreuung von schwer kranken oder verunfallten Kindern in Kraft gesetzt, welcher rein vom Umfang her eine deutlich grössere Entlastung für die Mitarbeitenden aber auch eine deutlich grössere Herausforderung für die betroffenen Arbeitgeberinnen darstellt.&nbsp;</p>' . '</div>' : '';
+
+$moreLink = /* REX_VALUE[7] */ 'personalrechtsblog.ch';
+$moreURL = /* REX_VALUE[6] */ 'https://personalrechtsblog.ch/2021/05/04/friendly-reminder-betreuungsurlaub-per-1-juli-2021/';
+
+if (!empty($moreLink) && !empty($moreURL)) {
+    $output .= '<div class="content__link" data-cursor-dynamic><span>READ MORE:</span><a href="' . Simplify::formatLink($moreURL) . '" target="_blank" title="' . $moreLink . '">' . $moreLink . '</a></div>';
+}
+
+$output .= '</div>';
+$output .= '</div>';
+$output .= '<div class="blog__more" data-cursor-dynamic></div>';
+$output .= '</div>';
+echo $output;
+?>
+EOD_55EAC1B31E14C07A6BFEC0DE2E1B0D0019959057
+);
+
+ } ?>

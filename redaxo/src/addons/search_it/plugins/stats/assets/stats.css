@@ -1,0 +1,22 @@
+#topsearchterms ol {
+    padding: 0;
+    overflow: auto;
+    margin: 0;
+}
+
+#topsearchterms li {
+    float: left;
+    padding: 0.2em 0.5em;
+    font-weight: 900;
+    margin: 0 0.5em 1em 0.5em;
+    list-style-position: inside;
+}
+#search_it_stats_maxTopSearchitems,
+#search_it_stats_searchtermselect,
+#search_it_stats_searchtermselectmonthcount {
+    display: inline;
+    width: auto;
+    padding: 6px 2px;
+}
+
+#generalstats-list td:first-child { text-align: right; }

@@ -1,0 +1,37 @@
+<?php if ($this->ctype == '1' || ($this->ctype == '-1')) { 
+require rex_stream::factory('module/10/output', 
+<<<'EOD_048F87581F3E9009E9E6F71FCBA106BF08BDCCCE'
+<?php
+    $output = '<div class="image component">';
+        $output .= Simplify::getPictureTag(/* REX_MEDIA[1] */ 'advokatur-barmet-portrait.jpg');
+    $output .= '</div>';
+    echo $output;
+?>
+EOD_048F87581F3E9009E9E6F71FCBA106BF08BDCCCE
+);
+require rex_stream::factory('module/12/output', 
+<<<'EOD_048F87581F3E9009E9E6F71FCBA106BF08BDCCCE'
+<?php
+$isBackToTop = !empty(/* REX_VALUE[3] */ '') ? ' scroll__to--top' : '';
+$notSloping = !empty(/* REX_VALUE[4] */ '') ? ' padding' : '';
+$anchor = !empty(/* REX_VALUE[2] */ '') ? ' id="#' . /* REX_VALUE[2] */ '' . '"' : '';
+$cursor = !empty($isBackToTop) ? ' data-cursor-dynamic' : '';
+$output = '<h2 class="subtitle component' . $isBackToTop . $notSloping . '"' . $anchor . $cursor . '>' . /* REX_VALUE[1] */ 'Impressum' . '</h2>';
+echo $output;
+?>
+EOD_048F87581F3E9009E9E6F71FCBA106BF08BDCCCE
+);
+require rex_stream::factory('module/13/output', 
+<<<'EOD_048F87581F3E9009E9E6F71FCBA106BF08BDCCCE'
+<?php
+$output = '<div class="title__text component">';
+    $output .= '<div class="title">' . /* REX_VALUE[1] */ 'Impressum &amp; Datenschutz' . '</div>';
+    $output .= '<div class="text">' . /* REX_VALUE[id=2 output=html] */ '<p class="default">Advokatur Barmet<br>Universitätstrasse 65<br>8006 Zürich<br>+41 44 201 70 07<br>barmet@advokaturbarmet.ch</p>' . "\r\n" . '<p class="default">Webdesign, Coding, Fotografie<br>Another Studio<br>Luca Margadant<br>Lea Waser</p>' . "\r\n" . '<p class="sub">HAFTUNGSAUSSCHLUSS</p>' . "\r\n" . '<p>Die in diesem Webauftritt enthaltenen Informationen stellen keine Rechtsauskunft dar und ersetzen eine professionelle Rechtsberatung im konkreten Fall unter keinen Umständen. Jede Haftung für Richtigkeit und Vollständigkeit der Seite und der darin enthaltenen Beiträge ist ausgeschlossen. Auf diesem Webauftritt sind Hyperlinks zu Websites Dritter enthalten. Diese Websites und die darin enthaltenen Informationen und Angebote unterliegen ausschliesslich der Haftung der jeweiligen Betreiber.</p>' . "\r\n" . '<p class="sub">WIE NUTZT ADVOKATURBARMET.CH COOKIES? </p>' . "\r\n" . '<p class="default">Alle persönlichen Informationen, die Sie uns geben, einschließlich Ihrer E-Mail, werden für die folgenden Zwecke verwendet: Funktionalität der Website-Funktionen, Web-Statistiken über Ihre Nutzung der Website. Wir verwenden die Informationen, um die Benutzererfahrung auf unserer Website zu messen und zu verbessern, um sicherzustellen, dass unsere Website wie beabsichtigt funktioniert. Daher können wir die folgenden Informationen sammeln.</p>' . "\r\n" . '<p>Advokatur Barmet verwendet Google Analytics, einen Webanalysedienst von Google Inc. Google Analytics verwendet sog. «Cookies». Das sind Textdateien, die auf Ihrem Computer gespeichert werden und die eine Analyse der Benutzung der Website ermöglichen. Die durch Cookies erzeugten Informationen über Ihre Benutzung dieser Website werden in der Regel an einen Server von Google in den USA übertragen und dort gespeichert. Im Falle der Aktivierung der IP-Anonymisierung auf dieser Webseite, wird Ihre IP-Adresse von Google jedoch innerhalb von Mitgliedstaaten der Europäischen Union oder in anderen Vertragsstaaten des Abkommens über den Europäischen Wirtschaftsraum zuvor gekürzt. Nur in Ausnahmefällen wird die volle IP-Adresse an einen Server von Google in den USA übertragen und dort gekürzt. Im Auftrag des Betreibers dieser Website wird Google diese Informationen benutzen, um Ihre Nutzung der Website auszuwerten, um Reports über die Websiteaktivitäten zusammenzustellen und um weitere mit der Websitenutzung und der Internetnutzung verbundene Dienstleistungen gegenüber dem Websitebetreiber zu erbringen. Die im Rahmen von Google Analytics von Ihrem Browser übermittelte IP-Adresse wird nicht mit anderen Daten von Google zusammengeführt. Sie können die Speicherung der Cookies durch eine entsprechende Einstellung Ihrer Browser-Software verhindern; wir weisen Sie jedoch darauf hin, dass Sie in diesem Fall gegebenenfalls nicht sämtliche Funktionen dieser Website vollumfänglich werden nutzen können.</p>' . '</div>';
+$output .= '</div>';
+
+echo $output;
+?>
+EOD_048F87581F3E9009E9E6F71FCBA106BF08BDCCCE
+);
+
+ } ?>
